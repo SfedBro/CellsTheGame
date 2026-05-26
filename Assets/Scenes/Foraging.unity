@@ -201,7 +201,60 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &756846604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 756846606}
+  - component: {fileID: 756846605}
+  m_Layer: 0
+  m_Name: Resource Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &756846605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 756846604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e56672be2f9e5504e8d4c3b890502b7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxResourcesOnMap: 100
+  initialResourcesOnMap: 10
+  spawnRate: 3
+  resources:
+  - {fileID: 4004008581200014397, guid: 2535b714b12915b40a3fbcb8da721eb1, type: 3}
+  generationBoundsMinX: -50
+  generationBoundsMaxX: 50
+  generationBoundsMinY: -50
+  generationBoundsMaxY: 50
+--- !u!4 &756846606
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 756846604}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.6860589, y: 0.68268955, z: -0.04565581}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -314,7 +367,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 2110928059}
   smoothSpeed: 5
-  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &1313044234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -594,10 +646,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f62df8888d1dc2499f18320a849a8ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
+  playerCamera: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1313044232}
   - {fileID: 2110928059}
+  - {fileID: 756846606}
   - {fileID: 628539245}
