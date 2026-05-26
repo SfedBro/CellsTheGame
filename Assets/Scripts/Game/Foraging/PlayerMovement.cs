@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private Camera playerCamera;
 
     private Vector2 moveInput;
     private Rigidbody2D rb;
@@ -35,8 +36,22 @@ public class PlayerMovement : MonoBehaviour
         moveInput = context.ReadValue<Vector2>();
     }
 
+    private void Start()
+    {
+        if (playerCamera == null)
+            playerCamera = Camera.main;
+    }
+
     private void FixedUpdate()
     {
         rb.linearVelocity = moveInput * moveSpeed;
+        RotateToMouse();
+    }
+
+    private void RotateToMouse()
+    {
+        Vector2 direction = (playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90;
+        rb.MoveRotation(angle);
     }
 }
