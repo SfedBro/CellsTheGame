@@ -41,4 +41,9 @@ public class ResourceGenerator : MonoBehaviour
         GameObject spawned = Instantiate(resources[Random.Range(0, resources.Length)], new Vector3(Random.Range(generationBoundsMinX, generationBoundsMaxX), Random.Range(generationBoundsMinY, generationBoundsMaxY), 0), Quaternion.identity);
         spawned.transform.parent = this.transform;
     }
+
+    void onCollected()
+    {
+        resourceCounter--;
+    }
 }
