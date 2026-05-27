@@ -1,19 +1,19 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ConveyorSegment : MonoBehaviour
 {
     public ConveyorSegment Next;
+    [SerializeField]
     private int slotsLength = 8;
     public ConveyorItem[] Slots;
     private Vector3[] visualSlots;
     private void Start()
     {
-        Reset();
+        Initialize();
     }
-    private void Reset()
+    private void Initialize()
     {
         Slots = new ConveyorItem[slotsLength];
         visualSlots = new Vector3[slotsLength];
@@ -30,35 +30,76 @@ public class ConveyorSegment : MonoBehaviour
             visualSlots[i] = Vector3.Lerp(start, end, t);
         }
     }
+
+    float timer;
     void Update()
     {
-        MoveItems();
-        UpdateVisual(Slots, visualSlots);
+        timer += Time.deltaTime;
+
+        if (timer >= 0.2f)
+        {
+            timer -= 0.2f;
+
+            MoveItems();
+        }
+
+        UpdateVisual();
     }
     void MoveItems()
     {
-        if (Slots[slotsLength - 1] != null && Next.Slots[0] == null)
+        for (int i = 0; i < slotsLength; i++)
         {
-            Next.Slots[0] = Slots[slotsLength - 1];
+            if (Slots[i] != null)
+                Slots[i].movedThisTick = false;
+        }
+        var lastItem = Slots[slotsLength - 1];
+        if (Next != null && Next.InsertItem(lastItem))
+        {
             Slots[slotsLength - 1] = null;
         }
         for (int i = slotsLength - 2; i >= 0; i--)
         {
-            if (Slots[i] != null && Slots[i + 1] == null)
+            var item = Slots[i];
+            if (item == null || item.movedThisTick)
+                continue;
+            if (Slots[i + 1] == null)
             {
                 Slots[i + 1] = Slots[i];
+                Slots[i + 1].movedThisTick = true;
                 Slots[i] = null;
             }
         }
     }
-    void UpdateVisual(ConveyorItem[] slots, Vector3[] positions)
+    void UpdateVisual()
     {
-        for (int i = 0; i < slots.Length; i++)
+        for (int i = 0; i < slotsLength; i++)
         {
             if (Slots[i] != null && Slots[i].View != null)
             {
                 Slots[i].View.transform.position = visualSlots[i];
             }
         }
+    }
+    public bool InsertItem(ConveyorItem item)
+    {
+        if (item == null || Slots[0] != null)
+            return false;
+
+        item.movedThisTick = true;
+        Slots[0] = item;
+        if (item.View != null)
+        {
+            item.View.transform.position = GetSlotPosition(0);
+        }
+
+        return true;
+    }
+    public Vector3 GetSlotPosition(int index)
+    {
+        if (index < 0 || index >= slotsLength)
+        {
+            throw new System.IndexOutOfRangeException($"Invalid index::ConveyorSegment.cs::101 on object {gameObject.name}");
+        }
+        return visualSlots[index];
     }
 }
