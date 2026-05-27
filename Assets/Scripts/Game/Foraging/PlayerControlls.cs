@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerControlls : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
@@ -11,11 +11,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private GameObject hintEnterHUB;
     [SerializeField] private float HUBEnterTime = 2.0f;
 
-    private Vector2 moveInput;
     private Rigidbody2D rb;
+
     private InputSystem_Actions inputActions;
-    private bool isHintEnterHUBActive = false;
-    private bool isInteractHold = false;
+    private Vector2 moveInput;
+    private bool isInteracting = false;
+
+    private bool inInteractingZone = false;
+    private bool inHUBInteractingZone = false;
     private float enterHUBTimer = 0.0f;
 
     private void Awake()
@@ -50,12 +53,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnInteractStart(InputAction.CallbackContext context)
     {
-        isInteractHold = isHintEnterHUBActive;
+        isInteracting = inInteractingZone;
+        enterHUBTimer = 0;
     }
 
     private void OnInteractEnd(InputAction.CallbackContext context)
     {
-        isInteractHold = false;
+        isInteracting = false;
         enterHUBTimer = 0;
     }
 
@@ -67,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (isHintEnterHUBActive && isInteractHold)
+        if (inHUBInteractingZone && isInteracting)
         {
             enterHUBTimer += Time.deltaTime;
             if (enterHUBTimer >= HUBEnterTime)
@@ -75,10 +79,7 @@ public class PlayerMovement : MonoBehaviour
                 print("Entering HUB");
             }
         }
-    }
 
-    private void FixedUpdate()
-    {
         rb.linearVelocity = moveInput * moveSpeed;
         RotateToMouse();
     }
@@ -90,22 +91,19 @@ public class PlayerMovement : MonoBehaviour
         rb.MoveRotation(angle);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void onHUBZoneEnter()
     {
-        if (collision.CompareTag("HUB"))
-        {
-            hintEnterHUB.SetActive(true);
-            isHintEnterHUBActive = true;
-        }
+        inInteractingZone = true;
+        inHUBInteractingZone = true;
+        enterHUBTimer = 0;
+        hintEnterHUB.SetActive(true);
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    public void onHUBZoneExit()
     {
-        if (collision.CompareTag("HUB"))
-        {
-            hintEnterHUB.SetActive(false);
-            isHintEnterHUBActive = false;
-            enterHUBTimer = 0;
-        }
+        inInteractingZone = false;
+        inHUBInteractingZone = false;
+        enterHUBTimer = 0;
+        hintEnterHUB.SetActive(false);
     }
 }

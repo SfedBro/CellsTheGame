@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class ResourceGenerator : MonoBehaviour
 {
@@ -12,8 +13,12 @@ public class ResourceGenerator : MonoBehaviour
     public float generationBoundsMinY;
     public float generationBoundsMaxY;
 
+    [Header("Resource collectiong")]
+    public TMPro.TextMeshProUGUI UICounter;
+
     private float timer = 0f;
     private int resourceCounter;
+    private int UINumberCounter;
 
     void Start()
     {
@@ -45,5 +50,7 @@ public class ResourceGenerator : MonoBehaviour
     void onCollected()
     {
         resourceCounter--;
+        UINumberCounter++;
+        UICounter.text = UINumberCounter.ToString();
     }
 }
