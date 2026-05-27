@@ -48,7 +48,7 @@ public class PlayerControlls : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext context)
     {
-        moveInput = context.ReadValue<Vector2>();
+        moveInput = context.ReadValue<Vector2>().normalized;
     }
 
     private void OnInteractStart(InputAction.CallbackContext context)
