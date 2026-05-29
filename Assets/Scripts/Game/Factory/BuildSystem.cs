@@ -69,7 +69,7 @@ public class BuildSystem : MonoBehaviour
         Plane plane = new Plane(Vector3.forward, Vector3.zero);
 
         if (plane.Raycast(ray, out float dist))
-            return ray.GetPoint(dist);
+            return ray.GetPoint(dist) + new Vector3(0.5f, 0.5f, 0);
 
         return Vector3.zero;
     }
