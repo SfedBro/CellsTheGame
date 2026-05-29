@@ -451,6 +451,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
+  speed: 10
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
