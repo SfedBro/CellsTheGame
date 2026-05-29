@@ -1,4 +1,6 @@
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerInteractor : MonoBehaviour
 {
@@ -10,9 +12,13 @@ public class PlayerInteractor : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             TryInteract();
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            SceneManager.LoadScene("Foraging");
         }
         Movement();
     }
