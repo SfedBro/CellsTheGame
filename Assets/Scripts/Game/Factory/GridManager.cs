@@ -25,4 +25,21 @@ public class GridManager : MonoBehaviour
 
         return receiver;
     }
+    public void NotifyNeighbours(Vector3Int pos)
+    {
+        TryRebuild(pos);
+        TryRebuild(pos + Vector3Int.right);
+        TryRebuild(pos + Vector3Int.left);
+        TryRebuild(pos + Vector3Int.up);
+        TryRebuild(pos + Vector3Int.down);
+    }
+
+    void TryRebuild(Vector3Int pos)
+    {
+        if (receivers.TryGetValue(pos, out var r))
+        {
+            if (r is IBuildable interactable)
+                interactable.RebuildConnections();
+        }
+    }
 }

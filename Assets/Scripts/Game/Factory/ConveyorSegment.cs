@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class ConveyorSegment : MonoBehaviour, IItemReceiver
+public class ConveyorSegment : MonoBehaviour, IItemReceiver, IBuildable
 {
     [SerializeField]
     private Vector3Int gridPosition;
@@ -17,7 +17,11 @@ public class ConveyorSegment : MonoBehaviour, IItemReceiver
     private void Start()
     {
         Initialize();
-        Invoke(nameof(GetNext), 0.1f);
+        RebuildConnections();
+    }
+    public void RebuildConnections()
+    {
+        Invoke(nameof(GetNext), 0.01f);
     }
     private void Initialize()
     {

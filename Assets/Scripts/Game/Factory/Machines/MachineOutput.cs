@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MachineOutput : MonoBehaviour
+public class MachineOutput : MonoBehaviour, IBuildable
 {
     public ConveyorItemView itemPrefab;
     [SerializeField]
@@ -10,8 +10,12 @@ public class MachineOutput : MonoBehaviour
     private void Start()
     {
         GetGridPosition();
-        Invoke(nameof(GetOutput), 0.1f);
+        RebuildConnections();
     }
+    public void RebuildConnections()
+{
+    Invoke(nameof(GetOutput), 0.01f);
+}
     private void GetGridPosition()
     {
         Grid grid = FindFirstObjectByType<Grid>();
