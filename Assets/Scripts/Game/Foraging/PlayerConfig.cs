@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerConfig : MonoBehaviour
 {
@@ -105,6 +106,7 @@ public class PlayerConfig : MonoBehaviour
             if (enterHUBTimer >= HUBEnterTime)
             {
                 print("Entering HUB");
+                SceneManager.LoadScene("FactorySampleScene");
             }
         }
 
