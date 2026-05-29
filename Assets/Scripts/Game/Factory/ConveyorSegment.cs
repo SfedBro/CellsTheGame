@@ -1,28 +1,54 @@
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
-public class ConveyorSegment : MonoBehaviour
+public class ConveyorSegment : MonoBehaviour, IItemReceiver
 {
-    public ConveyorSegment Next;
+    [SerializeField]
+    private Vector3Int gridPosition;
+    public IItemReceiver Next;
     [SerializeField]
     private int slotsLength = 8;
     public ConveyorItem[] Slots;
     private Vector3[] visualSlots;
-    private void Start()
+    private void Awake()
     {
         Initialize();
     }
+    private void Start()
+    {
+        Invoke(nameof(GetNext), 0.1f);
+    }
     private void Initialize()
     {
+        GetGridPosition();
+        GridManager.Instance.RegisterReceiver(gridPosition, this);
+
         Slots = new ConveyorItem[slotsLength];
         visualSlots = new Vector3[slotsLength];
         GetVisualPositions();
     }
+    private void GetGridPosition()
+    {
+        Grid grid = FindFirstObjectByType<Grid>();
+        gridPosition = grid.WorldToCell(transform.position);
+    }
+    private void GetNext()
+    {
+        Vector3Int nextPos = gridPosition + GetDirection();
+        Next = GridManager.Instance.GetReceiver(nextPos);
+        Debug.Log($"{name} -> {Next}");
+    }
+    private Vector3Int GetDirection()
+    {
+        Vector3 dir = transform.right;
+
+        return new Vector3Int(Mathf.RoundToInt(dir.x), Mathf.RoundToInt(dir.y), 0);
+    }
     private void GetVisualPositions()
     {
         Vector3 dir = transform.right;
-        Vector3 start = transform.position - dir * 0.5f;
+        float step = 1f / slotsLength;
+        Vector3 start = transform.position - dir * 0.5f + dir * step * 0.5f;
         Vector3 end = transform.position + dir * 0.5f;
         for (int i = 0; i < slotsLength; i++)
         {
@@ -53,7 +79,7 @@ public class ConveyorSegment : MonoBehaviour
                 Slots[i].movedThisTick = false;
         }
         var lastItem = Slots[slotsLength - 1];
-        if (Next != null && Next.InsertItem(lastItem))
+        if (lastItem != null && Next != null && Next.TryReceiveItem(lastItem))
         {
             Slots[slotsLength - 1] = null;
         }
@@ -80,17 +106,31 @@ public class ConveyorSegment : MonoBehaviour
             }
         }
     }
-    public bool InsertItem(ConveyorItem item)
+    private void OnDrawGizmos()
     {
+        if (visualSlots == null)
+            return;
+
+        foreach (var pos in visualSlots)
+        {
+            Gizmos.DrawSphere(pos, 0.05f);
+        }
+    }
+    public bool TryReceiveItem(ConveyorItem item)
+    {
+        if (item == null)
+        {
+            Debug.Log("Received NULL item");
+            return false;
+        }
+
+        //Debug.Log($"{name} received {item.Type}");
+
         if (item == null || Slots[0] != null)
             return false;
 
-        item.movedThisTick = true;
         Slots[0] = item;
-        if (item.View != null)
-        {
-            item.View.transform.position = GetSlotPosition(0);
-        }
+        item.movedThisTick = true;
 
         return true;
     }
