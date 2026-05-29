@@ -10,3 +10,7 @@ public interface IInteractable
 {
     void Interact(PlayerInteractor player);
 }
+public interface IBuildable
+{
+    void RebuildConnections();
+}
