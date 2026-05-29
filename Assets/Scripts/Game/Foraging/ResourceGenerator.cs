@@ -37,6 +37,7 @@ public class ResourceGenerator : MonoBehaviour
         timer += Time.deltaTime;
         if (timer >= spawnRate)
         {
+            resourceCounter++;
             timer = 0f;
             spawnResource();
         }
@@ -74,5 +75,23 @@ public class ResourceGenerator : MonoBehaviour
     {
         UINumberCounter /= 2;
         UICounter.text = UINumberCounter.ToString();
+    }
+
+    public int getResourceAmount(int index)
+    {
+        if (index == 0)
+        {
+            return UINumberCounter;
+        }
+        return 0;
+    }
+
+    public void removeResource(int index, int amount)
+    {
+        if (index == 0)
+        {
+            UINumberCounter -= amount;
+            UICounter.text = UINumberCounter.ToString();
+        }
     }
 }
