@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class PlayerConfig : MonoBehaviour
 {
@@ -10,7 +11,6 @@ public class PlayerConfig : MonoBehaviour
 
     [Header("Shooting Settings")]
     [SerializeField] private GameObject bullet;
-    [SerializeField] private GameObject bulletParent;
     [SerializeField] private float shootCooldown = 1f;
 
     private float nextFireTime = 0f;
@@ -18,6 +18,7 @@ public class PlayerConfig : MonoBehaviour
     [Header("Hints Settings")]
     [SerializeField] private GameObject hintEnterHUB;
     [SerializeField] private float HUBEnterTime = 2.0f;
+    [SerializeField] private TMPro.TextMeshProUGUI hpCounterUI;
 
     [Header("Stats")]
     [SerializeField] private int MaxHP = 5;
@@ -88,12 +89,15 @@ public class PlayerConfig : MonoBehaviour
             nextFireTime = Time.time + shootCooldown;
 
             GameObject b = Instantiate(bullet, transform.position, transform.rotation);
+            b.transform.parent = transform;
         }
     }
 
     private void Start()
     {
         curHP = MaxHP;
+        hpCounterUI.text = curHP.ToString();
+
         if (playerCamera == null)
             playerCamera = Camera.main;
     }
@@ -143,13 +147,27 @@ public class PlayerConfig : MonoBehaviour
 
         nextHit = Time.time + invinsibleTime;
         curHP -= dmg;
+        hpCounterUI.text = curHP.ToString();
 
         if (curHP <= 0)
         {
             transform.position = new Vector3(0, 0, 0);
             curHP = MaxHP;
+            hpCounterUI.text = curHP.ToString();
 
             rg.onPlayerDeath();
         }
+    }
+
+    public void upgradeSpeed()
+    {
+        moveSpeed *= 1.5f;
+    }
+
+    public void upgradeHP()
+    {
+        MaxHP++;
+        curHP = MaxHP;
+        hpCounterUI.text = curHP.ToString();
     }
 }
