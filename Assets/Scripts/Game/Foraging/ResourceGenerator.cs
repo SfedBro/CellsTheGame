@@ -1,5 +1,4 @@
 using UnityEngine;
-using TMPro;
 
 public class ResourceGenerator : MonoBehaviour
 {
@@ -13,13 +12,12 @@ public class ResourceGenerator : MonoBehaviour
     public float generationBoundsMinY;
     public float generationBoundsMaxY;
 
-    [Header("Resource collectiong")]
-    public TMPro.TextMeshProUGUI UICounter;
+    [Header("Inventory")]
+    public InventoryManagement inventory;
 
     private float timer = 0f;
     private int resourceCounter;
     private int lootCounter = 0;
-    private int UINumberCounter;
 
     void Start()
     {
@@ -67,31 +65,6 @@ public class ResourceGenerator : MonoBehaviour
         {
             resourceCounter--;
         }
-        UINumberCounter++;
-        UICounter.text = UINumberCounter.ToString();
-    }
-
-    public void onPlayerDeath()
-    {
-        UINumberCounter /= 2;
-        UICounter.text = UINumberCounter.ToString();
-    }
-
-    public int getResourceAmount(int index)
-    {
-        if (index == 0)
-        {
-            return UINumberCounter;
-        }
-        return 0;
-    }
-
-    public void removeResource(int index, int amount)
-    {
-        if (index == 0)
-        {
-            UINumberCounter -= amount;
-            UICounter.text = UINumberCounter.ToString();
-        }
+        inventory.addRes(ItemType.TestOre, 1);
     }
 }

@@ -22,7 +22,7 @@ public class PlayerConfig : MonoBehaviour
 
     [Header("Stats")]
     [SerializeField] private int MaxHP = 5;
-    [SerializeField] private ResourceGenerator rg;
+    [SerializeField] private InventoryManagement inventory;
     [SerializeField] private float invinsibleTime = 0.5f;
 
     private int curHP;
@@ -49,8 +49,8 @@ public class PlayerConfig : MonoBehaviour
     {
         inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
-        inputActions.Player.Interact.performed += OnInteractStart;
-        inputActions.Player.Interact.canceled += OnInteractEnd;
+        inputActions.Player.Crouch.performed += OnInteractStart;
+        inputActions.Player.Crouch.canceled += OnInteractEnd;
         inputActions.Player.Attack.performed += OnAttack;
         inputActions.Enable();
     }
@@ -59,8 +59,8 @@ public class PlayerConfig : MonoBehaviour
     {
         inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Move.canceled -= OnMove;
-        inputActions.Player.Interact.performed -= OnInteractStart;
-        inputActions.Player.Interact.canceled -= OnInteractEnd;
+        inputActions.Player.Crouch.performed -= OnInteractStart;
+        inputActions.Player.Crouch.canceled -= OnInteractEnd;
         inputActions.Player.Attack.performed -= OnAttack;
         inputActions.Disable();
     }
@@ -138,6 +138,7 @@ public class PlayerConfig : MonoBehaviour
         inInteractingZone = false;
         inHUBInteractingZone = false;
         enterHUBTimer = 0;
+        if (hintEnterHUB != null)
         hintEnterHUB.SetActive(false);
     }
 
@@ -155,7 +156,7 @@ public class PlayerConfig : MonoBehaviour
             curHP = MaxHP;
             hpCounterUI.text = curHP.ToString();
 
-            rg.onPlayerDeath();
+            inventory.onPlayerDeath();
         }
     }
 

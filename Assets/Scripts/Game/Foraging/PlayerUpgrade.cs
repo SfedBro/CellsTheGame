@@ -14,10 +14,10 @@ public class PlayerUpgrade : MonoBehaviour
 
     [Header("Resources")]
     public Sprite[] resources;
-    public ResourceGenerator resourceGenerator;
+    public InventoryManagement inventory;
 
     [Header("Upgrading")]
-    public int[] resourceTypes;
+    public ItemType[] resourceTypes;
     public int[] resourceAmount;
     public UnityEvent upgrade;
 
@@ -25,7 +25,7 @@ public class PlayerUpgrade : MonoBehaviour
     private int maxLevel;
 
     private int curRequirement;
-    private int curResource;
+    private ItemType curResource;
 
     public void Start()
     {
@@ -43,13 +43,13 @@ public class PlayerUpgrade : MonoBehaviour
         resourceAmountUI.color = Color.yellow;
 
         curResource = resourceTypes[curLevel];
-        resourceType.sprite = resources[curResource];
+        resourceType.sprite = resources[((int)curResource)];
 
     }
 
     public void FixedUpdate()
     {
-        if (curRequirement > resourceGenerator.getResourceAmount(curResource))
+        if (curRequirement > inventory.getResourceAmount(curResource))
         {
             resourceAmountUI.color = Color.red;
         }
@@ -61,11 +61,11 @@ public class PlayerUpgrade : MonoBehaviour
 
     public void onUpgradeTap()
     {
-        if (curRequirement <= resourceGenerator.getResourceAmount(curResource))
+        if (curRequirement <= inventory.getResourceAmount(curResource))
         {
             upgrade.Invoke();
             curLevel++;
-            resourceGenerator.removeResource(curResource, curRequirement);
+            inventory.addRes(curResource, -curRequirement);
 
 
             if (curLevel >= maxLevel)

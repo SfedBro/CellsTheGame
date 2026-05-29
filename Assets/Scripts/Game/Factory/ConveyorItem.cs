@@ -9,6 +9,6 @@ public class ConveyorItem
 
 public enum ItemType
 {
-    TestOre,
-    TestPlate
+    TestOre = 0,
+    TestPlate = 1,
 }
