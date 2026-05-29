@@ -6,3 +6,7 @@ public interface IItemProvider
 {
     ConveyorItem TryExtractItem();
 }
+public interface IInteractable
+{
+    void Interact(PlayerInteractor player);
+}
