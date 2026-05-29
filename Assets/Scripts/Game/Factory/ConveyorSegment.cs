@@ -12,15 +12,23 @@ public class ConveyorSegment : MonoBehaviour, IItemReceiver
     private Vector3[] visualSlots;
     private void Awake()
     {
-        Initialize();
+        //Initialize();
     }
     private void Start()
     {
+        Initialize();
         Invoke(nameof(GetNext), 0.1f);
     }
     private void Initialize()
     {
         GetGridPosition();
+
+        if (GridManager.Instance == null)
+        {
+            Debug.LogError($"{name}: GridManager is null");
+            return;
+        }
+
         GridManager.Instance.RegisterReceiver(gridPosition, this);
 
         Slots = new ConveyorItem[slotsLength];
@@ -36,7 +44,8 @@ public class ConveyorSegment : MonoBehaviour, IItemReceiver
     {
         Vector3Int nextPos = gridPosition + GetDirection();
         Next = GridManager.Instance.GetReceiver(nextPos);
-        Debug.Log($"{name} -> {Next}");
+
+        //Debug.Log($"{name} -> {Next}");
     }
     private Vector3Int GetDirection()
     {

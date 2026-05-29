@@ -1,15 +1,16 @@
 using UnityEngine;
 
-public class MachineOutput: MonoBehaviour
+public class MachineOutput : MonoBehaviour
 {
     public ConveyorItemView itemPrefab;
     [SerializeField]
     private Vector3Int gridPosition;
     private IItemReceiver output;
+    public bool shouldSpawnManually = false;
     private void Start()
     {
         GetGridPosition();
-        GetOutput();
+        Invoke(nameof(GetOutput), 0.1f);
     }
     private void GetGridPosition()
     {
@@ -33,7 +34,10 @@ public class MachineOutput: MonoBehaviour
     public bool SpawnItem(ItemType type)
     {
         if (output == null)
+        {
+            Debug.Log("Output IS NULL");
             return false;
+        }
 
         ConveyorItem item = new ConveyorItem();
 
@@ -49,8 +53,10 @@ public class MachineOutput: MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (shouldSpawnManually && Input.GetKeyDown(KeyCode.Space))
         {
+            Debug.Log("Space");
+
             SpawnItem(ItemType.TestOre);
         }
     }
