@@ -13,9 +13,9 @@ public class MachineOutput : MonoBehaviour, IBuildable
         RebuildConnections();
     }
     public void RebuildConnections()
-{
-    Invoke(nameof(GetOutput), 0.01f);
-}
+    {
+        Invoke(nameof(GetOutput), 0.01f);
+    }
     private void GetGridPosition()
     {
         Grid grid = FindFirstObjectByType<Grid>();
