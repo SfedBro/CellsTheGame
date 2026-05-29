@@ -16,7 +16,7 @@ public class MachineInput : MonoBehaviour, IItemReceiver
     {
         //Debug.Log($"{machine.name} received {item.Type}");
 
-        machine.AddItem(item.Type);
+        machine.inventory.AddItem(item.Type);
 
         if (item.View != null)
             Destroy(item.View.gameObject);

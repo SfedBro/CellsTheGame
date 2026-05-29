@@ -4,7 +4,7 @@ using UnityEngine;
 public class MachineInterior : MonoBehaviour
 {
     [Header("Inventory")]
-    public List<ItemStack> inventory = new();
+    public Inventory inventory = new();
 
     [Header("Output")]
     public MachineOutput output;
@@ -13,23 +13,6 @@ public class MachineInterior : MonoBehaviour
     public float progress;
     public float processTime = 2f;
 
-    public void AddItem(ItemType type)
-    {
-        ItemStack stack = FindItem(type);
-
-        if (stack != null)
-        {
-            stack.amount++;
-            return;
-        }
-
-        inventory.Add(new ItemStack
-        {
-            type = type,
-            amount = 1
-        });
-    }
-
     private void Update()
     {
         ProcessOre();
@@ -37,44 +20,19 @@ public class MachineInterior : MonoBehaviour
 
     void ProcessOre()
     {
-        ItemStack ore = FindItem(ItemType.TestOre);
-
-        if (ore == null || ore.amount <= 0)
+        var item = inventory.FindItem(ItemType.TestOre);
+        if (item != null && item.amount > 0)
         {
-            progress = 0;
-            return;
-        }
-
-        progress += Time.deltaTime;
-
-        if (progress >= processTime)
-        {
-            progress = 0;
-            ore.amount--;
-            bool success = output.SpawnItem(ItemType.TestPlate);
-            if (!success)
+            if (progress < processTime)
             {
-                ore.amount++;
+                progress += Time.deltaTime;
             }
-            inventory.RemoveAll(x => x.amount <= 0);
+            else
+            {
+                inventory.RemoveItem(ItemType.TestOre);
+                if (output.SpawnItem(ItemType.TestPlate))
+                    progress = 0;
+            }
         }
     }
-
-    ItemStack FindItem(ItemType type)
-    {
-        foreach (var stack in inventory)
-        {
-            if (stack.type == type)
-                return stack;
-        }
-
-        return null;
-    }
-}
-
-[System.Serializable]
-public class ItemStack
-{
-    public ItemType type = ItemType.TestOre;
-    public int amount = 0;
 }
