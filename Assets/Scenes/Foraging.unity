@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 567709370}
   - component: {fileID: 567709369}
   m_Layer: 0
-  m_Name: Trigger-zone's trigger
+  m_Name: Body
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -455,6 +455,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  playerConfig: {fileID: 2110928060}
 --- !u!58 &567709370
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2122,6 +2123,9 @@ MonoBehaviour:
   shootCooldown: 1
   hintEnterHUB: {fileID: 1083678646}
   HUBEnterTime: 2
+  MaxHP: 1
+  rg: {fileID: 756846605}
+  invinsibleTime: 0.5
 --- !u!1 &2124369753
 GameObject:
   m_ObjectHideFlags: 0

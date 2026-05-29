@@ -8,7 +8,8 @@ public class EnemyBody : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            print("Collide with player");
+            PlayerConfig p = collision.gameObject.GetComponent<PlayerConfig>();
+            p.getDMG(1);
         }
     }
 

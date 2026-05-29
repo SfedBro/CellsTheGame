@@ -117,8 +117,7 @@ public class Enemy : MonoBehaviour
         hp -= dmg;
 
         if (hp <= 0)
-        {
-            transform.parent.SendMessage("onKilled", transform.position);
+        {            transform.parent.SendMessage("onKilled", transform.position);
             Destroy(gameObject);
         }
     }

@@ -69,4 +69,10 @@ public class ResourceGenerator : MonoBehaviour
         UINumberCounter++;
         UICounter.text = UINumberCounter.ToString();
     }
+
+    public void onPlayerDeath()
+    {
+        UINumberCounter /= 2;
+        UICounter.text = UINumberCounter.ToString();
+    }
 }
