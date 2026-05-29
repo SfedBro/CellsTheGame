@@ -1192,6 +1192,8 @@ MonoBehaviour:
   spawnBoundsMaxX: 25
   spawnBoundsMinY: -25
   spawnBoundsMaxY: 25
+  rg: {fileID: 756846605}
+  lootAmount: 3
 --- !u!4 &1406458050
 Transform:
   m_ObjectHideFlags: 0
@@ -2116,6 +2118,7 @@ MonoBehaviour:
   moveSpeed: 5
   playerCamera: {fileID: 1313044231}
   bullet: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
+  bulletParent: {fileID: 0}
   shootCooldown: 1
   hintEnterHUB: {fileID: 1083678646}
   HUBEnterTime: 2

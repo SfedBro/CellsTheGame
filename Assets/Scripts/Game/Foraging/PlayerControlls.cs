@@ -9,6 +9,7 @@ public class PlayerControlls : MonoBehaviour
 
     [Header("Shooting Settings")]
     [SerializeField] private GameObject bullet;
+    [SerializeField] private GameObject bulletParent;
     [SerializeField] private float shootCooldown = 1f;
 
     private float nextFireTime = 0f;
@@ -77,7 +78,7 @@ public class PlayerControlls : MonoBehaviour
         {
             nextFireTime = Time.time + shootCooldown;
 
-            Instantiate(bullet, transform.position, transform.rotation);
+            GameObject b = Instantiate(bullet, transform.position, transform.rotation);
         }
     }
 
