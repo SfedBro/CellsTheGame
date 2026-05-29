@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Storage : MonoBehaviour, IItemReceiver
 {
-    public Inventory inventory = new();
+    public ResourcesManager resourcesManager = new();
     private void Start()
     {
         Grid grid = FindFirstObjectByType<Grid>();
@@ -11,10 +11,12 @@ public class Storage : MonoBehaviour, IItemReceiver
         Vector3Int pos = grid.WorldToCell(transform.position);
 
         GridManager.Instance.RegisterReceiver(pos, this);
+
+        resourcesManager = FindAnyObjectByType<ResourcesManager>();
     }
     public bool TryReceiveItem(ConveyorItem item)
     {
-        inventory.AddItem(item.Type);
+        resourcesManager.addResourceAmount(item.Type, 1);
 
         if (item.View != null)
             Destroy(item.View.gameObject);
