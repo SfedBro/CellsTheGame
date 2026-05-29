@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour
 
     [Header("Stats")]
     public float statDiversity = 0.5f;
+    public int hp = 3;
 
     private SpriteRenderer sr;
 
@@ -109,5 +110,15 @@ public class Enemy : MonoBehaviour
     public void OnPlayerLost()
     {
         playerFound = false;
+    }
+
+    public void GetDamage(int dmg)
+    {
+        hp -= dmg;
+
+        if (hp <= 0)
+        {            transform.parent.SendMessage("onKilled", transform.position);
+            Destroy(gameObject);
+        }
     }
 }

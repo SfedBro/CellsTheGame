@@ -18,6 +18,7 @@ public class ResourceGenerator : MonoBehaviour
 
     private float timer = 0f;
     private int resourceCounter;
+    private int lootCounter = 0;
     private int UINumberCounter;
 
     void Start()
@@ -47,10 +48,31 @@ public class ResourceGenerator : MonoBehaviour
         spawned.transform.parent = this.transform;
     }
 
+    public void spawnLoot(Vector3 t)
+    {
+        GameObject spawned = Instantiate(resources[Random.Range(0, resources.Length)], t, Quaternion.identity);
+        spawned.transform.parent = this.transform;
+
+        lootCounter++;
+    }
+
     void onCollected()
     {
-        resourceCounter--;
+        if (lootCounter > 0)
+        {
+            lootCounter--;
+        }
+        else
+        {
+            resourceCounter--;
+        }
         UINumberCounter++;
+        UICounter.text = UINumberCounter.ToString();
+    }
+
+    public void onPlayerDeath()
+    {
+        UINumberCounter /= 2;
         UICounter.text = UINumberCounter.ToString();
     }
 }

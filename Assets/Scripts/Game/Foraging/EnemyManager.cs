@@ -12,6 +12,10 @@ public class EnemyManager : MonoBehaviour
     public float spawnBoundsMinY;
     public float spawnBoundsMaxY;
 
+    [Header("Enemy loot")]
+    public ResourceGenerator rg;
+    public int lootAmount = 3;
+
     private float timer = 0f;
     private int enemyCounter;
 
@@ -42,8 +46,12 @@ public class EnemyManager : MonoBehaviour
         spawned.transform.parent = this.transform;
     }
 
-    void onKilled()
+    void onKilled(Vector3 t)
     {
         enemyCounter--;
+        for (int i = 0; i < lootAmount; i++)
+        {
+            rg.spawnLoot(t);
+        }
     }
 }

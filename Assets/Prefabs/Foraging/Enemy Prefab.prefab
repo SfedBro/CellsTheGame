@@ -81,6 +81,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da445bdd005b90c4ebbfef72f6773621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  self: {fileID: 7521434082381556041}
 --- !u!1 &6739187949074802408
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,6 +258,9 @@ MonoBehaviour:
   attackCharge: 2
   trigger: {fileID: 2297251964580457677}
   statDiversity: 0.25
+  hp: 3
+  loot: {fileID: 4004008581200014397, guid: 2535b714b12915b40a3fbcb8da721eb1, type: 3}
+  lootAmount: 3
 --- !u!1 &8000683374567677273
 GameObject:
   m_ObjectHideFlags: 0

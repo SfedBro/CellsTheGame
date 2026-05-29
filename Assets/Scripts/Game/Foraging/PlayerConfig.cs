@@ -2,15 +2,30 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PlayerControlls : MonoBehaviour
+public class PlayerConfig : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private Camera playerCamera;
 
+    [Header("Shooting Settings")]
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private GameObject bulletParent;
+    [SerializeField] private float shootCooldown = 1f;
+
+    private float nextFireTime = 0f;
+
     [Header("Hints Settings")]
     [SerializeField] private GameObject hintEnterHUB;
     [SerializeField] private float HUBEnterTime = 2.0f;
+
+    [Header("Stats")]
+    [SerializeField] private int MaxHP = 5;
+    [SerializeField] private ResourceGenerator rg;
+    [SerializeField] private float invinsibleTime = 0.5f;
+
+    private int curHP;
+    private float nextHit = 0f;
 
     private Rigidbody2D rb;
 
@@ -35,6 +50,7 @@ public class PlayerControlls : MonoBehaviour
         inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.Interact.performed += OnInteractStart;
         inputActions.Player.Interact.canceled += OnInteractEnd;
+        inputActions.Player.Attack.performed += OnAttack;
         inputActions.Enable();
     }
 
@@ -44,6 +60,7 @@ public class PlayerControlls : MonoBehaviour
         inputActions.Player.Move.canceled -= OnMove;
         inputActions.Player.Interact.performed -= OnInteractStart;
         inputActions.Player.Interact.canceled -= OnInteractEnd;
+        inputActions.Player.Attack.performed -= OnAttack;
         inputActions.Disable();
     }
 
@@ -64,8 +81,19 @@ public class PlayerControlls : MonoBehaviour
         enterHUBTimer = 0;
     }
 
+    private void OnAttack(InputAction.CallbackContext context)
+    {
+        if (Time.time >= nextFireTime)
+        {
+            nextFireTime = Time.time + shootCooldown;
+
+            GameObject b = Instantiate(bullet, transform.position, transform.rotation);
+        }
+    }
+
     private void Start()
     {
+        curHP = MaxHP;
         if (playerCamera == null)
             playerCamera = Camera.main;
     }
@@ -107,5 +135,21 @@ public class PlayerControlls : MonoBehaviour
         inHUBInteractingZone = false;
         enterHUBTimer = 0;
         hintEnterHUB.SetActive(false);
+    }
+
+    public void getDMG(int dmg)
+    {
+        if (Time.time < nextHit) return;
+
+        nextHit = Time.time + invinsibleTime;
+        curHP -= dmg;
+
+        if (curHP <= 0)
+        {
+            transform.position = new Vector3(0, 0, 0);
+            curHP = MaxHP;
+
+            rg.onPlayerDeath();
+        }
     }
 }
