@@ -7,6 +7,12 @@ public class PlayerControlls : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private Camera playerCamera;
 
+    [Header("Shooting Settings")]
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private float shootCooldown = 1f;
+
+    private float nextFireTime = 0f;
+
     [Header("Hints Settings")]
     [SerializeField] private GameObject hintEnterHUB;
     [SerializeField] private float HUBEnterTime = 2.0f;
@@ -34,6 +40,7 @@ public class PlayerControlls : MonoBehaviour
         inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.Interact.performed += OnInteractStart;
         inputActions.Player.Interact.canceled += OnInteractEnd;
+        inputActions.Player.Attack.performed += OnAttack;
         inputActions.Enable();
     }
 
@@ -43,6 +50,7 @@ public class PlayerControlls : MonoBehaviour
         inputActions.Player.Move.canceled -= OnMove;
         inputActions.Player.Interact.performed -= OnInteractStart;
         inputActions.Player.Interact.canceled -= OnInteractEnd;
+        inputActions.Player.Attack.performed -= OnAttack;
         inputActions.Disable();
     }
 
@@ -61,6 +69,16 @@ public class PlayerControlls : MonoBehaviour
     {
         isInteracting = false;
         enterHUBTimer = 0;
+    }
+
+    private void OnAttack(InputAction.CallbackContext context)
+    {
+        if (Time.time >= nextFireTime)
+        {
+            nextFireTime = Time.time + shootCooldown;
+
+            Instantiate(bullet, transform.position, transform.rotation);
+        }
     }
 
     private void Start()
