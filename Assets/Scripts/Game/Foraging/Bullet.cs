@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 10f;
-    public float timeToLive = 2f;
+    [SerializeField] public float speed = 10f;
+    [SerializeField] public float timeToLive = 2f;
 
     private Rigidbody2D rb;
 
@@ -11,7 +11,7 @@ public class Bullet : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         rb.linearVelocity = transform.up * speed;
-        transform.rotation = new Quaternion(0, 0, 0, 0);
+        transform.rotation = Quaternion.identity;
 
         Destroy(gameObject, timeToLive);
     }

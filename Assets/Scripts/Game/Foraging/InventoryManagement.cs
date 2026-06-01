@@ -4,8 +4,8 @@ using TMPro;
 public class InventoryManagement : MonoBehaviour
 {
     [Header("Counters")]
-    public TMPro.TextMeshProUGUI res1ctr;
-    public TMPro.TextMeshProUGUI res2ctr;
+    public TextMeshProUGUI res1ctr;
+    public TextMeshProUGUI res2ctr;
 
     private ResourcesManager rm = ResourcesManager.instance;
 
