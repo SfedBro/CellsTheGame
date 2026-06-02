@@ -39,5 +39,5 @@ MonoBehaviour:
   - 4
   - 5
   - 6
-  maxLevel: 0
-  curLevel: 0
+  maxLevel: 5
+  curLevel: 1

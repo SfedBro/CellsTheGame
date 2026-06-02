@@ -36,7 +36,7 @@ public class InventoryManagement : MonoBehaviour
         {
             ItemCounter counter = new ItemCounter(Instantiate(counterPrefab), item);
             counter.Disable();
-            counter.transform.SetParent(countersParent);
+            counter.transform.SetParent(countersParent, false);
             counter.image.sprite = rm.getResourceSprite(item);
             counters.Add(counter);
         }
@@ -63,30 +63,15 @@ public class InventoryManagement : MonoBehaviour
         else if (amount == 0 && counter.enabled)
         {
             counter.Disable();
-            for (int i = (int)type; i < counters.Count; i++)
+            bool last = true;
+            for (int i = (int)type + 1; i < counters.Count; i++)
             {
                 counters[i].transform.position += down;
+                last = false;
             }
+
+            if (last) counters[(int)type].transform.position += down;
         }
-    }
-
-    public int getResourceAmount(ItemType t)
-    {
-        return rm.getResourceAmount(t);
-    }
-
-    public void addRes(ItemType t, int amount)
-    {
-        rm.addResourceAmount(t, amount);
-    }
-
-    public void onPlayerDeath()
-    {
-        int r1 = rm.getResourceAmount(ItemType.TestOre) / -2;
-        addRes(ItemType.TestOre, r1);
-
-        int r2 = rm.getResourceAmount(ItemType.TestPlate) / -2;
-        addRes(ItemType.TestPlate, r2);
     }
 }
 

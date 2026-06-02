@@ -76,4 +76,12 @@ public class ResourcesManager : MonoBehaviour
     {
         observers.Remove(action);
     }
+
+    public void onPlayerDeath()
+    {
+        foreach(ItemStack stack in inventory.items)
+        {
+            stack.amount = 0;
+        }
+    }
 }

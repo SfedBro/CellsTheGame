@@ -12,8 +12,7 @@ public class ResourceGenerator : MonoBehaviour
     public float generationBoundsMinY;
     public float generationBoundsMaxY;
 
-    [Header("Inventory")]
-    public InventoryManagement inventory;
+    private ResourcesManager rm = ResourcesManager.instance;
 
     private float timer = 0f;
     private int resourceCounter;
@@ -65,6 +64,6 @@ public class ResourceGenerator : MonoBehaviour
         {
             resourceCounter--;
         }
-        inventory.addRes(ItemType.TestOre, 1);
+        rm.addResourceAmount(ItemType.TestOre, 1);
     }
 }

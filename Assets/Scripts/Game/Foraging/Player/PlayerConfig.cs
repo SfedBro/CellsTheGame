@@ -7,6 +7,7 @@ public class PlayerConfig : MonoBehaviour
 
     private Rigidbody2D rb;
     private InputSystem_Actions inputActions;
+    private ResourcesManager rm = ResourcesManager.instance;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
@@ -42,7 +43,6 @@ public class PlayerConfig : MonoBehaviour
 
     [Header("Stats")]
     [SerializeField] private int MaxHP = 5;
-    [SerializeField] private InventoryManagement inventory;
     [SerializeField] private float invinsibleTime = 0.5f;
     private UpgradingManager um;
     private int curHP;
@@ -150,7 +150,7 @@ public class PlayerConfig : MonoBehaviour
         curHP = MaxHP;
         hpIndicatorUI.text = curHP.ToString();
         buildHint.enabled = false;
-        HUBSprite.gameObject.GetComponent<HUB>().onDes = () => {canBuild = true; buildHint.enabled = true;};
+        HUBSprite.gameObject.GetComponent<HUB>().onDes = () => {canBuild = true; if (buildHint != null) buildHint.enabled = true;};
 
         if (playerCamera == null)
             playerCamera = Camera.main;
@@ -230,7 +230,7 @@ public class PlayerConfig : MonoBehaviour
             curHP = MaxHP;
             hpIndicatorUI.text = curHP.ToString();
 
-            inventory.onPlayerDeath();
+            rm.onPlayerDeath();
         }
     }
 

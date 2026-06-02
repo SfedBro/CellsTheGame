@@ -34,6 +34,7 @@ public class HUB : MonoBehaviour, Interactable
 
     public void onZoneExit()
     {
+        if (hint != null)
         hint.enabled = false;
     }
 
