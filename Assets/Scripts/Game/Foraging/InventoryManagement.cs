@@ -11,7 +11,7 @@ public class InventoryManagement : MonoBehaviour
 
     public void Update()
     {
-        updateCounters();
+        // updateCounters();
     }
 
     private void updateCounters()

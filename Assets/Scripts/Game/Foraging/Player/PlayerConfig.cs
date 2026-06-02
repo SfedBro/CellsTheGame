@@ -29,6 +29,7 @@ public class PlayerConfig : MonoBehaviour
     private bool isBuilding = false;
     private float buildingHUBTimer;
     private bool canBuild = false;
+    private Vector3 respawn = Vector3.zero;
 
 
     [Header("Hints Settings")]
@@ -123,7 +124,7 @@ public class PlayerConfig : MonoBehaviour
 
     private void OnInteractStart(InputAction.CallbackContext context)
     {
-        isInteracting = curInteractAction == null;
+        isInteracting = curInteractAction != null;
         interactTimer = 0;
     }
 
@@ -193,6 +194,7 @@ public class PlayerConfig : MonoBehaviour
         isBuilding = false;
         buildHint.enabled = false;
         canBuild = false;
+        respawn = transform.position;
     }
 
     private void RotateToMouse()
@@ -224,7 +226,7 @@ public class PlayerConfig : MonoBehaviour
 
         if (curHP <= 0)
         {
-            transform.position = Vector3.zero;
+            transform.position = respawn;
             curHP = MaxHP;
             hpIndicatorUI.text = curHP.ToString();
 

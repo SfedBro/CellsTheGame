@@ -8,11 +8,11 @@ public class HUB : MonoBehaviour, Interactable
     [SerializeField] public static float timeToDisapear = 20f;
     public TMPro.TextMeshProUGUI hint;
     public Action onDes;
+    private float timer = 0f;
 
     void OnEnable()
     {
         transform.position += new Vector3(0, 0, 1);
-        Destroy(gameObject, timeToDisapear);
     }
 
     void OnDestroy()
@@ -35,5 +35,18 @@ public class HUB : MonoBehaviour, Interactable
     public void onZoneExit()
     {
         hint.enabled = false;
+    }
+
+    void Update()
+    {
+        if (!hint.enabled)
+        {
+            timer += Time.deltaTime;
+
+            if (timer >= timeToDisapear)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 }

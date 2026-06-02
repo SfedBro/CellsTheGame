@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ResourcesManager : MonoBehaviour
 {
     public static ResourcesManager instance;
+    [SerializeField] private List<Sprite> ResourceSpritesForItemSprites;
+    [SerializeField] private Sprite defaultSprite;
     protected Inventory inventory;
     private void Awake()
     {
@@ -14,6 +17,15 @@ public class ResourcesManager : MonoBehaviour
         instance = this;
         inventory = new Inventory();
         DontDestroyOnLoad(gameObject);
+    }
+
+    public Sprite getResourceSprite(ItemType item)
+    {
+        if (ResourceSpritesForItemSprites.Count > (int)item)
+        {
+            return ResourceSpritesForItemSprites[(int)item];
+        }
+        return defaultSprite;
     }
 
     public int getResourceAmount(ItemType t)
