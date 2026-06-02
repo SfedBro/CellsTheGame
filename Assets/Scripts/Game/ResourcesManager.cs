@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ public class ResourcesManager : MonoBehaviour
     [SerializeField] private List<Sprite> ResourceSpritesForItemSprites;
     [SerializeField] private Sprite defaultSprite;
     protected Inventory inventory;
+
+    private List<Action<ItemType, int>> observers = new();
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -57,5 +60,20 @@ public class ResourcesManager : MonoBehaviour
                 inventory.AddItem(t);
             }
         }
+
+        foreach (var action in observers)
+        {
+            action(t, getResourceAmount(t));
+        }
+    }
+
+    public void Subscrive(Action<ItemType, int> action)
+    {
+        observers.Add(action);
+    }
+
+    public void Unsubscrive(Action<ItemType, int> action)
+    {
+        observers.Remove(action);
     }
 }
