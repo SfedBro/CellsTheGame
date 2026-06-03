@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 5411605968586055887}
   - component: {fileID: 7070174528060140860}
   - component: {fileID: 5806362959945131244}
+  - component: {fileID: -4101821239819809719}
   m_Layer: 0
-  m_Name: Resource Yellow Prefab
+  m_Name: Resource Prefab
   m_TagString: Collectable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1653931339364552450, guid: 36f82a376eacbad408e3f2c09bc3dbbc, type: 3}
+  m_Sprite: {fileID: -2369867600477939372, guid: 0c90b3d12cc3b6849a2b71687c92a868, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -124,3 +125,15 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.16
+--- !u!114 &-4101821239819809719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4004008581200014397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0424e779af507847aa01dff27a787f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

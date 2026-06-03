@@ -51,7 +51,7 @@ public class EnemyManager : MonoBehaviour
         enemyCounter--;
         for (int i = 0; i < lootAmount; i++)
         {
-            rg.spawnLoot(t);
+            // rg.spawnLoot(t);
         }
     }
 }
