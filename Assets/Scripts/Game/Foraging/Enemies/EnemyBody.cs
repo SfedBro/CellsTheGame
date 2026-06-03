@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class EnemyBody : MonoBehaviour
 {
-    public Enemy self;
+    public EnemyBase self;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
             PlayerConfig p = collision.gameObject.GetComponent<PlayerConfig>();
-            p.getDMG(1);
+            p.getDMG(self.GetAttack());
         }
     }
 
@@ -17,7 +17,7 @@ public class EnemyBody : MonoBehaviour
     {
         if (collision.CompareTag("Bullet"))
         {
-            self.GetDamage(1);
+            self.GetDamage(collision.gameObject.GetComponent<Bullet>().dmg);
             Destroy(collision.gameObject);
         }
     }

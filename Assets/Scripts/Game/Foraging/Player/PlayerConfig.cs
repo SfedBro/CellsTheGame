@@ -8,6 +8,8 @@ public class PlayerConfig : MonoBehaviour
     private Rigidbody2D rb;
     private InputSystem_Actions inputActions;
     private ResourcesManager rm = ResourcesManager.instance;
+    private SpriteRenderer sr;
+    private bool gray;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
@@ -53,6 +55,7 @@ public class PlayerConfig : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         inputActions = new InputSystem_Actions();
+        sr = GetComponent<SpriteRenderer>();
         
         um = UpgradingManager.instance;
         um.correctPlayerStats(this);
@@ -158,6 +161,12 @@ public class PlayerConfig : MonoBehaviour
 
     private void Update()
     {
+        if (Time.time > nextHit && gray)
+        {
+            gray = false;
+            sr.color = new Color(1, 1, 1, 1);
+        }
+
         // Building HUB
         if (isBuilding)
         {
@@ -221,6 +230,8 @@ public class PlayerConfig : MonoBehaviour
         if (Time.time < nextHit) return;
 
         nextHit = Time.time + invinsibleTime;
+        sr.color = new Color(1, 1, 1, 0.5f);
+        gray = true;
         curHP -= dmg;
         hpIndicatorUI.text = curHP.ToString();
 

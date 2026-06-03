@@ -68,7 +68,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.24
+  m_Radius: 0.3
 --- !u!114 &4841824673097611092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,7 +81,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da445bdd005b90c4ebbfef72f6773621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 7521434082381556041}
+  self: {fileID: -3078250838118684747}
 --- !u!1 &6739187949074802408
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,9 +94,9 @@ GameObject:
   - component: {fileID: 8133070594941601096}
   - component: {fileID: 7417007160386273949}
   - component: {fileID: 2324927215258062014}
-  - component: {fileID: 7521434082381556041}
+  - component: {fileID: -3078250838118684747}
   m_Layer: 0
-  m_Name: Enemy Prefab
+  m_Name: Ram enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,7 +163,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 6967238673357281191, guid: 5c1cca6d509b2b148b6c1bba0c788f61, type: 3}
+  m_Sprite: {fileID: -2369867600477939372, guid: 0c90b3d12cc3b6849a2b71687c92a868, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -237,7 +237,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.25
---- !u!114 &7521434082381556041
+--- !u!114 &-3078250838118684747
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -246,21 +246,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 6739187949074802408}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 810b6015d60dbb64dbd1b5439db9e6a4, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a0d8fa467cde544fbc0753921d9a9fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basicSpeed: 3
-  changeDirectionTime: 2
+  levelStats:
+  - {fileID: 11400000, guid: 4cc0184e7630f74438e68538f6bb5de5, type: 2}
+  - {fileID: 11400000, guid: 535ecf656f1d8234f9a7d80848706a03, type: 2}
+  - {fileID: 11400000, guid: 6b79a4f8eb21992428d9b1ab77f8ef46, type: 2}
+  curHP: 0
+  moveSpeed: 0
+  dmg: 0
+  state: 0
+  sprite: {fileID: 6967238673357281191, guid: 5c1cca6d509b2b148b6c1bba0c788f61, type: 3}
+  changeDirectionTime: 5
   pauseTime: 0.8
-  ramSpeed: 10
-  attackTime: 0.5
-  triggerRadius: 3
-  attackCharge: 2
+  ramSpeedMultipler: 3
+  attackTime: 2
+  basetriggerRadius: 1.5
+  seekTriggerRadius: 3
+  attackCharge: 1.5
   trigger: {fileID: 2297251964580457677}
-  statDiversity: 0.25
-  hp: 3
-  loot: {fileID: 4004008581200014397, guid: 2535b714b12915b40a3fbcb8da721eb1, type: 3}
-  lootAmount: 3
 --- !u!1 &8000683374567677273
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,33 +347,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 769a50f173446ef45a38e92df6b4da8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnPlayerTriggerEnter:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7521434082381556041}
-        m_TargetAssemblyTypeName: Enemy, Assembly-CSharp
-        m_MethodName: OnPlayerFound
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  OnPlayerTriggerExit:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7521434082381556041}
-        m_TargetAssemblyTypeName: Enemy, Assembly-CSharp
-        m_MethodName: OnPlayerLost
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  self: {fileID: -3078250838118684747}

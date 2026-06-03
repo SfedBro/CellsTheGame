@@ -1745,7 +1745,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1406458049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1758,16 +1758,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42a66b507131b0c49b8e5bf343d971f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxEnemiesOnMap: 5
-  initialEnemiesOnMap: 3
-  spawnRate: 5
-  enemy: {fileID: 6739187949074802408, guid: 3463d0993d361ca4286e69301b72fb60, type: 3}
-  spawnBoundsMinX: -25
-  spawnBoundsMaxX: 25
-  spawnBoundsMinY: -25
-  spawnBoundsMaxY: 25
+  playerCamera: {fileID: 1313044231}
+  generationMaxAttemp: 5
+  respawnTime: 5
+  enemies:
+  - {fileID: -3078250838118684747, guid: 3463d0993d361ca4286e69301b72fb60, type: 3}
+  enemiesAmountPerLevel:
+  - amount: 5
+    upgradeChance: 0.7
+    allowedRadiusMin: 10
+    allowedRadiusMax: 35
+  - amount: 2
+    upgradeChance: 0.5
+    allowedRadiusMin: 20
+    allowedRadiusMax: 35
+  - amount: 0
+    upgradeChance: 0
+    allowedRadiusMin: 40
+    allowedRadiusMax: 45
   rg: {fileID: 756846605}
-  lootAmount: 3
 --- !u!4 &1406458050
 Transform:
   m_ObjectHideFlags: 0
