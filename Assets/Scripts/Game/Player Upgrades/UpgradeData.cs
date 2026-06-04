@@ -17,7 +17,7 @@ public class UpgradeData : ScriptableObject
     public float getCurLevelValue() => valuePerLevel[curLevel];
 }
 
-public enum StatType { Speed, Health }
+public enum StatType { Speed, Health, Damage }
 
 [System.Serializable]
 public class UpgradeLevel

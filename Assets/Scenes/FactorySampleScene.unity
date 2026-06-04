@@ -589,6 +589,7 @@ MonoBehaviour:
   upgradeTemplates:
   - {fileID: 11400000, guid: fcd7ca5c5a36d0b4395bce1825beb540, type: 2}
   - {fileID: 11400000, guid: a0591d4f18693994e8e2b999e458fdd7, type: 2}
+  - {fileID: 11400000, guid: e35c868ef6cdf8245b78ccd3439ad5e2, type: 2}
 --- !u!4 &629169653
 Transform:
   m_ObjectHideFlags: 0

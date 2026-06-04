@@ -10,35 +10,39 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ff210b430b3ae340a67f07c713ea035, type: 3}
-  m_Name: Speed Upgrade
+  m_Name: Damage Upgrade
   m_EditorClassIdentifier: 
-  stat: 0
+  stat: 2
   costPerLevel:
   - costs: []
   - costs:
     - resource: 0
-      amount: 1
-  - costs:
-    - resource: 0
       amount: 3
+  - costs:
+    - resource: 1
+      amount: 1
   - costs:
     - resource: 0
       amount: 5
-  - costs:
     - resource: 1
-      amount: 1
+      amount: 3
   - costs:
     - resource: 0
-      amount: 8
+      amount: 10
     - resource: 1
-      amount: 2
+      amount: 8
+  - costs:
+    - resource: 0
+      amount: 20
+    - resource: 1
+      amount: 15
   valuePerLevel:
-  - 2.5
-  - 3.5
-  - 4.5
+  - 1
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
   - 6
-  - 8
-  - 10
-  - 12
   maxLevel: 6
   curLevel: 1

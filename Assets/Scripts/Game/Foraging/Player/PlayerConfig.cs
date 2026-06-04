@@ -45,10 +45,12 @@ public class PlayerConfig : MonoBehaviour
 
 
     [Header("Stats")]
-    [SerializeField] private int MaxHP = 5;
-    [SerializeField] private float invinsibleTime = 0.5f;
     [SerializeField] private UpgradingManager upgradingManager;
-    private int curHP;
+    [SerializeField] private int MaxHP = 5;
+    [SerializeField] private int curHP;
+    [SerializeField] private int dmg;
+    [SerializeField] private float invinsibleTime = 0.5f;
+    
     private float nextHit = 0f;
 
 
@@ -148,6 +150,8 @@ public class PlayerConfig : MonoBehaviour
 
             GameObject b = Instantiate(bulletPrefab, transform.position, transform.rotation);
             b.transform.parent = bulletParent;
+            b.transform.localScale = new Vector3((dmg + 3f) / 8f, (dmg + 3f) / 8f, 1);
+            b.GetComponent<Bullet>().dmg = dmg;
         }
     }
 
@@ -285,7 +289,10 @@ public class PlayerConfig : MonoBehaviour
                 MaxHP = (int)newValue;
                 curHP = MaxHP;
                 hpIndicatorUI.text = curHP.ToString();
-            break;
+                break;
+            case StatType.Damage:
+                dmg = (int)newValue;
+                break;
         }
     }
 }
