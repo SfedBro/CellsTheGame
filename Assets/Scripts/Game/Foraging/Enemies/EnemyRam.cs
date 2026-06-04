@@ -49,6 +49,7 @@ public class EnemyRam : EnemyBase
                 attackChargeTimer += Time.deltaTime;
                 float color = 1 - (attackChargeTimer / attackCharge);
                 sr.color = new Color(1, color, color);
+                rb.linearVelocity = Vector2.zero;
             }
             else if (attackTimer < attackTime)
             {
