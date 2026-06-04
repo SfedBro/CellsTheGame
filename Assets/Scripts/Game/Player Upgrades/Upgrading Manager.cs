@@ -75,4 +75,17 @@ public class UpgradingManager : MonoBehaviour
             inc.UpdateRequirements(type, amount);
         }
     }
+
+    public void onPlayerDeath()
+    {
+        foreach (UpgradeData data in upgrades)
+        {
+            data.curLevel = 1;
+        }
+
+        foreach (IncrementInterface inc in increments)
+        {
+            inc.UpdateUI();
+        }
+    }
 }

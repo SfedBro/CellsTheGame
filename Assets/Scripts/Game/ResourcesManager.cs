@@ -82,6 +82,10 @@ public class ResourcesManager : MonoBehaviour
         foreach(ItemStack stack in inventory.items)
         {
             stack.amount = 0;
+            foreach (var action in observers)
+            {
+                action(stack.type, getResourceAmount(stack.type));
+            }
         }
     }
 }

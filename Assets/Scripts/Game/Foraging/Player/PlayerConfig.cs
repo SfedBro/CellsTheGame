@@ -37,6 +37,7 @@ public class PlayerConfig : MonoBehaviour
 
     [Header("Hints Settings")]
     [SerializeField] private TMPro.TextMeshProUGUI hpIndicatorUI;
+    [SerializeField] private DeathScreen deathScreen;
     private bool isInteracting = false;
     private Action curInteractAction;
     private float interactTime;
@@ -56,6 +57,9 @@ public class PlayerConfig : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         inputActions = new InputSystem_Actions();
         sr = GetComponent<SpriteRenderer>();
+
+        deathScreen.player = this;
+        deathScreen.gameObject.SetActive(false);
         
         upgradingManager.correctPlayerStats(this);
     }
@@ -236,12 +240,38 @@ public class PlayerConfig : MonoBehaviour
 
         if (curHP <= 0)
         {
-            transform.position = respawn;
-            curHP = MaxHP;
-            hpIndicatorUI.text = curHP.ToString();
-
+            moveInput = Vector2.zero;
             rm.onPlayerDeath();
+            upgradingManager.onPlayerDeath();
+            upgradingManager.correctPlayerStats(this);
+            
+            gameObject.SetActive(false);
+            enabled = false;
+
+            deathScreen.gameObject.SetActive(true);
         }
+    }
+
+    public void Respawn()
+    {
+        gameObject.SetActive(true);
+        enabled = true;
+
+        transform.position = respawn;
+        curHP = MaxHP;  
+        hpIndicatorUI.text = curHP.ToString();
+
+        canBuild = false;
+        buildHint.enabled = false;
+        isBuilding = false;
+        buildingHUBTimer = 0f;
+
+        GameObject hub = Instantiate(HUBPrefab, transform.position, Quaternion.identity);
+        HUB h = hub.GetComponent<HUB>();
+        h.hint = HUBHint;
+        h.onDes = () => {canBuild = true; if (buildHint = null) buildHint.enabled = true;};
+        HUBCollider = hub.GetComponent<CircleCollider2D>();
+        HUBSprite = hub.GetComponent<SpriteRenderer>();
     }
 
     public void upgradeStat(StatType type, float newValue)
