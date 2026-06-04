@@ -4,8 +4,10 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Collectable
   - HUB
+  - Bullet
+  - CollectAura
+  - Collectable
   layers:
   - Default
   - TransparentFX
