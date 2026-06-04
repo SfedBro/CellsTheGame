@@ -390,9 +390,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c37920bfdca5a7b4fad46a50a6998ccf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upgrades:
-  - {fileID: 11400000, guid: a0591d4f18693994e8e2b999e458fdd7, type: 2}
-  - {fileID: 11400000, guid: fcd7ca5c5a36d0b4395bce1825beb540, type: 2}
   UIParent: {fileID: 962563848}
   UIPrefab: {fileID: 1640040929440014650, guid: a8aba554144c99f4f8d103013bb2c884, type: 3}
   yOffset: -55
@@ -2475,6 +2472,7 @@ MonoBehaviour:
   hpIndicatorUI: {fileID: 32299417}
   MaxHP: 1
   invinsibleTime: 0.5
+  upgradingManager: {fileID: 114667746}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

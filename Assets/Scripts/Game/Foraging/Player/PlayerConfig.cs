@@ -46,7 +46,7 @@ public class PlayerConfig : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private int MaxHP = 5;
     [SerializeField] private float invinsibleTime = 0.5f;
-    private UpgradingManager um;
+    [SerializeField] private UpgradingManager upgradingManager;
     private int curHP;
     private float nextHit = 0f;
 
@@ -57,8 +57,7 @@ public class PlayerConfig : MonoBehaviour
         inputActions = new InputSystem_Actions();
         sr = GetComponent<SpriteRenderer>();
         
-        um = UpgradingManager.instance;
-        um.correctPlayerStats(this);
+        upgradingManager.correctPlayerStats(this);
     }
 
     private void OnEnable()
@@ -101,7 +100,7 @@ public class PlayerConfig : MonoBehaviour
         GameObject hub = Instantiate(HUBPrefab, transform.position, Quaternion.identity);
         HUB h = hub.GetComponent<HUB>();
         h.hint = HUBHint;
-        h.onDes = () => {canBuild = true; buildHint.enabled = true;};
+        h.onDes = () => {canBuild = true; if (buildHint = null) buildHint.enabled = true;};
         HUBCollider = hub.GetComponent<CircleCollider2D>();
         HUBCollider.enabled = false;
         HUBSprite = hub.GetComponent<SpriteRenderer>();

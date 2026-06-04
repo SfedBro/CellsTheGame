@@ -3,19 +3,6 @@ using UnityEngine;
 
 public class UpgradingManager : MonoBehaviour
 {
-    public static UpgradingManager instance;
-    private void Awake()
-    {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        instance = this;
-    }
-
-    [SerializeField] List<UpgradeData> upgrades;
-
     [Header("UI")] 
     [SerializeField] private Transform UIParent;
     [SerializeField] private GameObject UIPrefab;
@@ -25,6 +12,8 @@ public class UpgradingManager : MonoBehaviour
     private ResourcesManager rm = ResourcesManager.instance;
     private List<IncrementInterface> increments = new();
 
+    private List<UpgradeData> upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
+
     void OnEnable()
     {
         rm.Subscrive(UpdateCounters);
@@ -32,12 +21,6 @@ public class UpgradingManager : MonoBehaviour
 
      void Start()
     {
-        foreach (IncrementInterface inter in increments)
-        {
-            Destroy(inter);
-        }
-        increments.Clear();
-
         Vector3 down = new Vector3(0, yOffset, 0);
         int i = 0;
         foreach (UpgradeData upgrade in upgrades)
@@ -80,9 +63,8 @@ public class UpgradingManager : MonoBehaviour
             rm.addResourceAmount(cost.resource, -cost.amount);
         }
     
-        player.upgradeStat(upgrade.GetStatType(), upgrade.getCurLevelValue());
-
         upgrade.curLevel++;
+        player.upgradeStat(upgrade.GetStatType(), upgrade.getCurLevelValue());
         return true;
     }
 

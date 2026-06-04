@@ -38,7 +38,12 @@ public class IncrementInterface : MonoBehaviour
         label.text = upgradeData.GetStatType().ToString();
         level.text = upgradeData.curLevel.ToString();
 
-        if (upgradeData.curLevel == upgradeData.maxLevel) return;
+        if (upgradeData.curLevel == upgradeData.maxLevel)
+        {
+            level.text = "MAX";
+            btn.enabled = false;
+            return;
+        }
 
         int i = 0;
         foreach (ResourceCost cost in upgradeData.getCurCost())
@@ -75,6 +80,8 @@ public class IncrementInterface : MonoBehaviour
 
     public void UpdateRequirements(ItemType type, int amount)
     {
+        if (upgradeData.curLevel == upgradeData.maxLevel) return;
+        
         int i = 0;
         foreach (ResourceCost cost in upgradeData.getCurCost())
         {
