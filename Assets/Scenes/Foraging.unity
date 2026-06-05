@@ -1077,7 +1077,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.1
+  m_Radius: 0.35
 --- !u!1 &602776085
 GameObject:
   m_ObjectHideFlags: 0
@@ -1276,7 +1276,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 5938178225821747823, guid: 1f7aeb76b5229634c8dfc6be489a914d, type: 3}
+  m_Sprite: {fileID: -7443756053782179069, guid: 116bbd5fc2822fb4e905133efc7711ea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1297,7 +1297,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2157,7 +2157,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 1
+  m_Radius: 0.5
 --- !u!1 &727949728
 GameObject:
   m_ObjectHideFlags: 0
@@ -3554,10 +3554,10 @@ MonoBehaviour:
   - amount: 2
     upgradeChance: 0.5
     allowedRadiusMin: 20
-    allowedRadiusMax: 35
+    allowedRadiusMax: 40
   - amount: 0
     upgradeChance: 0
-    allowedRadiusMin: 40
+    allowedRadiusMin: 30
     allowedRadiusMax: 45
   rg: {fileID: 756846605}
 --- !u!4 &1406458050
@@ -3697,6 +3697,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1552780139}
+  - component: {fileID: 1552780141}
+  - component: {fileID: 1552780140}
   m_Layer: 5
   m_Name: PlayerUpgrade
   m_TagString: Untagged
@@ -3725,6 +3727,44 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 250}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1552780140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552780138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1552780141
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552780138}
+  m_CullTransparentMesh: 1
 --- !u!1 &1600507647
 GameObject:
   m_ObjectHideFlags: 0
@@ -4143,6 +4183,37 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 100, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &2073452199
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2073452200}
+  m_Layer: 0
+  m_Name: Mines Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2073452200
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073452199}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -13.428105, y: -0.8877204, z: -0.24518232}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2110928055
 GameObject:
   m_ObjectHideFlags: 0
@@ -4340,7 +4411,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -4159156719903188475, guid: 4ded78e0e85a3394dabe60885656716d, type: 3}
+  m_Sprite: {fileID: -2311659948842064771, guid: 78fdc8ddf304487449368c7ad32af616, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4409,6 +4480,7 @@ SceneRoots:
   - {fileID: 208088761}
   - {fileID: 114667747}
   - {fileID: 756846606}
+  - {fileID: 2073452200}
   - {fileID: 1406458050}
   - {fileID: 43086096}
   - {fileID: 628539245}

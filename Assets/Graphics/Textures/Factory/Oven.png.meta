@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5c1cca6d509b2b148b6c1bba0c788f61
+guid: 9c62871b0b2c0a74fb7bd08dd60f66fb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6967238673357281191
-    second: Prototype Enemy_0
+      213: -6413138906981451842
+    second: Oven_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Prototype Enemy_0
+      name: Oven_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 7
-        width: 50
-        height: 50
+        x: 63
+        y: 63
+        width: 642
+        height: 642
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7a713dec8aa90b060800000000000000
-      internalID: 6967238673357281191
+      spriteID: eb732227424fff6a0800000000000000
+      internalID: -6413138906981451842
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Prototype Enemy_0: 6967238673357281191
+      Oven_0: -6413138906981451842
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
