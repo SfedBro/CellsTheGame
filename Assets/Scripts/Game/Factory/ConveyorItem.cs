@@ -11,4 +11,5 @@ public enum ItemType
 {
     TestOre = 0,
     TestPlate = 1,
+    TestCopper = 2,
 }

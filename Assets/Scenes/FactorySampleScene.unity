@@ -818,6 +818,7 @@ MonoBehaviour:
   ResourceSpritesForItemSprites:
   - {fileID: -1653931339364552450, guid: 36f82a376eacbad408e3f2c09bc3dbbc, type: 3}
   - {fileID: -416782690744727292, guid: b95db52466109814da39499b733770a9, type: 3}
+  - {fileID: 3908602768091700040, guid: 4393ced44920baf48a2dac70a3bbae91, type: 3}
   defaultSprite: {fileID: -2369867600477939372, guid: 0c90b3d12cc3b6849a2b71687c92a868, type: 3}
 --- !u!4 &1060753329
 Transform:

@@ -149,6 +149,7 @@ public class PlayerConfig : MonoBehaviour
             nextShootTime = Time.time + shootCooldown;
 
             GameObject b = Instantiate(bulletPrefab, transform.position, transform.rotation);
+            b.transform.Rotate(new Vector3(0, sr.flipX? 180 : 0, 0));
             b.transform.parent = bulletParent;
             b.transform.localScale = new Vector3((dmg + 3f) / 8f, (dmg + 3f) / 8f, 1);
             b.GetComponent<Bullet>().dmg = dmg;
@@ -216,7 +217,19 @@ public class PlayerConfig : MonoBehaviour
     private void RotateToMouse()
     {
         Vector2 direction = (playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position).normalized;
-        rb.MoveRotation(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90);
+        float rawAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        bool flip = false;
+        float finalAngle = rawAngle;
+
+        if (rawAngle > 90f || rawAngle < -90f)
+        {
+            flip = true;
+            finalAngle = rawAngle - 180f;
+        }
+
+        sr.flipX = flip;
+        rb.MoveRotation(finalAngle);
     }
 
     public void onInteractZoneEnter(float time, Action action)

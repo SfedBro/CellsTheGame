@@ -93,6 +93,8 @@ public class EnemyRam : EnemyBase
                 rb.linearVelocity = moveDirection * moveSpeed;
             }
         }
+
+        sr.flipX = moveDirection.x < 0;
     }
 
 }

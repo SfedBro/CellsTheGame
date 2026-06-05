@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c2f0115df7cfe764eae02ea065998246
+guid: 4393ced44920baf48a2dac70a3bbae91
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7825441216102758031
-    second: Prototype Bullet_0
+      213: 3908602768091700040
+    second: Prototype Material Orange_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Prototype Bullet_0
+      name: Prototype Material Orange_0
       rect:
         serializedVersion: 2
-        x: 7
-        y: 7
-        width: 50
-        height: 50
+        x: 0
+        y: 0
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f867188335d899c60800000000000000
-      internalID: 7825441216102758031
+      spriteID: 84bd63842852e3630800000000000000
+      internalID: 3908602768091700040
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Prototype Bullet_0: 7825441216102758031
+      Prototype Material Orange_0: 3908602768091700040
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
