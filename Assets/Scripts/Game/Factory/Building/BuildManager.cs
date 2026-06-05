@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
+    #region Переменные
     public Camera cam;
 
     [System.Serializable]
@@ -43,7 +44,7 @@ public class BuildManager : MonoBehaviour
 
     private bool selectingRectangle;
     private Vector3Int anchorA;
-
+    #endregion
     private void Start()
     {
         grid = FindFirstObjectByType<Grid>();
@@ -57,7 +58,7 @@ public class BuildManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             buildMode = !buildMode;
-
+            ClearAll();
             Debug.Log($"Build mode: {buildMode}");
         }
 
@@ -71,7 +72,7 @@ public class BuildManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
             ApplyChanges();
     }
-
+    #region Функции строительства
     void HandleBuildingSelection()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -139,6 +140,7 @@ public class BuildManager : MonoBehaviour
         foreach (var cell in plannedDeletes)
         {
             MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
+            Debug.Log($"Delete {cell}, found = {building}");
 
             if (building == null)
                 continue;
@@ -174,6 +176,7 @@ public class BuildManager : MonoBehaviour
 
         ClearAll();
     }
+    #endregion
 
     Vector3Int WorldToCell(Vector3 pos)
     {
@@ -203,9 +206,6 @@ public class BuildManager : MonoBehaviour
 
     void ToggleCell(Vector3Int cell, bool deleteMode)
     {
-        if (!deleteMode && GridManager.Instance.IsOccupied(cell))
-            return;
-
         if (selectedCells.Contains(cell))
         {
             selectedCells.Remove(cell);
@@ -225,11 +225,22 @@ public class BuildManager : MonoBehaviour
         {
             plannedDeletes.Add(cell);
             CreateDeleteMarker(cell);
+            return;
         }
-        else
+
+        if (!GridManager.Instance.IsOccupied(cell))
         {
-            plannedBuilds[cell] = new PlannedBuild(selectedBuilding, 0);
-            CreateBuildGhost(cell, selectedBuilding, 0);
+            plannedBuilds[cell] =
+                new PlannedBuild(
+                    selectedBuilding,
+                    0
+                );
+
+            CreateBuildGhost(
+                cell,
+                selectedBuilding,
+                0
+            );
         }
     }
 
