@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class ConveyorSegment : MonoBehaviour, IItemReceiver, IBuildable
+public class ConveyorSegment : MonoBehaviour, IItemReceiver, IItemGiver
 {
     [SerializeField]
     private Vector3Int gridPosition;
@@ -34,6 +34,7 @@ public class ConveyorSegment : MonoBehaviour, IItemReceiver, IBuildable
         }
 
         GridManager.Instance.RegisterReceiver(gridPosition, this);
+        GridManager.Instance.RegisterBuilding(gridPosition, this);
 
         Slots = new ConveyorItem[slotsLength];
         visualSlots = new Vector3[slotsLength];
