@@ -106,7 +106,7 @@ public class PlayerConfig : MonoBehaviour
         GameObject hub = Instantiate(HUBPrefab, transform.position, Quaternion.identity);
         HUB h = hub.GetComponent<HUB>();
         h.hint = HUBHint;
-        h.onDes = () => {canBuild = true; if (buildHint = null) buildHint.enabled = true;};
+        h.onDes = () => {canBuild = true; if (buildHint != null) buildHint.enabled = true;};
         HUBCollider = hub.GetComponent<CircleCollider2D>();
         HUBCollider.enabled = false;
         HUBSprite = hub.GetComponent<SpriteRenderer>();
@@ -278,17 +278,23 @@ public class PlayerConfig : MonoBehaviour
         curHP = MaxHP;  
         hpIndicatorUI.text = curHP.ToString();
 
-        canBuild = false;
-        buildHint.enabled = false;
-        isBuilding = false;
-        buildingHUBTimer = 0f;
+        if (HUBCollider != null) {
+            HUBCollider.gameObject.GetComponent<HUB>().onDes = () => {};
+            Destroy(HUBCollider.gameObject);
+        }
 
+        buildingHUBTimer = 0f;
         GameObject hub = Instantiate(HUBPrefab, transform.position, Quaternion.identity);
         HUB h = hub.GetComponent<HUB>();
         h.hint = HUBHint;
-        h.onDes = () => {canBuild = true; if (buildHint = null) buildHint.enabled = true;};
+        h.onDes = () => {canBuild = true; if (buildHint != null) buildHint.enabled = true;};
         HUBCollider = hub.GetComponent<CircleCollider2D>();
         HUBSprite = hub.GetComponent<SpriteRenderer>();
+
+        HUBCollider.enabled = true;
+        isBuilding = false;
+        buildHint.enabled = false;
+        canBuild = false;
     }
 
     public void upgradeStat(StatType type, float newValue)
