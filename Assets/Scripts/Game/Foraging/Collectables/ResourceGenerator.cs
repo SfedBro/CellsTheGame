@@ -12,8 +12,6 @@ public class ResourceGenerator : MonoBehaviour
     [SerializeField] private List<int> maxAmount;
     [SerializeField] private int generationMaxAttemp = 5;
 
-    private ResourcesManager rm = ResourcesManager.instance;
-
     private List<int> curAmount = new();
     private Dictionary<ItemType, int> typeToIndex = new();
 

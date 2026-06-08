@@ -1,16 +1,26 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MineManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [Header("Resource generation")]
+    [SerializeField] private GameObject minePrefab;
+    [SerializeField] private List<MineData> minesData;
+    [SerializeField] private List<int> amount;
+
     void Start()
     {
-        
-    }
+        for (int i = 0; i < minesData.Count; i++)
+        {
+            MineData data = minesData[i];
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            for (int j = 0; j < amount[i]; j++)
+            {
+                Vector2 newPos = data.getSelfPosition();
+                Mine m = Instantiate(minePrefab, new Vector3(newPos.x, newPos.y, 0), Quaternion.identity).GetComponent<Mine>();
+                m.transform.SetParent(transform, false);
+                m.Setup(data);
+            }
+        }
     }
 }

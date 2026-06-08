@@ -20,18 +20,20 @@ MonoBehaviour:
       amount: 1
   - costs:
     - resource: 0
-      amount: 3
-  - costs:
-    - resource: 0
-      amount: 5
+      amount: 20
   - costs:
     - resource: 1
-      amount: 1
-  - costs:
-    - resource: 0
       amount: 10
+  - costs:
+    - resource: 0
+      amount: 40
     - resource: 1
-      amount: 3
+      amount: 40
+  - costs:
+    - resource: 0
+      amount: 50
+    - resource: 1
+      amount: 50
   valuePerLevel:
   - 1
   - 1
