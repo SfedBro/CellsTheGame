@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b95db52466109814da39499b733770a9
+guid: 5480f79bafb0356439657c1fd77ce3e9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -416782690744727292
-    second: Prototype Material Light Green_0
+      213: -3856633284888853020
+    second: IngotTin_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Prototype Material Light Green_0
+      name: IngotTin_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 40901a9d95a473af0800000000000000
-      internalID: -416782690744727292
+      spriteID: 4e58041f57c7a7ac0800000000000000
+      internalID: -3856633284888853020
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Prototype Material Light Green_0: -416782690744727292
+      IngotTin_0: -3856633284888853020
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

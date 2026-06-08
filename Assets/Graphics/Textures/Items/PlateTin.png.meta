@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4393ced44920baf48a2dac70a3bbae91
+guid: 63f1e99f4960166468c1368deeeb473c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3908602768091700040
-    second: Prototype Material Orange_0
+      213: -4204262651145609143
+    second: PlateTin_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Prototype Material Orange_0
+      name: PlateTin_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 84bd63842852e3630800000000000000
-      internalID: 3908602768091700040
+      spriteID: 9402608d46577a5c0800000000000000
+      internalID: -4204262651145609143
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Prototype Material Orange_0: 3908602768091700040
+      PlateTin_0: -4204262651145609143
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -2227,10 +2227,12 @@ MonoBehaviour:
   playerCamera: {fileID: 1313044231}
   resourcePrefab: {fileID: 4004008581200014397, guid: 2535b714b12915b40a3fbcb8da721eb1, type: 3}
   resourcesData:
-  - {fileID: 11400000, guid: 669a47743481ce3499c17d36af590e64, type: 2}
-  initialAmount: 32000000
-  minAmount: 14000000
-  maxAmount: 64000000
+  - {fileID: 11400000, guid: de1d876c4a48e1244a857814ada1d762, type: 2}
+  - {fileID: 11400000, guid: 458bd407f6a679a4aa2ea4409f4665aa, type: 2}
+  - {fileID: 11400000, guid: 4c655b98dab6bb647b6f32169e43d083, type: 2}
+  initialAmount: 140000000a0000000a000000
+  minAmount: 050000000500000005000000
+  maxAmount: 1e0000001e0000001e000000
   generationMaxAttemp: 5
 --- !u!4 &756846606
 Transform:
@@ -4229,8 +4231,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minePrefab: {fileID: 7520916437887327511, guid: 27449113ea7652e42ae746240bc84839, type: 3}
   minesData:
-  - {fileID: 11400000, guid: 0ae7cdfc28cda4c42b20bd6504fc3b40, type: 2}
-  amount: 05000000
+  - {fileID: 11400000, guid: 9667c81976ccfda4dbfa61fb02c9e08c, type: 2}
+  - {fileID: 11400000, guid: e8d58f5fe5686524fb4f5b9e43418e48, type: 2}
+  - {fileID: 11400000, guid: 83bfe0b6e05dc3948b0d7486ee3a06fc, type: 2}
+  amount: 050000000300000002000000
 --- !u!1 &2110928055
 GameObject:
   m_ObjectHideFlags: 0

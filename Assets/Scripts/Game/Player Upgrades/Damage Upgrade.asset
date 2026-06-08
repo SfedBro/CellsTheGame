@@ -16,7 +16,7 @@ MonoBehaviour:
   costPerLevel:
   - costs: []
   - costs:
-    - resource: 0
+    - resource: 1
       amount: 10
   - costs:
     - resource: 1

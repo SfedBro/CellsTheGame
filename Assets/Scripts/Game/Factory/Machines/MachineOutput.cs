@@ -62,7 +62,7 @@ public class MachineOutput : MonoBehaviour, IItemGiver
         {
             Debug.Log("Space");
 
-            SpawnItem(ItemType.TestOre);
+            SpawnItem(ItemType.Default);
         }
     }
 }

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 36f82a376eacbad408e3f2c09bc3dbbc
+guid: 00f613b009a2d594f99b1821686b1e40
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1653931339364552450
-    second: Prototype Material Yellow_0
+      213: 5134288010554056040
+    second: PlateCopper_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Prototype Material Yellow_0
+      name: PlateCopper_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ef03a42b53e0c09e0800000000000000
-      internalID: -1653931339364552450
+      spriteID: 86d1f933eb7a04740800000000000000
+      internalID: 5134288010554056040
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Prototype Material Yellow_0: -1653931339364552450
+      PlateCopper_0: 5134288010554056040
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

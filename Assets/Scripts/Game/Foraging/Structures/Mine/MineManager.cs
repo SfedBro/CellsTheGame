@@ -17,7 +17,7 @@ public class MineManager : MonoBehaviour
             for (int j = 0; j < amount[i]; j++)
             {
                 Vector2 newPos = data.getSelfPosition();
-                Mine m = Instantiate(minePrefab, new Vector3(newPos.x, newPos.y, 0), Quaternion.identity).GetComponent<Mine>();
+                Mine m = Instantiate(minePrefab, new Vector3(newPos.x, newPos.y, 2), Quaternion.identity).GetComponent<Mine>();
                 m.transform.SetParent(transform, false);
                 m.Setup(data);
             }

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 399c9420f48e4d046b998eb3376315cf, type: 3}
-  m_Name: TestOre
+  m_Name: OreCopper
   m_EditorClassIdentifier: 
-  type: 0
-  sprite: {fileID: -1653931339364552450, guid: 36f82a376eacbad408e3f2c09bc3dbbc, type: 3}
-  colliderRadius: 0.16
-  allowedRadiusMin: 0
-  allowedRadiusMax: 45
-  transformTo: 1
-  chance: 0
+  type: 2
+  sprite: {fileID: 6928653406639625558, guid: 0ea8b8878fef1b34fa23934c59d5a42f, type: 3}
+  colliderRadius: 0.15
+  allowedRadiusMin: 20
+  allowedRadiusMax: 30
+  transformTo: 3
+  chance: 0.5

@@ -2,14 +2,21 @@ using UnityEngine;
 
 public class ConveyorItem
 {
-    public ItemType Type = ItemType.TestOre;
+    public ItemType Type = ItemType.Default;
     public ConveyorItemView View;
     public bool movedThisTick = false;
 }
 
 public enum ItemType
 {
-    TestOre = 0,
-    TestPlate = 1,
-    TestCopper = 2,
+    Default,
+    OreIron,
+    OreCopper,
+    OreTin,
+    IngotIron,
+    IngotCopper,
+    IngotTin,
+    PlateIron,
+    PlateCopper,
+    PlateTin
 }

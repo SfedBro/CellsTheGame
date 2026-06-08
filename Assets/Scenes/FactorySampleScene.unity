@@ -352,7 +352,6 @@ MonoBehaviour:
     prefab: {fileID: 8205903439499413639, guid: 0e30c75635f336d4c8ab483d9748294f, type: 3}
   - type: 2
     prefab: {fileID: 8562724713926900921, guid: 8e59f81d19cb6894487ea00a90038fa6, type: 3}
-  buildMarkerPrefab: {fileID: 6392801901722973838, guid: 69784b39d8da9d5439cbc11de0c3b9a4, type: 3}
   deleteMarkerPrefab: {fileID: 2568346070506059399, guid: 2bc4ebf0365cf3c46bf592348113031f, type: 3}
   buildMode: 0
 --- !u!1 &519420028
@@ -840,9 +839,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourceSpritesForItemSprites:
-  - {fileID: -1653931339364552450, guid: 36f82a376eacbad408e3f2c09bc3dbbc, type: 3}
-  - {fileID: -416782690744727292, guid: b95db52466109814da39499b733770a9, type: 3}
-  - {fileID: 3908602768091700040, guid: 4393ced44920baf48a2dac70a3bbae91, type: 3}
+  - {fileID: -2369867600477939372, guid: 0c90b3d12cc3b6849a2b71687c92a868, type: 3}
+  - {fileID: -4216599972048657442, guid: 79f63e3d9ffb93a46b70d3a8623769b3, type: 3}
+  - {fileID: 6928653406639625558, guid: 0ea8b8878fef1b34fa23934c59d5a42f, type: 3}
+  - {fileID: -1752412850962090364, guid: 367036bff82a08f4c959d40b951d5956, type: 3}
+  - {fileID: 729147793154898138, guid: f6f552472276a8a4fab12a2da5a2eb16, type: 3}
+  - {fileID: 7511363498054095083, guid: 8efa8638ff871724a81f2232a427e21a, type: 3}
+  - {fileID: -3856633284888853020, guid: 5480f79bafb0356439657c1fd77ce3e9, type: 3}
+  - {fileID: -5315998895232176958, guid: d2a5b5b8d8382d840a68ece03bd9e049, type: 3}
+  - {fileID: 5134288010554056040, guid: 00f613b009a2d594f99b1821686b1e40, type: 3}
+  - {fileID: -4204262651145609143, guid: 63f1e99f4960166468c1368deeeb473c, type: 3}
   defaultSprite: {fileID: -2369867600477939372, guid: 0c90b3d12cc3b6849a2b71687c92a868, type: 3}
 --- !u!4 &1060753329
 Transform:
@@ -1223,3 +1229,6 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 1053999866}
   - {fileID: 1054260384875647774}
+  - {fileID: 1099569955}
+  - {fileID: 629169653}
+  - {fileID: 1060753329}

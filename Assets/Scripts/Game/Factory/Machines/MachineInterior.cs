@@ -20,7 +20,7 @@ public class MachineInterior : MonoBehaviour
 
     void ProcessOre()
     {
-        var item = inventory.FindItem(ItemType.TestOre);
+        var item = inventory.FindItem(ItemType.Default);
         if (item != null && item.amount > 0)
         {
             if (progress < processTime)
@@ -29,8 +29,8 @@ public class MachineInterior : MonoBehaviour
             }
             else
             {
-                inventory.RemoveItem(ItemType.TestOre);
-                if (output.SpawnItem(ItemType.TestPlate))
+                inventory.RemoveItem(ItemType.Default);
+                if (output.SpawnItem(ItemType.Default))
                     progress = 0;
             }
         }

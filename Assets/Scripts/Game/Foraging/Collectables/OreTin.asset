@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 399c9420f48e4d046b998eb3376315cf, type: 3}
-  m_Name: TestCopper
+  m_Name: OreTin
   m_EditorClassIdentifier: 
-  type: 2
-  sprite: {fileID: 3908602768091700040, guid: 4393ced44920baf48a2dac70a3bbae91, type: 3}
-  colliderRadius: 0.16
-  allowedRadiusMin: 0
-  allowedRadiusMax: 0
-  transformTo: 0
-  chance: 0
+  type: 3
+  sprite: {fileID: -1752412850962090364, guid: 367036bff82a08f4c959d40b951d5956, type: 3}
+  colliderRadius: 0.15
+  allowedRadiusMin: 25
+  allowedRadiusMax: 35
+  transformTo: 1
+  chance: 0.5
