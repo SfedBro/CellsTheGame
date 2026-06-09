@@ -6,6 +6,9 @@ public class PlayerLevelManager : MonoBehaviour
     public static PlayerLevelManager instance;
     [SerializeField] private List<UpgradeData> upgradeTemplates;
     private List<UpgradeData> playerUpgrades = new();
+    public int curPlayerLevel = 0;
+    public int curExperience = 0;
+    public int curUpgradePoints = 0;
 
     private void Awake()
     {

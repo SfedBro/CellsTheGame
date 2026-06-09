@@ -12,6 +12,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private List<EnemyBase> enemies;
     [SerializeField] private List<EnemyLevelGeneration> enemiesAmountPerLevel;
     [SerializeField] private ResourceGenerator rg;
+    [SerializeField] private PlayerExperienceManager playerExperienceManager;
 
     private float timer = 0f;
     private Queue<int> enemiesLevelQueue = new();
@@ -78,6 +79,11 @@ public class EnemyManager : MonoBehaviour
 
         foreach (LootAmount l in loot)
         {
+            if (l.GetItemType() == ItemType.Default)
+            {
+                playerExperienceManager.spawnExperience(pos + (Vector3)(UnityEngine.Random.insideUnitCircle * 0.5f), l.GetAmount());
+                continue;
+            }
             rg.spawnLoot(pos + (Vector3)(UnityEngine.Random.insideUnitCircle * 0.5f), l.GetItemType(), l.GetAmount());
         }
     }

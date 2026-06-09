@@ -50,9 +50,10 @@ public class PlayerConfig : MonoBehaviour
     [SerializeField] private int curHP;
     [SerializeField] private int dmg;
     [SerializeField] private float invinsibleTime = 0.5f;
-    
     private float nextHit = 0f;
 
+    [Header("References")]
+    [SerializeField] private PlayerExperienceManager playerExperienceManager;
 
     private void Awake()
     {
@@ -261,6 +262,7 @@ public class PlayerConfig : MonoBehaviour
             rm.onPlayerDeath();
             upgradingManager.onPlayerDeath();
             upgradingManager.correctPlayerStats(this);
+            playerExperienceManager.onPlayerDeath();
             
             gameObject.SetActive(false);
             enabled = false;

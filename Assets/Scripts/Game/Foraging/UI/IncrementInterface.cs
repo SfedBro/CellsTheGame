@@ -10,6 +10,8 @@ public class IncrementInterface : MonoBehaviour
     [SerializeField] private TextMeshProUGUI label;
     [SerializeField] private TextMeshProUGUI level;
     [SerializeField] private Button btn;
+    [SerializeField] private TextMeshProUGUI levelRequirement;
+    [SerializeField] private Color levelColor;
     [SerializeField] private GameObject requirementPrefab;
     [SerializeField] private Transform requirementParent;
     [SerializeField] private int xOffset = 155;
@@ -49,6 +51,21 @@ public class IncrementInterface : MonoBehaviour
         int i = 0;
         foreach (ResourceCost cost in upgradeData.getCurCost())
         {
+            if (cost.resource == ItemType.Default)
+            {
+                levelRequirement.text = cost.amount.ToString();
+                if (PlayerLevelManager.instance.curUpgradePoints < cost.amount)
+                {
+                    levelRequirement.color = Color.red;
+                }
+                else
+                {
+                    levelRequirement.color = levelColor;
+                }
+                texts.Add(levelRequirement);
+                continue;
+            }
+
             GameObject req = Instantiate(requirementPrefab);
             req.transform.SetParent(requirementParent, false);
             req.transform.position += i * left;
@@ -94,6 +111,11 @@ public class IncrementInterface : MonoBehaviour
                 }
                 else
                 {
+                    if (type == ItemType.Default)
+                    {
+                        texts[i].color = levelColor;
+                        return;
+                    }
                     texts[i].color = Color.black;
                 }
                 return;

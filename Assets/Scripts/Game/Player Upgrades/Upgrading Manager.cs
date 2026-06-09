@@ -8,15 +8,24 @@ public class UpgradingManager : MonoBehaviour
     [SerializeField] private GameObject UIPrefab;
     [SerializeField] private int yOffset = 105;
 
+    [Header("Dependencies")]
+    [SerializeField] private PlayerExperienceManager pem;
+
     private PlayerConfig player;
     private ResourcesManager rm = ResourcesManager.instance;
     private List<IncrementInterface> increments = new();
 
-    private List<UpgradeData> upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
+    private List<UpgradeData> upgrades;
+
+    void Awake()
+    {
+        upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
+    }
 
     void OnEnable()
     {
         rm.Subscrive(UpdateCounters);
+        pem.Subscribe(UpdateCounters);
     }
 
      void Start()
@@ -55,11 +64,23 @@ public class UpgradingManager : MonoBehaviour
     {
         foreach (ResourceCost cost in upgrade.getCurCost())
         {
+            if (cost.resource == ItemType.Default)
+            {
+                if (pem.GetUpgradePoints() < cost.amount) return false;
+                continue;
+            }
+
             if (rm.getResourceAmount(cost.resource) < cost.amount) return false;
         }
 
         foreach (ResourceCost cost in upgrade.getCurCost())
         {
+            if (cost.resource == ItemType.Default)
+            {
+                pem.RemoveUpgradePoints(cost.amount);
+                continue;
+            }
+
             rm.addResourceAmount(cost.resource, -cost.amount);
         }
     

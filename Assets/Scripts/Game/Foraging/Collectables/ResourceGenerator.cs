@@ -82,6 +82,6 @@ public class ResourceGenerator : MonoBehaviour
         LootItem spawned = Instantiate(resourcePrefab, pos, Quaternion.identity).GetComponent<LootItem>();
         spawned.Setup(resourcesData[index], null, amount);
         spawned.transform.localScale = new Vector3(amount, amount, 1);
-        spawned.transform.parent = transform;
+        spawned.transform.SetParent(transform, false);
     }
 }

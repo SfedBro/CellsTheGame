@@ -17,12 +17,12 @@ MonoBehaviour:
   DMG: 1
   types: 00000000
   tables:
-  - defaultAmount: 1
+  - defaultAmount: 3
     table:
-    - amount: 1
-      rareness: 5
-    - amount: 2
-      rareness: 4
     - amount: 3
+      rareness: 5
+    - amount: 4
+      rareness: 4
+    - amount: 5
       rareness: 1
     totalRareness: 10

@@ -8,11 +8,14 @@ public class DeathScreen : MonoBehaviour
 
     private void Awake()
     {
+        inputActions = new InputSystem_Actions();
         gameObject.SetActive(false);
     }
 
     public void RespawnPlayer()
     {
+        if (!isActiveAndEnabled) return;
+        
         gameObject.SetActive(false);
         player.Respawn();
     }

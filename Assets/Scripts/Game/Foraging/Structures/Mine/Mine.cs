@@ -35,7 +35,7 @@ public class Mine : MonoBehaviour
     private void spawnResource()
     {
         Vector2 newPos = data.getResourcePosition();
-        LootItem spawned = Instantiate(resourcePrefab, newPos, Quaternion.identity).GetComponent<LootItem>();
+        LootItem spawned = Instantiate(resourcePrefab, new Vector3(newPos.x, newPos.y, -2), Quaternion.identity).GetComponent<LootItem>();
         spawned.Setup(resourceData, onCollected, 1);
         spawned.transform.SetParent(transform, false);
         curResources++;

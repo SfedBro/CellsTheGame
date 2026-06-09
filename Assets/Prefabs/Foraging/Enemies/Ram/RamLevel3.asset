@@ -15,14 +15,47 @@ MonoBehaviour:
   maxHP: 10
   moveSpeed: 6
   DMG: 3
-  types: 00000000
+  types: 00000000040000000500000006000000
   tables:
-  - defaultAmount: 3
+  - defaultAmount: 10
+    table:
+    - amount: 10
+      rareness: 3
+    - amount: 12
+      rareness: 5
+    - amount: 13
+      rareness: 3
+    - amount: 14
+      rareness: 1
+    totalRareness: 12
+  - defaultAmount: 2
     table:
     - amount: 2
-      rareness: 3
-    - amount: 3
       rareness: 5
+    - amount: 3
+      rareness: 3
+    - amount: 4
+      rareness: 3
+    - amount: 5
+      rareness: 1
+    totalRareness: 12
+  - defaultAmount: 2
+    table:
+    - amount: 2
+      rareness: 5
+    - amount: 3
+      rareness: 3
+    - amount: 4
+      rareness: 3
+    - amount: 5
+      rareness: 1
+    totalRareness: 12
+  - defaultAmount: 2
+    table:
+    - amount: 2
+      rareness: 5
+    - amount: 3
+      rareness: 3
     - amount: 4
       rareness: 3
     - amount: 5
