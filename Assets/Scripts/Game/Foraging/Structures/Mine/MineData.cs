@@ -9,18 +9,18 @@ public class MineData : ScriptableObject
     [SerializeField] private float allowedRadiusMin;
     [SerializeField] private float allowedRadiusMax;
 
-    [Header("Spawn rules")]
+    [Header("Resource spawn rules")]
     [SerializeField] private float spawnRadius;
     [SerializeField] private int maxResources;
     [SerializeField] private int initialResources;
-    [SerializeField] private float spawnRate;
+    [SerializeField] private int spawnRate;
 
 
     public CollectableData GeItemData() => collectable;
     public Sprite GetSprite() => sprite;
     public int GetMaxResources() => maxResources;
     public int GetInitialResources() => initialResources;
-    public float GetSpawnRate() => spawnRate;
+    public int GetSpawnRate() => spawnRate;
 
     public Vector2 getSelfPosition()
     {
