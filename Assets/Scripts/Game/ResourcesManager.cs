@@ -9,7 +9,7 @@ public class ResourcesManager : MonoBehaviour
     [SerializeField] private Sprite defaultSprite;
     protected Inventory inventory;
 
-    private List<Action<ItemType, int>> observers = new();
+    private List<Action<ItemType, int>> observers;
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -33,14 +33,7 @@ public class ResourcesManager : MonoBehaviour
 
     public int getResourceAmount(ItemType t)
     {
-        ItemStack stack = inventory.FindItem(t);
-
-        if (stack == null)
-        {
-            return 0;
-        }
-
-        return stack.amount;
+        return inventory.GetAmount(t);
     }
 
     public void addResourceAmount(ItemType t, int amount)
@@ -79,12 +72,12 @@ public class ResourcesManager : MonoBehaviour
 
     public void onPlayerDeath()
     {
-        foreach(ItemStack stack in inventory.items)
+        foreach(var itemType in inventory.items.Keys)
         {
-            stack.amount = 0;
+            inventory.items[itemType] = 0;
             foreach (var action in observers)
             {
-                action(stack.type, getResourceAmount(stack.type));
+                action(itemType, getResourceAmount(itemType));
             }
         }
     }

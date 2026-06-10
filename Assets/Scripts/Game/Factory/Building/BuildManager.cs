@@ -3,36 +3,32 @@ using UnityEngine;
 
 public class BuildManager : MonoBehaviour
 {
-    #region Переменные
+    #region ??????????
     public Camera cam;
 
-    [System.Serializable]
-    public class BuildEntry
-    {
-        public Building type;
-        public GameObject prefab;
-    }
+    
 
     [System.Serializable]
     private class PlannedBuild
     {
-        public Building type;
+        public BuildingData type;
         public int rotation;
-        public PlannedBuild(Building type, int rotation)
+        public PlannedBuild(BuildingData type, int rotation)
         {
             this.type = type;
             this.rotation = rotation;
         }
     }
 
-    public List<BuildEntry> prefabs = new();
+    // (List of prefabs removed, use BuildingData directly)
 
     public GameObject deleteMarkerPrefab;
     [SerializeField]
     private bool buildMode = false;
+    public bool IsBuildMode => buildMode;
     private Grid grid;
 
-    private Building selectedBuilding = Building.Conveyor;
+    public BuildingData selectedBuilding;
 
     private HashSet<Vector3Int> selectedCells = new();
 
@@ -40,6 +36,8 @@ public class BuildManager : MonoBehaviour
     private HashSet<Vector3Int> plannedDeletes = new();
 
     private Dictionary<Vector3Int, GameObject> buildGhosts = new();
+    private Dictionary<Vector3Int, GameObject> rotationGhosts = new();
+    private Dictionary<Vector3Int, int> plannedRotations = new();
     private Dictionary<Vector3Int, GameObject> deleteMarkers = new();
 
     private bool selectingRectangle;
@@ -72,25 +70,28 @@ public class BuildManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
             ApplyChanges();
     }
-    #region Функции строительства
+    #region ??????? ?????????????
+    [Header("Available Buildings")]
+    public List<BuildingData> availableBuildings = new List<BuildingData>();
+
     void HandleBuildingSelection()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && availableBuildings.Count > 0)
         {
-            selectedBuilding = Building.Conveyor;
-            Debug.Log("Selected: Conveyor");
+            selectedBuilding = availableBuildings[0];
+            Debug.Log("Selected: " + selectedBuilding.buildingName);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && availableBuildings.Count > 1)
         {
-            selectedBuilding = Building.Factory;
-            Debug.Log("Selected: Factory");
+            selectedBuilding = availableBuildings[1];
+            Debug.Log("Selected: " + selectedBuilding.buildingName);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && availableBuildings.Count > 2)
         {
-            selectedBuilding = Building.Storage;
-            Debug.Log("Selected: Storage");
+            selectedBuilding = availableBuildings[2];
+            Debug.Log("Selected: " + selectedBuilding.buildingName);
         }
     }
 
@@ -134,22 +135,49 @@ public class BuildManager : MonoBehaviour
 
     void ApplyChanges()
     {
-        HashSet<Vector3Int> changed =
-            new HashSet<Vector3Int>();
+        HashSet<Vector3Int> changed = new HashSet<Vector3Int>();
+        HashSet<FactoryBlock> blocksToDestroy = new HashSet<FactoryBlock>();
 
         foreach (var cell in plannedDeletes)
         {
             MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
-            Debug.Log($"Delete {cell}, found = {building}");
+            if (building == null) continue;
 
-            if (building == null)
-                continue;
-
-            GridManager.Instance.Unregister(cell);
-
-            Destroy(building.gameObject);
-
+            if (building is FactoryBlock block)
+            {
+                blocksToDestroy.Add(block);
+            }
+            else
+            {
+                GridManager.Instance.Unregister(cell);
+                if (building != null) Destroy(building.gameObject);
+                changed.Add(cell);
+            }
+        }
+        
+        foreach (var block in blocksToDestroy)
+        {
+            block.OnRemoved();
+            if (block != null) Destroy(block.gameObject);
+        }
+        
+        foreach (var cell in plannedDeletes)
+        {
             changed.Add(cell);
+        }
+
+        foreach (var pair in plannedRotations)
+        {
+            MonoBehaviour building = GridManager.Instance.GetBuilding(pair.Key);
+            if (building != null)
+            {
+                building.transform.rotation = Quaternion.Euler(0, 0, pair.Value);
+                if (building is FactoryBlock block)
+                {
+                    block.UpdateRotation();
+                }
+                changed.Add(pair.Key);
+            }
         }
 
         foreach (var pair in plannedBuilds)
@@ -158,13 +186,16 @@ public class BuildManager : MonoBehaviour
                 continue;
 
             GameObject prefab = GetPrefab(pair.Value.type);
+            if (prefab == null) continue;
 
-            if (prefab == null)
-                continue;
-
-            Instantiate(prefab,
+            GameObject go = Instantiate(prefab,
                 CellToWorld(pair.Key),
                 Quaternion.Euler(0, 0, pair.Value.rotation));
+                
+            if (go.TryGetComponent<FactoryBlock>(out var block))
+            {
+                block.OnPlaced();
+            }
 
             changed.Add(pair.Key);
         }
@@ -178,6 +209,7 @@ public class BuildManager : MonoBehaviour
     }
     #endregion
 
+    #region Grid Math
     Vector3Int WorldToCell(Vector3 pos)
     {
         return grid.WorldToCell(pos + new Vector3(0.5f, 0.5f, 0f));
@@ -204,6 +236,9 @@ public class BuildManager : MonoBehaviour
         return Vector3.zero;
     }
 
+    #endregion
+
+    #region Selection Logic
     void ToggleCell(Vector3Int cell, bool deleteMode)
     {
         if (selectedCells.Contains(cell))
@@ -264,6 +299,9 @@ public class BuildManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Operations
     void RotateSelected(int angle)
     {
         HashSet<Vector3Int> changed = new HashSet<Vector3Int>();
@@ -279,12 +317,30 @@ public class BuildManager : MonoBehaviour
                 }
                 changed.Add(cell);
             }
-
-            MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
-            if (building != null)
+            else
             {
-                building.transform.Rotate(0, 0, angle);
-                changed.Add(cell);
+                MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
+                if (building != null)
+                {
+                    if (!plannedRotations.ContainsKey(cell))
+                    {
+                        plannedRotations[cell] = Mathf.RoundToInt(building.transform.eulerAngles.z) + angle;
+                    }
+                    else
+                    {
+                        plannedRotations[cell] += angle;
+                    }
+
+                    if (!rotationGhosts.TryGetValue(cell, out var ghost))
+                    {
+                        ghost = new GameObject($"GhostRotation_{building.name}");
+                        ghost.transform.position = CellToWorld(cell);
+                        CopySprites(building.gameObject, ghost);
+                        rotationGhosts[cell] = ghost;
+                    }
+                    ghost.transform.rotation = Quaternion.Euler(0, 0, plannedRotations[cell]);
+                    changed.Add(cell);
+                }
             }
         }
 
@@ -294,14 +350,9 @@ public class BuildManager : MonoBehaviour
         }
     }
 
-    GameObject GetPrefab(Building type)
+    GameObject GetPrefab(BuildingData data)
     {
-        foreach (var entry in prefabs)
-        {
-            if (entry.type == type)
-                return entry.prefab;
-        }
-
+        if (data != null) return data.prefab;
         return null;
     }
 
@@ -310,11 +361,19 @@ public class BuildManager : MonoBehaviour
         return grid.CellToWorld(cell);
     }
 
+    #endregion
+
+    #region Visuals & Ghosts
     void ClearAll()
     {
         foreach (var ghost in buildGhosts.Values)
             Destroy(ghost);
         buildGhosts.Clear();
+
+        foreach (var ghost in rotationGhosts.Values)
+            Destroy(ghost);
+        rotationGhosts.Clear();
+        plannedRotations.Clear();
 
         foreach (var marker in deleteMarkers.Values)
             Destroy(marker);
@@ -349,7 +408,7 @@ public class BuildManager : MonoBehaviour
         deleteMarkers.Remove(cell);
     }
 
-    void CreateBuildGhost(Vector3Int cell, Building type, int rotation)
+    void CreateBuildGhost(Vector3Int cell, BuildingData type, int rotation)
     {
         if (buildGhosts.ContainsKey(cell))
             return;
@@ -395,16 +454,11 @@ public class BuildManager : MonoBehaviour
             copy.sortingLayerID = renderer.sortingLayerID;
             copy.sortingOrder = renderer.sortingOrder;
 
-            Color color = renderer.color;
-            color.a = 0.5f;
-            copy.color = color;
+            copy.color = new Color(0, 1, 0, 0.5f);
         }
     }
+    #endregion
 }
 
-public enum Building
-{
-    Conveyor,
-    Factory,
-    Storage
-}
+
+
