@@ -43,6 +43,8 @@ public class EnemyTurret : EnemyBase
 
     void Update()
     {
+        if (player == null) playerFound = false;
+
         if (playerFound)
         {
             Vector2 direction = (player.position - transform.position).normalized;

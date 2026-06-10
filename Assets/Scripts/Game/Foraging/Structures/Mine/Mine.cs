@@ -7,6 +7,7 @@ public class Mine : MonoBehaviour
     private MineData data;
     private SpriteRenderer sr;
     private List<TickEvent> actions = new();
+    private Action<List<LootAmount>, Vector3> spawnLoot;
 
     [Header("Resource Spawn")]
     [SerializeField] private GameObject resourcePrefab;
@@ -14,24 +15,39 @@ public class Mine : MonoBehaviour
     private int resourceCapacity;
     private int curResources = 0;
 
+    private EnemyBase enemyBase;
+    private int enemyCapacity;
+    private int curEnemies = 0;
+    private int enemyLevel;
+
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
     }
 
-    public void Setup(MineData d)
+    public void Setup(MineData d, Action<List<LootAmount>, Vector3> s)
     {
         data = d;
         sr.sprite = d.GetSprite();
+        spawnLoot = s;
+
         resourceData = d.GeItemData();
         resourceCapacity = d.GetMaxResources();
-
-        TickEvent loot = new(d.GetSpawnRate(), spawnResource);
+        TickEvent loot = new(d.GetResourceSpawnRate(), spawnResource);
         actions.Add(loot);
-
         for (int i = 0; i < d.GetInitialResources(); i++)
         {
             spawnResource();
+        }
+
+        enemyBase = d.GetEnemyBase();
+        enemyCapacity = d.GetMaxEnemies();
+        enemyLevel = d.GetEnemyLevel();
+        TickEvent enemy = new(d.GetEnemySpawnRate(), spawnEnemy);
+        actions.Add(enemy);
+        for (int i = 0; i < d.GetInitialEnemies(); i++)
+        {
+            spawnEnemy();
         }
     }
 
@@ -46,6 +62,17 @@ public class Mine : MonoBehaviour
         curResources++;
     }
 
+    private void spawnEnemy()
+    {
+        if (curEnemies >= enemyCapacity) return;
+
+        Vector2 newPos = data.getEnemyPosition();
+        EnemyBase spawned = Instantiate(enemyBase.gameObject, new Vector3(newPos.x, newPos.y, -2), Quaternion.identity).GetComponent<EnemyBase>();
+        spawned.Prepare(enemyLevel, onKilled);
+        spawned.transform.SetParent(transform, false);
+        curEnemies++;
+    }
+
     private void onCollected(CollectableData d)
     {
         curResources--;
@@ -57,6 +84,12 @@ public class Mine : MonoBehaviour
         {
             e.Tick();
         }
+    }
+
+    private void onKilled(int level, List<LootAmount> loot, Vector3 pos)
+    {
+        curEnemies -= 1;
+        spawnLoot(loot, pos);
     }
 }
 

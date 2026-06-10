@@ -4236,6 +4236,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47fbb0b957385cd428270c0112be77b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerExperienceManager: {fileID: 466662813}
+  resourceGenerator: {fileID: 756846605}
   minePrefab: {fileID: 7520916437887327511, guid: 27449113ea7652e42ae746240bc84839, type: 3}
   minesData:
   - {fileID: 11400000, guid: 9667c81976ccfda4dbfa61fb02c9e08c, type: 2}

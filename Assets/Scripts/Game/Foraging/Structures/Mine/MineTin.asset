@@ -16,7 +16,13 @@ MonoBehaviour:
   sprite: {fileID: -3588546140081193300, guid: fad0ab913b07cf84dbe7f7d93d9890f9, type: 3}
   allowedRadiusMin: 40
   allowedRadiusMax: 60
-  spawnRadius: 3
+  resourceSpawnRadius: 3
   maxResources: 10
   initialResources: 3
-  spawnRate: 4
+  resourceSpawnRate: 4
+  enemyBase: {fileID: 3857481871772085267, guid: c65d932fd480e7a44b6aab746a8f88eb, type: 3}
+  enemiesSpawnRadius: 3
+  maxEnemies: 3
+  initialEnemies: 1
+  enemiesSpawnRate: 10
+  enemyLevel: 2

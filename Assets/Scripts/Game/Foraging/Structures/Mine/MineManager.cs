@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class MineManager : MonoBehaviour
 {
+    [Header("Dependencies")]
+    [SerializeField] private PlayerExperienceManager playerExperienceManager;
+    [SerializeField] private ResourceGenerator resourceGenerator;
+
     [Header("Resource generation")]
     [SerializeField] private GameObject minePrefab;
     [SerializeField] private List<MineData> minesData;
@@ -22,7 +26,7 @@ public class MineManager : MonoBehaviour
                 Vector2 newPos = data.getSelfPosition();
                 Mine m = Instantiate(minePrefab, new Vector3(newPos.x, newPos.y, 2), Quaternion.identity).GetComponent<Mine>();
                 m.transform.SetParent(transform, false);
-                m.Setup(data);
+                m.Setup(data, spawnLoot);
                 mines.Add(m);
             }
         }
@@ -42,6 +46,19 @@ public class MineManager : MonoBehaviour
         foreach (Mine m in mines)
         {
             m.Tick();
+        }
+    }
+
+    private void spawnLoot(List<LootAmount> loot, Vector3 pos)
+    {
+        foreach (LootAmount l in loot)
+        {
+            if (l.GetItemType() == ItemType.Default)
+            {
+                playerExperienceManager.spawnExperience(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetAmount());
+                continue;
+            }
+            resourceGenerator.spawnLoot(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetItemType(), l.GetAmount());
         }
     }
 }
