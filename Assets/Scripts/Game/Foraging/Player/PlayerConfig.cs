@@ -153,7 +153,9 @@ public class PlayerConfig : MonoBehaviour
             b.transform.Rotate(new Vector3(0, sr.flipX? 180 : 0, 0));
             b.transform.parent = bulletParent;
             b.transform.localScale = new Vector3((dmg + 3f) / 8f, (dmg + 3f) / 8f, 1);
-            b.GetComponent<Bullet>().dmg = dmg;
+            Bullet bullet = b.GetComponent<Bullet>();
+            bullet.dmg = dmg;
+            bullet.isEnemy = false;
         }
     }
 

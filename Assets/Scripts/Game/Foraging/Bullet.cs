@@ -5,6 +5,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] public float speed = 10f;
     [SerializeField] public float timeToLive = 2f;
     [SerializeField] public int dmg = 1;
+    [SerializeField] public bool isEnemy;
 
     private Rigidbody2D rb;
 

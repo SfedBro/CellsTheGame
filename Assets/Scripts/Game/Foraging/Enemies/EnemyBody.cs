@@ -17,8 +17,11 @@ public class EnemyBody : MonoBehaviour
     {
         if (collision.CompareTag("Bullet"))
         {
-            self.GetDamage(collision.gameObject.GetComponent<Bullet>().dmg);
-            Destroy(collision.gameObject);
+            Bullet b = collision.gameObject.GetComponent<Bullet>();
+            if (!b.isEnemy) {
+                self.GetDamage(b.dmg);
+                Destroy(collision.gameObject);
+            }
         }
     }
 }

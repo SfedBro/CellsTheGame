@@ -16,6 +16,6 @@ MonoBehaviour:
   sprite: {fileID: 7511363498054095083, guid: 8efa8638ff871724a81f2232a427e21a, type: 3}
   colliderRadius: 0.25
   allowedRadiusMin: 0
-  allowedRadiusMax: 0
+  allowedRadiusMax: 100
   transformTo: 0
   chance: 0

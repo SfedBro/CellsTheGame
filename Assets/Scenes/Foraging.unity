@@ -3378,6 +3378,7 @@ MonoBehaviour:
   respawnTime: 5
   enemies:
   - {fileID: -3078250838118684747, guid: 3463d0993d361ca4286e69301b72fb60, type: 3}
+  - {fileID: 3857481871772085267, guid: c65d932fd480e7a44b6aab746a8f88eb, type: 3}
   enemiesAmountPerLevel:
   - amount: 5
     upgradeChance: 0.7
