@@ -33,6 +33,7 @@ public class PlayerConfig : MonoBehaviour
     private float buildingHUBTimer;
     private bool canBuild = false;
     private Vector3 respawn = Vector3.zero;
+    private int isAttacked = 0;
 
 
     [Header("Hints Settings")]
@@ -98,7 +99,7 @@ public class PlayerConfig : MonoBehaviour
 
     private void OnHUBBuild(InputAction.CallbackContext context)
     {
-        if (!canBuild) return;
+        if (!canBuild || isAttacked > 0) return;
 
         if (isBuilding) CancelBuilding();
         
@@ -107,7 +108,7 @@ public class PlayerConfig : MonoBehaviour
         GameObject hub = Instantiate(HUBPrefab, transform.position, Quaternion.identity);
         HUB h = hub.GetComponent<HUB>();
         h.hint = HUBHint;
-        h.onDes = () => {canBuild = true; if (buildHint != null) buildHint.enabled = true;};
+        h.onDes = () => {canBuild = true; if (buildHint != null && isAttacked == 0) buildHint.enabled = true;};
         HUBCollider = hub.GetComponent<CircleCollider2D>();
         HUBCollider.enabled = false;
         HUBSprite = hub.GetComponent<SpriteRenderer>();
@@ -291,7 +292,7 @@ public class PlayerConfig : MonoBehaviour
         GameObject hub = Instantiate(HUBPrefab, transform.position, Quaternion.identity);
         HUB h = hub.GetComponent<HUB>();
         h.hint = HUBHint;
-        h.onDes = () => {canBuild = true; if (buildHint != null) buildHint.enabled = true;};
+        h.onDes = () => {canBuild = true; if (buildHint != null && isAttacked == 0) buildHint.enabled = true;};
         HUBCollider = hub.GetComponent<CircleCollider2D>();
         HUBSprite = hub.GetComponent<SpriteRenderer>();
 
@@ -316,6 +317,24 @@ public class PlayerConfig : MonoBehaviour
             case StatType.Damage:
                 dmg = (int)newValue;
                 break;
+        }
+    }
+
+    public void EnemyFound()
+    {
+        isAttacked++;
+        if (isBuilding) CancelBuilding();
+        canBuild = false;
+        buildHint.enabled = false;
+    }
+
+    public void EnemyLost()
+    {
+        isAttacked--;
+        if (isAttacked == 0 && HUBSprite == null)
+        {
+            canBuild = true;
+            buildHint.enabled = true;
         }
     }
 }

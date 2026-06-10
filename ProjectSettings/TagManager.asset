@@ -8,6 +8,7 @@ TagManager:
   - Bullet
   - CollectAura
   - Collectable
+  - Enemy
   layers:
   - Default
   - TransparentFX

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerTrigger : MonoBehaviour
+public class PlayerBody : MonoBehaviour
 {
     [SerializeField] private PlayerConfig player;
 

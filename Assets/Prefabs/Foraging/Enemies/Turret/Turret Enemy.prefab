@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 3857481871772085267}
   m_Layer: 0
   m_Name: Turret Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -253,6 +253,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0d7441e29f3fbc945aeacd6ff4a9e96b, type: 2}
   - {fileID: 11400000, guid: 21366bcb96aca0f41b1f211b6f33191a, type: 2}
   - {fileID: 11400000, guid: 614baa7e97356cb4ea3736e3cd220609, type: 2}
+  centerPosition: {x: 0, y: 0, z: 0}
+  mapRadius: 0
   curHP: 0
   moveSpeed: 0
   dmg: 0
