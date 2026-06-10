@@ -8,6 +8,10 @@ public class EnemyBase : MonoBehaviour
     [Header("Levels")]
     [SerializeField] protected List<EnemySO> levelStats;
 
+    [Header("Map")]
+    [SerializeField] protected Vector3 centerPosition;
+    [SerializeField] protected float mapRadius;
+
     [Header("Current stats")]
     [SerializeField] protected int curHP;
     [SerializeField] protected float moveSpeed;
@@ -93,6 +97,12 @@ public class EnemyBase : MonoBehaviour
 
     protected void OnStartSeek() {}
     protected void OnStopSeek() {}
+
+    public void SetBounds(Vector3 center, float radius)
+    {
+        centerPosition = center;
+        mapRadius = radius;
+    }
 }
 
 public enum EnemyState

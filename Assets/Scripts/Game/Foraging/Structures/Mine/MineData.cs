@@ -22,6 +22,7 @@ public class MineData : ScriptableObject
     [SerializeField] private int initialEnemies;
     [SerializeField] private int enemiesSpawnRate;
     [SerializeField] private int enemyLevel;
+    [SerializeField] private float enemyWalkRadius;
 
 
     public CollectableData GeItemData() => collectable;
@@ -34,6 +35,7 @@ public class MineData : ScriptableObject
     public int GetInitialEnemies() => initialEnemies;
     public int GetEnemySpawnRate() => enemiesSpawnRate;
     public int GetEnemyLevel() => enemyLevel;
+    public float GetEnemyWalkRadius() => enemyWalkRadius;
 
     public Vector2 getSelfPosition()
     {

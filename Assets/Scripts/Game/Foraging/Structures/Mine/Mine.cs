@@ -19,6 +19,7 @@ public class Mine : MonoBehaviour
     private int enemyCapacity;
     private int curEnemies = 0;
     private int enemyLevel;
+    private float enemyWalkRadius;
 
     void Awake()
     {
@@ -43,6 +44,7 @@ public class Mine : MonoBehaviour
         enemyBase = d.GetEnemyBase();
         enemyCapacity = d.GetMaxEnemies();
         enemyLevel = d.GetEnemyLevel();
+        enemyWalkRadius = d.GetEnemyWalkRadius();
         TickEvent enemy = new(d.GetEnemySpawnRate(), spawnEnemy);
         actions.Add(enemy);
         for (int i = 0; i < d.GetInitialEnemies(); i++)
@@ -70,6 +72,7 @@ public class Mine : MonoBehaviour
         EnemyBase spawned = Instantiate(enemyBase.gameObject, new Vector3(newPos.x, newPos.y, -2), Quaternion.identity).GetComponent<EnemyBase>();
         spawned.Prepare(enemyLevel, onKilled);
         spawned.transform.SetParent(transform, false);
+        spawned.SetBounds(transform.position, enemyWalkRadius);
         curEnemies++;
     }
 

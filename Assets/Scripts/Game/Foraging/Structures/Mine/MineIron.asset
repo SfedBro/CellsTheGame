@@ -20,9 +20,10 @@ MonoBehaviour:
   maxResources: 10
   initialResources: 2
   resourceSpawnRate: 3
-  enemyBase: {fileID: 3857481871772085267, guid: c65d932fd480e7a44b6aab746a8f88eb, type: 3}
+  enemyBase: {fileID: -3078250838118684747, guid: 3463d0993d361ca4286e69301b72fb60, type: 3}
   enemiesSpawnRadius: 3
   maxEnemies: 3
   initialEnemies: 1
   enemiesSpawnRate: 5
   enemyLevel: 1
+  enemyWalkRadius: 5

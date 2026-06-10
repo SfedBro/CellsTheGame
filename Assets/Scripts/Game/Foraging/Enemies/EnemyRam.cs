@@ -81,7 +81,15 @@ public class EnemyRam : EnemyBase
             changeDirectionTimer += Time.deltaTime;
             if (changeDirectionTimer > changeDirectionTime)
             {
-                moveDirection = Random.insideUnitCircle.normalized;
+                Vector3 toCenter = centerPosition - transform.position;
+                if (toCenter.magnitude > mapRadius)
+                {
+                    moveDirection = toCenter.normalized;
+                }
+                else
+                {
+                    moveDirection = Random.insideUnitCircle.normalized;
+                }
                 changeDirectionTimer = 0;
             }
             else if (changeDirectionTimer > changeDirectionTime * pauseTime)

@@ -253,18 +253,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4cc0184e7630f74438e68538f6bb5de5, type: 2}
   - {fileID: 11400000, guid: 535ecf656f1d8234f9a7d80848706a03, type: 2}
   - {fileID: 11400000, guid: 6b79a4f8eb21992428d9b1ab77f8ef46, type: 2}
+  centerPosition: {x: 0, y: 0, z: 0}
+  mapRadius: 80
   curHP: 0
   moveSpeed: 0
   dmg: 0
   state: 0
   sprite: {fileID: -9153389512723893024, guid: 117fb6cdb9a61a5448cdb579b8a4b734, type: 3}
-  changeDirectionTime: 5
-  pauseTime: 0.8
+  changeDirectionTime: 3
+  pauseTime: 0.7
   ramSpeedMultipler: 3
-  attackTime: 2
-  basetriggerRadius: 1.5
-  seekTriggerRadius: 3
-  attackCharge: 1.5
+  attackTime: 1
+  basetriggerRadius: 3
+  seekTriggerRadius: 5
+  attackCharge: 1
   trigger: {fileID: 2297251964580457677}
 --- !u!1 &8000683374567677273
 GameObject:

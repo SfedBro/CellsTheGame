@@ -26,3 +26,4 @@ MonoBehaviour:
   initialEnemies: 1
   enemiesSpawnRate: 10
   enemyLevel: 2
+  enemyWalkRadius: 5
