@@ -3,21 +3,20 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
+    #region Singleton & State
     public static GridManager Instance;
-
-    private Dictionary<Vector3Int, IItemReceiver> receivers = new();
     private Dictionary<Vector3Int, MonoBehaviour> buildings = new();
+    #endregion
 
+    #region Lifecycle
     private void Awake()
     {
         Instance = this;
+        DontDestroyOnLoad(Instance);
     }
+    #endregion
 
-    public void RegisterReceiver(Vector3Int pos, IItemReceiver receiver)
-    {
-        receivers[pos] = receiver;
-    }
-
+    #region Registration
     public void RegisterBuilding(Vector3Int pos, MonoBehaviour building)
     {
         buildings[pos] = building;
@@ -25,19 +24,14 @@ public class GridManager : MonoBehaviour
 
     public void Unregister(Vector3Int pos)
     {
-        receivers.Remove(pos);
         buildings.Remove(pos);
     }
+    #endregion
 
+    #region Lookups
     public bool IsOccupied(Vector3Int pos)
     {
         return buildings.ContainsKey(pos);
-    }
-
-    public IItemReceiver GetReceiver(Vector3Int pos)
-    {
-        receivers.TryGetValue(pos, out var receiver);
-        return receiver;
     }
 
     public MonoBehaviour GetBuilding(Vector3Int pos)
@@ -45,11 +39,12 @@ public class GridManager : MonoBehaviour
         buildings.TryGetValue(pos, out var building);
         return building;
     }
+    #endregion
 
+    #region Neighbor Notification
     public void NotifyNeighbours(Vector3Int pos)
     {
         TryRebuild(pos);
-
         TryRebuild(pos + Vector3Int.right);
         TryRebuild(pos + Vector3Int.left);
         TryRebuild(pos + Vector3Int.up);
@@ -61,9 +56,10 @@ public class GridManager : MonoBehaviour
         if (!buildings.TryGetValue(pos, out var building))
             return;
 
-        if (building is IItemGiver buildable)
+        if (building is FactoryBlock factoryBlock)
         {
-            buildable.RebuildConnections();
+            factoryBlock.RebuildConnections();
         }
     }
+    #endregion
 }
