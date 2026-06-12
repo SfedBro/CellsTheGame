@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: OreTin
   m_EditorClassIdentifier: 
   type: 3
-  sprite: {fileID: -1752412850962090364, guid: 367036bff82a08f4c959d40b951d5956, type: 3}
+  sprite: {fileID: -1752412850962090364, guid: 6c498b5793fa7964581970ae9c7309bc, type: 3}
   colliderRadius: 0.15
   allowedRadiusMin: 25
   allowedRadiusMax: 35

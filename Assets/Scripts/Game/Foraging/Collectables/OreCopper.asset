@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: OreCopper
   m_EditorClassIdentifier: 
   type: 2
-  sprite: {fileID: 6928653406639625558, guid: 0ea8b8878fef1b34fa23934c59d5a42f, type: 3}
+  sprite: {fileID: 6928653406639625558, guid: 4764f345064efde44a4b210516768d05, type: 3}
   colliderRadius: 0.15
   allowedRadiusMin: 20
   allowedRadiusMax: 30

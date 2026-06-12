@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: OreIron
   m_EditorClassIdentifier: 
   type: 1
-  sprite: {fileID: -4216599972048657442, guid: 79f63e3d9ffb93a46b70d3a8623769b3, type: 3}
+  sprite: {fileID: -4216599972048657442, guid: 03b4b55d6af7ab6418d6c8bd17f1832d, type: 3}
   colliderRadius: 0.15
   allowedRadiusMin: 0
   allowedRadiusMax: 40

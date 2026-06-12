@@ -623,6 +623,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fcd7ca5c5a36d0b4395bce1825beb540, type: 2}
   - {fileID: 11400000, guid: a0591d4f18693994e8e2b999e458fdd7, type: 2}
   - {fileID: 11400000, guid: e35c868ef6cdf8245b78ccd3439ad5e2, type: 2}
+  curPlayerLevel: 0
+  curExperience: 0
+  curUpgradePoints: 0
 --- !u!4 &629169653
 Transform:
   m_ObjectHideFlags: 0
@@ -840,14 +843,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ResourceSpritesForItemSprites:
   - {fileID: -2369867600477939372, guid: 0c90b3d12cc3b6849a2b71687c92a868, type: 3}
-  - {fileID: -4216599972048657442, guid: 79f63e3d9ffb93a46b70d3a8623769b3, type: 3}
-  - {fileID: 6928653406639625558, guid: 0ea8b8878fef1b34fa23934c59d5a42f, type: 3}
-  - {fileID: -1752412850962090364, guid: 367036bff82a08f4c959d40b951d5956, type: 3}
+  - {fileID: -4216599972048657442, guid: 03b4b55d6af7ab6418d6c8bd17f1832d, type: 3}
+  - {fileID: 6928653406639625558, guid: 4764f345064efde44a4b210516768d05, type: 3}
+  - {fileID: -1752412850962090364, guid: 6c498b5793fa7964581970ae9c7309bc, type: 3}
   - {fileID: 729147793154898138, guid: f6f552472276a8a4fab12a2da5a2eb16, type: 3}
   - {fileID: 7511363498054095083, guid: 8efa8638ff871724a81f2232a427e21a, type: 3}
   - {fileID: -3856633284888853020, guid: 5480f79bafb0356439657c1fd77ce3e9, type: 3}
-  - {fileID: -5315998895232176958, guid: d2a5b5b8d8382d840a68ece03bd9e049, type: 3}
-  - {fileID: 5134288010554056040, guid: 00f613b009a2d594f99b1821686b1e40, type: 3}
+  - {fileID: -1014278335334063885, guid: 39ff2f531de31de488734d77135994ac, type: 3}
+  - {fileID: 5134288010554056040, guid: 70c29ecd378c11e44b9b140abf5c7982, type: 3}
   - {fileID: -4204262651145609143, guid: 63f1e99f4960166468c1368deeeb473c, type: 3}
   defaultSprite: {fileID: -2369867600477939372, guid: 0c90b3d12cc3b6849a2b71687c92a868, type: 3}
 --- !u!4 &1060753329
