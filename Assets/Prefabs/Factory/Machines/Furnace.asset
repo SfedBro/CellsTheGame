@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b10f42f1de8ab174bb80ce8acb57cc6c, type: 3}
+  m_Name: Furnace
+  m_EditorClassIdentifier: 
+  buildingName: Furnace
+  prefab: {fileID: 8205903439499413639, guid: 0e30c75635f336d4c8ab483d9748294f, type: 3}
+  cost: []
