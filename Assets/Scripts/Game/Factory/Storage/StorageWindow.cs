@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System.Linq;
 
 public class StorageWindow : MonoBehaviour
 {
@@ -7,14 +9,16 @@ public class StorageWindow : MonoBehaviour
 
     [Header("UI References")]
     [SerializeField] private GameObject root;
-    [SerializeField] private TMP_Text storageText;
-    [SerializeField] private TMP_Text playerText;
-
-    [Header("Transfer Configuration")]
-    public ItemType selectedItemType = ItemType.OreIron;
-    public int transferAmount = 1;
+    [SerializeField] private TMP_Text titleText; // optional
+    
+    [Header("Slot Containers (Assign in Inspector)")]
+    [SerializeField] private ItemSlotUI slotPrefab;
+    [SerializeField] private Transform storageSlotsContainer;
+    [SerializeField] private Transform playerSlotsContainer;
 
     private MachineStorage currentStorage;
+    private List<ItemSlotUI> storageSlots = new List<ItemSlotUI>();
+    private List<ItemSlotUI> playerSlots = new List<ItemSlotUI>();
 
     private void Awake()
     {
@@ -25,6 +29,9 @@ public class StorageWindow : MonoBehaviour
     public void Open(MachineStorage storage)
     {
         currentStorage = storage;
+        if (titleText != null) titleText.text = "Склад";
+        
+        GenerateSlots();
         Refresh();
         root.SetActive(true);
     }
@@ -35,69 +42,50 @@ public class StorageWindow : MonoBehaviour
         currentStorage = null;
     }
 
+    private void GenerateSlots()
+    {
+        if (slotPrefab == null) return;
+
+        // Generate Storage Slots
+        if (storageSlotsContainer != null && currentStorage != null)
+        {
+            foreach (Transform child in storageSlotsContainer) Destroy(child.gameObject);
+            storageSlots.Clear();
+            for (int i = 0; i < currentStorage.Inventory.slotCount; i++)
+            {
+                var slot = Instantiate(slotPrefab, storageSlotsContainer);
+                slot.Initialize(currentStorage.Inventory, i);
+                storageSlots.Add(slot);
+            }
+        }
+
+        // Generate Player Slots
+        if (playerSlotsContainer != null && PlayerInventory.Instance != null)
+        {
+            foreach (Transform child in playerSlotsContainer) Destroy(child.gameObject);
+            playerSlots.Clear();
+            for (int i = 0; i < PlayerInventory.Instance.Inventory.slotCount; i++)
+            {
+                var slot = Instantiate(slotPrefab, playerSlotsContainer);
+                slot.Initialize(PlayerInventory.Instance.Inventory, i);
+                playerSlots.Add(slot);
+            }
+        }
+    }
+
     public void Refresh()
     {
-        if (currentStorage == null)
-            return;
+        if (currentStorage == null) return;
 
-        if (storageText != null)
+        foreach (var slot in storageSlots) slot.UpdateUI();
+        foreach (var slot in playerSlots) slot.UpdateUI();
+    }
+
+    private void Update()
+    {
+        if (root.activeSelf && currentStorage == null)
         {
-            storageText.text = "�����:\n";
-            foreach (var item in currentStorage.Inventory.items)
-            {
-                if (item.Value > 0)
-                {
-                    storageText.text += $"{item.Key}: {item.Value}";
-                    if (currentStorage.Inventory.MaxCapacity > 0)
-                        storageText.text += $" / {currentStorage.Inventory.MaxCapacity}";
-                    storageText.text += "\n";
-                }
-            }
+            Close();
         }
-
-        if (playerText != null && PlayerInventory.Instance != null)
-        {
-            playerText.text = "�����:\n";
-            foreach (var item in PlayerInventory.Instance.Inventory.items)
-            {
-                if (item.Value > 0)
-                    playerText.text += $"{item.Key}: {item.Value}\n";
-            }
-        }
-    }
-
-    public void MoveToStorage()
-    {
-        if (currentStorage == null || PlayerInventory.Instance == null) return;
-
-        bool success = PlayerInventory.Instance.Inventory.TransferTo(
-            currentStorage.Inventory,
-            selectedItemType,
-            transferAmount);
-
-        if (success) Refresh();
-    }
-
-    public void MoveFromStorage()
-    {
-        if (currentStorage == null || PlayerInventory.Instance == null) return;
-
-        bool success = currentStorage.Inventory.TransferTo(
-            PlayerInventory.Instance.Inventory,
-            selectedItemType,
-            transferAmount);
-
-        if (success) Refresh();
-    }
-
-    // ��������������� ������ ��� �������� � ������� UnityEvent (Dropdown, Slider � �.�.)
-    public void SetSelectedItemType(int typeIndex)
-    {
-        selectedItemType = (ItemType)typeIndex;
-    }
-
-    public void SetTransferAmount(float amount)
-    {
-        transferAmount = Mathf.RoundToInt(amount);
     }
 }

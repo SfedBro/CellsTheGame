@@ -109,4 +109,22 @@ public class UpgradingManager : MonoBehaviour
             inc.UpdateUI();
         }
     }
+
+    public void ForceUpdateAfterLoad()
+    {
+        if (player != null)
+        {
+            // Reset base stats or just re-apply? 
+            // Wait, correctPlayerStats re-applies current level.
+            // If player stats don't reset automatically, this might add on top.
+            // Assuming player starts fresh on load or we just set it.
+            // For now, call correctPlayerStats.
+            correctPlayerStats(player);
+        }
+
+        foreach (IncrementInterface inc in increments)
+        {
+            inc.UpdateUI();
+        }
+    }
 }

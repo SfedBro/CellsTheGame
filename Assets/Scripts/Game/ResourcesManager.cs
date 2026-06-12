@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class ResourcesManager : MonoBehaviour
+public class ResourcesManager : MonoBehaviour, IGameService
 {
     public static ResourcesManager instance;
     [SerializeField] private List<Sprite> ResourceSpritesForItemSprites;
     [SerializeField] private Sprite defaultSprite;
     protected Inventory inventory;
 
-    private List<Action<ItemType, int>> observers;
-    private void Awake()
+    private List<Action<ItemType, int>> observers = new List<Action<ItemType, int>>();
+    
+    public void InitializeService()
     {
         if (instance != null && instance != this)
         {
@@ -18,8 +20,21 @@ public class ResourcesManager : MonoBehaviour
             return;
         }
         instance = this;
-        inventory = new Inventory();
         DontDestroyOnLoad(gameObject);
+    }
+
+    public void StartService()
+    {
+        // Link to PlayerInventory if it exists
+        if (PlayerInventory.Instance != null)
+        {
+            inventory = PlayerInventory.Instance.Inventory;
+        }
+        else
+        {
+            inventory = new Inventory();
+            inventory.Initialize(100);
+        }
     }
 
     public Sprite getResourceSprite(ItemType item)
@@ -41,17 +56,11 @@ public class ResourcesManager : MonoBehaviour
         if (amount < 0)
         {
             amount *= -1;
-            for (int i = 0; i < amount; i++)
-            {
-                inventory.RemoveItem(t);
-            }
+            inventory.RemoveItem(t, amount);
         }
         else
         {
-            for (int i = 0; i < amount; i++)
-            {
-                inventory.AddItem(t);
-            }
+            inventory.AddItem(t, amount);
         }
 
         foreach (var action in observers)
@@ -72,12 +81,19 @@ public class ResourcesManager : MonoBehaviour
 
     public void onPlayerDeath()
     {
-        foreach(var itemType in inventory.items.Keys)
+        if (inventory.slots == null) return;
+        var distinctTypes = inventory.slots.Where(s => !s.IsEmpty).Select(s => s.type).Distinct().ToList();
+        
+        foreach (var slot in inventory.slots)
         {
-            inventory.items[itemType] = 0;
+            slot.Clear();
+        }
+
+        foreach (var itemType in distinctTypes)
+        {
             foreach (var action in observers)
             {
-                action(itemType, getResourceAmount(itemType));
+                action(itemType, 0);
             }
         }
     }

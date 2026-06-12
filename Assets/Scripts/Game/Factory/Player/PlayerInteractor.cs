@@ -12,7 +12,6 @@ public class PlayerInteractor : MonoBehaviour
     #region Lifecycle
     private void Start()
     {
-        cam = Camera.main ? Camera.main : Instantiate(new Camera());
     }
 
     private void Update()
@@ -35,9 +34,16 @@ public class PlayerInteractor : MonoBehaviour
         }
     }
 
+    private Camera GetCamera()
+    {
+        if (cam == null) cam = Camera.main;
+        return cam;
+    }
+
     private void TryInteract()
     {
-        Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+        Debug.Log("[PlayerInteractor] TryInteract called!");
+        Vector2 mousePos = GetCamera().ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
 
         if (hit && hit.collider != null)
@@ -45,6 +51,7 @@ public class PlayerInteractor : MonoBehaviour
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
             if (interactable != null)
             {
+                Debug.Log($"[PlayerInteractor] Hit collider with IInteractable: {hit.collider.name}");
                 interactable.Interact(this);
                 return;
             }
@@ -52,17 +59,36 @@ public class PlayerInteractor : MonoBehaviour
 
         if (GridManager.Instance != null)
         {
+            Debug.Log("[PlayerInteractor] GridManager.Instance is NOT null.");
             Grid grid = FindFirstObjectByType<Grid>();
             if (grid != null)
             {
-                // Применяем смещение на 0.5, как в строительном скрипте
+                Debug.Log("[PlayerInteractor] Grid found in scene.");
                 Vector3Int cell = grid.WorldToCell(new Vector3(mousePos.x + 0.5f, mousePos.y + 0.5f, 0f));
                 MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
-                if (building is IInteractable gridInteractable)
+                
+                if (building != null)
                 {
-                    gridInteractable.Interact(this);
+                    Debug.Log($"[PlayerInteractor] Found building at cell {cell}: {building.name}");
+                    if (building is IInteractable gridInteractable)
+                    {
+                        Debug.Log("[PlayerInteractor] Calling Interact on Grid building");
+                        gridInteractable.Interact(this);
+                    }
+                }
+                else
+                {
+                    Debug.Log($"[PlayerInteractor] No building found at cell {cell}");
                 }
             }
+            else
+            {
+                Debug.LogWarning("[PlayerInteractor] Grid is NULL in scene!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[PlayerInteractor] GridManager.Instance is NULL!");
         }
     }
     #endregion
@@ -70,7 +96,7 @@ public class PlayerInteractor : MonoBehaviour
     #region Movement
     private void Move()
     {
-        cam.GetComponent<Transform>().localPosition += FactoryMovement.Movement(movementSpeed) * Time.deltaTime;
+        GetCamera().GetComponent<Transform>().localPosition += FactoryMovement.Movement(movementSpeed) * Time.deltaTime;
     }
     #endregion
 }

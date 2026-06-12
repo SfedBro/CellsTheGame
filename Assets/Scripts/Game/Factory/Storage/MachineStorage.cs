@@ -18,10 +18,26 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
         resourcesManager = FindAnyObjectByType<ResourcesManager>();
     }
 
+    [SerializeField]
+    private int startingSlotCount = 24;
+
     public override void Initialize()
     {
         base.Initialize();
-        inventory.MaxCapacity = 100; // Limit storage to 100 items max
+        inventory.Initialize(startingSlotCount); // Limit storage to slots
+    }
+
+    public override string GetSaveState()
+    {
+        return JsonUtility.ToJson(inventory);
+    }
+
+    public override void LoadSaveState(string stateJson)
+    {
+        if (!string.IsNullOrEmpty(stateJson))
+        {
+            JsonUtility.FromJsonOverwrite(stateJson, inventory);
+        }
     }
 
     public override void Tick()
@@ -39,13 +55,16 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
         // Find any item to output
         ItemType typeToOutput = ItemType.OreIron;
         bool hasItem = false;
-        foreach (var kvp in inventory.items)
+        if (inventory.slots != null)
         {
-            if (kvp.Value > 0)
+            foreach (var slot in inventory.slots)
             {
-                typeToOutput = kvp.Key;
-                hasItem = true;
-                break;
+                if (!slot.IsEmpty)
+                {
+                    typeToOutput = slot.type;
+                    hasItem = true;
+                    break;
+                }
             }
         }
 
@@ -95,6 +114,21 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
     public void Interact(PlayerInteractor player)
     {
-        StorageWindow.Instance.Open(this);
+        Debug.Log("[MachineStorage] Interact called!");
+        if (StorageWindow.Instance == null)
+        {
+            Debug.Log("[MachineStorage] StorageWindow.Instance is null, searching for it...");
+            StorageWindow.Instance = FindFirstObjectByType<StorageWindow>(FindObjectsInactive.Include);
+        }
+        
+        if (StorageWindow.Instance != null)
+        {
+            Debug.Log($"[MachineStorage] Opening StorageWindow: {StorageWindow.Instance.name}");
+            StorageWindow.Instance.Open(this);
+        }
+        else
+        {
+            Debug.LogError("[MachineStorage] StorageWindow not found in scene!");
+        }
     }
 }

@@ -4,15 +4,34 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     #region Singleton & State
-    public static GridManager Instance;
+    private static GridManager _instance;
+    public static GridManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindFirstObjectByType<GridManager>();
+            }
+            return _instance;
+        }
+        set
+        {
+            _instance = value;
+        }
+    }
     private Dictionary<Vector3Int, MonoBehaviour> buildings = new();
     #endregion
 
     #region Lifecycle
     private void Awake()
     {
-        Instance = this;
-        DontDestroyOnLoad(Instance);
+        if (_instance != null && _instance != this)
+        {
+            Destroy(_instance.gameObject);
+        }
+        _instance = this;
+        buildings.Clear();
     }
     #endregion
 

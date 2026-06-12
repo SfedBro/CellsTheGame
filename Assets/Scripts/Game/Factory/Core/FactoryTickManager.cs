@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FactoryTickManager : MonoBehaviour
+public class FactoryTickManager : MonoBehaviour, IGameService
 {
     public static FactoryTickManager Instance;
 
@@ -10,17 +10,17 @@ public class FactoryTickManager : MonoBehaviour
 
     private List<FactoryBlock> activeBlocks = new List<FactoryBlock>();
 
-    private void Awake()
+    public void InitializeService()
     {
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            Destroy(Instance.gameObject);
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Instance = this;
+    }
+
+    public void StartService()
+    {
     }
 
     public void RegisterBlock(FactoryBlock block)

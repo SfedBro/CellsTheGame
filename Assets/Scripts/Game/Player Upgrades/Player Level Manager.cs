@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class PlayerLevelManager : MonoBehaviour
+public class PlayerLevelManager : MonoBehaviour, IGameService
 {
     public static PlayerLevelManager instance;
     [SerializeField] private List<UpgradeData> upgradeTemplates;
@@ -10,7 +10,7 @@ public class PlayerLevelManager : MonoBehaviour
     public int curExperience = 0;
     public int curUpgradePoints = 0;
 
-    private void Awake()
+    public void InitializeService()
     {
         if (instance != null && instance != this)
         {
@@ -32,4 +32,8 @@ public class PlayerLevelManager : MonoBehaviour
     }
 
     public List<UpgradeData> getPlayerUpgrades() => playerUpgrades;
+
+    public void StartService()
+    {
+    }
 }

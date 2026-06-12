@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildManager : MonoBehaviour
+public class BuildManager : MonoBehaviour, IGameService
 {
     #region ??????????
     public Camera cam;
@@ -43,7 +43,11 @@ public class BuildManager : MonoBehaviour
     private bool selectingRectangle;
     private Vector3Int anchorA;
     #endregion
-    private void Start()
+    public void InitializeService()
+    {
+    }
+
+    public void StartService()
     {
         grid = FindFirstObjectByType<Grid>();
 
@@ -70,7 +74,7 @@ public class BuildManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
             ApplyChanges();
     }
-    #region ??????? ?????????????
+    #region Main Functions
     [Header("Available Buildings")]
     public List<BuildingData> availableBuildings = new List<BuildingData>();
 
@@ -194,6 +198,7 @@ public class BuildManager : MonoBehaviour
                 
             if (go.TryGetComponent<FactoryBlock>(out var block))
             {
+                block.blockId = pair.Value.type.buildingName; // Save ID
                 block.OnPlaced();
             }
 
@@ -207,18 +212,47 @@ public class BuildManager : MonoBehaviour
 
         ClearAll();
     }
+
+    public void SpawnBuildingFromSave(string blockId, Vector3Int cell, int rotation, string customState)
+    {
+        BuildingData data = availableBuildings.Find(b => b.buildingName == blockId);
+        if (data == null || data.prefab == null) return;
+
+        GameObject go = Instantiate(data.prefab, CellToWorld(cell), Quaternion.Euler(0, 0, rotation));
+        if (go.TryGetComponent<FactoryBlock>(out var block))
+        {
+            block.blockId = blockId;
+            block.Initialize(); // Initialize and register in Grid immediately!
+            block.LoadSaveState(customState);
+            block.OnPlaced();
+        }
+        
+        GridManager.Instance.NotifyNeighbours(cell);
+    }
     #endregion
 
     #region Grid Math
+    Grid GetGrid()
+    {
+        if (grid == null) grid = FindFirstObjectByType<Grid>();
+        return grid;
+    }
+
+    Camera GetCamera()
+    {
+        if (cam == null) cam = Camera.main;
+        return cam;
+    }
+
     Vector3Int WorldToCell(Vector3 pos)
     {
-        return grid.WorldToCell(pos + new Vector3(0.5f, 0.5f, 0f));
+        return GetGrid().WorldToCell(pos + new Vector3(0.5f, 0.5f, 0f));
     }
 
     Vector3 GetMouseWorld()
     {
         Ray ray =
-            cam.ScreenPointToRay(
+            GetCamera().ScreenPointToRay(
                 Input.mousePosition);
 
         Plane plane =
@@ -358,7 +392,7 @@ public class BuildManager : MonoBehaviour
 
     Vector3 CellToWorld(Vector3Int cell)
     {
-        return grid.CellToWorld(cell);
+        return GetGrid().CellToWorld(cell);
     }
 
     #endregion

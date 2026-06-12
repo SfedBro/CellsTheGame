@@ -133,6 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Size: {x: 1, y: 1}
+  blockId: Conveyor
   Ports:
   - CellOffset: {x: 0, y: 0}
     Direction: 2

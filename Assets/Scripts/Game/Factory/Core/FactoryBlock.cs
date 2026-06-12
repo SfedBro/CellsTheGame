@@ -7,6 +7,9 @@ public abstract class FactoryBlock : MonoBehaviour
     [Header("Grid")]
     public Vector2Int Size = Vector2Int.one;
 
+    [Header("Save Data")]
+    public string blockId; // Used by SaveSystem to know which prefab to instantiate
+
     [Header("Connections")]
     public List<Port> Ports = new List<Port>();
 
@@ -48,6 +51,15 @@ public abstract class FactoryBlock : MonoBehaviour
     public virtual void Tick()
     {
         // To be overridden by mechanisms that need tick logic (like Conveyors, Presses)
+    }
+    
+    public virtual string GetSaveState()
+    {
+        return "";
+    }
+
+    public virtual void LoadSaveState(string stateJson)
+    {
     }
     #endregion
 
