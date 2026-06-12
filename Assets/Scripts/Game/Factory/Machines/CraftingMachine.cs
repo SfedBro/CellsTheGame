@@ -9,8 +9,8 @@ public class CraftingMachine : FactoryBlock
     [Header("Processing")]
     public float progress;
     public float processTime = 2f;
-    public ItemType inputType = ItemType.TestOre;
-    public ItemType outputType = ItemType.TestPlate;
+    public ItemType inputType = ItemType.OreIron;
+    public ItemType outputType = ItemType.IngotIron;
     
     [SerializeField]
     private ConveyorItemView conveyorItemPrefab;

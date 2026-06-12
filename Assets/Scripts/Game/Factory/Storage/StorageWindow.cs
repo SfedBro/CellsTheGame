@@ -11,7 +11,7 @@ public class StorageWindow : MonoBehaviour
     [SerializeField] private TMP_Text playerText;
 
     [Header("Transfer Configuration")]
-    public ItemType selectedItemType = ItemType.TestOre;
+    public ItemType selectedItemType = ItemType.OreIron;
     public int transferAmount = 1;
 
     private MachineStorage currentStorage;
@@ -42,7 +42,7 @@ public class StorageWindow : MonoBehaviour
 
         if (storageText != null)
         {
-            storageText.text = "Склад:\n";
+            storageText.text = "пїЅпїЅпїЅпїЅпїЅ:\n";
             foreach (var item in currentStorage.Inventory.items)
             {
                 if (item.Value > 0)
@@ -57,7 +57,7 @@ public class StorageWindow : MonoBehaviour
 
         if (playerText != null && PlayerInventory.Instance != null)
         {
-            playerText.text = "Игрок:\n";
+            playerText.text = "пїЅпїЅпїЅпїЅпїЅ:\n";
             foreach (var item in PlayerInventory.Instance.Inventory.items)
             {
                 if (item.Value > 0)
@@ -90,7 +90,7 @@ public class StorageWindow : MonoBehaviour
         if (success) Refresh();
     }
 
-    // Вспомогательные методы для привязки к кнопкам UnityEvent (Dropdown, Slider и т.д.)
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ UnityEvent (Dropdown, Slider пїЅ пїЅ.пїЅ.)
     public void SetSelectedItemType(int typeIndex)
     {
         selectedItemType = (ItemType)typeIndex;

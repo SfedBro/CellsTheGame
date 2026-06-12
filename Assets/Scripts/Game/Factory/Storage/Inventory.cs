@@ -129,7 +129,7 @@ public class Inventory : ISerializationCallbackReceiver
 [System.Serializable]
 public class ItemStack
 {
-    public ItemType type = ItemType.TestOre;
+    public ItemType type = ItemType.Default;
     public int amount = 0;
     public ItemStack(ItemType type, int amount)
     {

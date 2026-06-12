@@ -37,7 +37,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
         if (outPort == null) return;
 
         // Find any item to output
-        ItemType typeToOutput = ItemType.TestOre;
+        ItemType typeToOutput = ItemType.OreIron;
         bool hasItem = false;
         foreach (var kvp in inventory.items)
         {
@@ -90,7 +90,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     public void RemoveItems(Dictionary<ItemType, int> items)
     {
         PlayerInventory playerInventory = FindFirstObjectByType<PlayerInventory>();
-        InventoryUtils.Transfer(this, playerInventory, ItemType.TestOre, 10);
+        InventoryUtils.Transfer(this, playerInventory, ItemType.OreIron, 10);
     }
 
     public void Interact(PlayerInteractor player)
