@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
@@ -42,15 +41,24 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
     public override void Tick()
     {
+        Debug.Log("[Storage] Tick called.");
         TryOutput();
     }
 
     private void TryOutput()
     {
-        if (inventory.CurrentTotalAmount <= 0) return;
+        if (inventory.CurrentTotalAmount <= 0) 
+        {
+            // Debug.Log("[Storage] Inventory is empty!"); 
+            return;
+        }
 
         Port outPort = Ports.Find(p => p.IsOutput && p.ConnectedBlock != null);
-        if (outPort == null) return;
+        if (outPort == null) 
+        {
+            Debug.Log("[Storage] No connected output port found!");
+            return;
+        }
 
         // Find any item to output
         ItemType typeToOutput = ItemType.OreIron;
@@ -77,16 +85,29 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
         if (conveyorItemPrefab != null)
         {
             itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
-            itemView.GetComponent<SpriteRenderer>().sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
-            item.View = itemView;
         }
+        else
+        {
+            GameObject go = new GameObject("ConveyorItem");
+            go.transform.position = transform.position;
+            go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+            itemView = go.AddComponent<ConveyorItemView>();
+            var renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sortingOrder = 32767;
+        }
+
+        var sr = itemView.GetComponentInChildren<SpriteRenderer>();
+        if (sr != null) sr.sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
+        item.View = itemView;
 
         if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
         {
+            Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
             inventory.RemoveItem(typeToOutput);
         }
         else
         {
+            Debug.Log($"[Storage] Failed to output {typeToOutput} to {outPort.ConnectedBlock.name} (Conveyor full?)");
             if (itemView != null) Destroy(itemView.gameObject);
         }
     }

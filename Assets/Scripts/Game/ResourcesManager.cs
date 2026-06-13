@@ -25,6 +25,8 @@ public class ResourcesManager : MonoBehaviour, IGameService
 
     public void StartService()
     {
+        if (instance != this) return;
+
         // Link to PlayerInventory if it exists
         if (PlayerInventory.Instance != null)
         {

@@ -55,6 +55,8 @@ public class SaveManager : MonoBehaviour, IGameService
 
     public void StartService()
     {
+        if (Instance != this) return;
+
         if (autoLoadOnStart)
         {
             LoadGame();

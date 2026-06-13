@@ -17,6 +17,20 @@ public class ConveyorSegment : FactoryBlock
         GetVisualPositions();
     }
 
+    private void OnDestroy()
+    {
+        if (Slots != null)
+        {
+            foreach (var item in Slots)
+            {
+                if (item != null && item.View != null)
+                {
+                    Destroy(item.View.gameObject);
+                }
+            }
+        }
+    }
+
     public override void Initialize()
     {
         if (Ports == null) Ports = new System.Collections.Generic.List<Port>();
@@ -116,10 +130,10 @@ public class ConveyorSegment : FactoryBlock
         Vector3 dir = transform.right;
         float step = 1f / slotsLength;
         Vector3 start = transform.position - dir * 0.5f + dir * step * 0.5f;
-        Vector3 end = transform.position + dir * 0.5f;
+        Vector3 end = transform.position + dir * 0.5f - dir * step * 0.5f;
         for (int i = 0; i < slotsLength; i++)
         {
-            float t = slotsLength >= 1 ? (float)i / (slotsLength - 1) : 0f;
+            float t = slotsLength > 1 ? (float)i / (slotsLength - 1) : 0f;
             visualSlots[i] = Vector3.Lerp(start, end, t);
         }
     }
@@ -133,6 +147,7 @@ public class ConveyorSegment : FactoryBlock
         return visualSlots[index];
     }
 
+#if UNITY_EDITOR
     protected override void OnDrawGizmos()
     {
         if (Ports == null) Ports = new System.Collections.Generic.List<Port>();
@@ -151,5 +166,6 @@ public class ConveyorSegment : FactoryBlock
             Gizmos.DrawSphere(pos, 0.05f);
         }
     }
+#endif
     #endregion
 }

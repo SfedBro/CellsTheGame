@@ -178,6 +178,7 @@ public abstract class FactoryBlock : MonoBehaviour
         ShowDebugPorts = !ShowDebugPorts;
         UnityEditor.SceneView.RepaintAll();
     }
+#endif
 
     private int currentPortRotationSteps = 0;
 
@@ -219,6 +220,7 @@ public abstract class FactoryBlock : MonoBehaviour
         currentPortRotationSteps = targetSteps;
     }
 
+#if UNITY_EDITOR
     protected virtual void OnDrawGizmos()
     {
         if (!ShowDebugPorts) return;

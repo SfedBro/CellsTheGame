@@ -54,17 +54,29 @@ public class CraftingMachine : FactoryBlock
 
     public override bool TryReceiveItem(ConveyorItem item, Port receivingPort)
     {
-        if (availableRecipes == null || availableRecipes.Count == 0) return false;
+        // Debug.Log($"[CraftingMachine] {gameObject.name} TryReceiveItem {item.Type} on port {receivingPort.Position}");
+        if (availableRecipes == null || availableRecipes.Count == 0) 
+        {
+            Debug.Log($"[CraftingMachine] {gameObject.name} no recipes available.");
+            return false;
+        }
 
         // Accept item if it is an input for ANY available recipe
         bool isInputItem = availableRecipes.Any(r => r.Inputs.Any(input => input.type == item.Type));
-        if (!isInputItem) return false;
+        if (!isInputItem) 
+        {
+            Debug.Log($"[CraftingMachine] {gameObject.name} item {item.Type} is not an input for any recipe.");
+            return false;
+        }
         
         if (inventory.AddItem(item.Type))
         {
+            Debug.Log($"[CraftingMachine] {gameObject.name} accepted item {item.Type}.");
             if (item.View != null) Destroy(item.View.gameObject);
             return true;
         }
+        
+        Debug.Log($"[CraftingMachine] {gameObject.name} inventory full for {item.Type}.");
         return false;
     }
 
@@ -126,9 +138,20 @@ public class CraftingMachine : FactoryBlock
                 if (conveyorItemPrefab != null)
                 {
                     itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
-                    itemView.GetComponent<SpriteRenderer>().sprite = ResourcesManager.instance.getResourceSprite(outputType);
-                    item.View = itemView;
                 }
+                else
+                {
+                    GameObject go = new GameObject("ConveyorItem");
+                    go.transform.position = transform.position;
+                    go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+                    itemView = go.AddComponent<ConveyorItemView>();
+                    var renderer = go.AddComponent<SpriteRenderer>();
+                    renderer.sortingOrder = 32767;
+                }
+
+                var sr = itemView.GetComponentInChildren<SpriteRenderer>();
+                if (sr != null) sr.sprite = ResourcesManager.instance.getResourceSprite(outputType);
+                item.View = itemView;
 
                 if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
                 {

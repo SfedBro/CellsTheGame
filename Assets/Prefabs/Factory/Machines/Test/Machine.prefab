@@ -243,7 +243,11 @@ MonoBehaviour:
     IsInput: 1
     IsOutput: 0
     ConnectedBlock: {fileID: 0}
-  availableRecipes: []
+  availableRecipes:
+  - {fileID: 11400000, guid: 6df0e09a98b5a364c9f7e4480d94430a, type: 2}
+  - {fileID: 11400000, guid: 266707fc31d7f534c87ad55683b9115f, type: 2}
+  - {fileID: 11400000, guid: 369fa6e678f44ca4bb5b25a822620f4e, type: 2}
+  - {fileID: 11400000, guid: 2eb50d171af712848b77318a380e4ce7, type: 2}
   inventory:
     slotCount: 24
     defaultMaxStackSize: 100
@@ -298,4 +302,4 @@ MonoBehaviour:
     - type: 0
       amount: 0
   progress: 0
-  conveyorItemPrefab: {fileID: 0}
+  conveyorItemPrefab: {fileID: 6583885564060920282, guid: d608c5e4eadc8d044b02390f8b83a729, type: 3}

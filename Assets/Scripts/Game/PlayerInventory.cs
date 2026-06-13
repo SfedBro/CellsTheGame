@@ -24,5 +24,6 @@ public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
 
     public void StartService()
     {
+        if (Instance != this) return;
     }
 }

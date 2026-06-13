@@ -7,18 +7,8 @@ public class GameBootstrapper : MonoBehaviour
     [Tooltip("Drag your manager components here in the order they should be initialized.")]
     public List<MonoBehaviour> services;
 
-    private static GameBootstrapper Instance;
-
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
         // 1. Initialize Phase
         foreach (var serviceObj in services)
         {
