@@ -79,7 +79,7 @@ public class EnemyTurret : EnemyBase
             b.transform.localScale = new Vector3((dmg + 3f) / 8f, (dmg + 3f) / 8f, 1);
             Bullet bullet = b.GetComponent<Bullet>();
             bullet.dmg = dmg;
-            bullet.isEnemy = true;
+            bullet.enemy = this;
         }
     }
 

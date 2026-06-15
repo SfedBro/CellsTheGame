@@ -7,7 +7,7 @@ public class PlayerConfig : MonoBehaviour
 
     private Rigidbody2D rb;
     private InputSystem_Actions inputActions;
-    private ResourcesManager rm = ResourcesManager.instance;
+    private ResourcesManager resourcesManager = ResourcesManager.instance;
     private SpriteRenderer sr;
     private bool gray;
 
@@ -156,7 +156,6 @@ public class PlayerConfig : MonoBehaviour
             b.transform.localScale = new Vector3((dmg + 3f) / 8f, (dmg + 3f) / 8f, 1);
             Bullet bullet = b.GetComponent<Bullet>();
             bullet.dmg = dmg;
-            bullet.isEnemy = false;
         }
     }
 
@@ -249,9 +248,11 @@ public class PlayerConfig : MonoBehaviour
         curInteractAction = null;
     }
 
-    public void getDMG(int dmg)
+    public void getDMG(EnemyBase enemy)
     {
         if (Time.time < nextHit) return;
+
+        int dmg = enemy.GetAttack();
 
         nextHit = Time.time + invinsibleTime;
         sr.color = new Color(1, 1, 1, 0.5f);
@@ -262,10 +263,11 @@ public class PlayerConfig : MonoBehaviour
         if (curHP <= 0)
         {
             moveInput = Vector2.zero;
-            rm.onPlayerDeath();
+            resourcesManager.onPlayerDeath(enemy);
             upgradingManager.onPlayerDeath();
             upgradingManager.correctPlayerStats(this);
-            playerExperienceManager.onPlayerDeath();
+            playerExperienceManager.onPlayerDeath(enemy);
+            enemy.onPlayerKilled();
             
             gameObject.SetActive(false);
             enabled = false;
@@ -334,7 +336,7 @@ public class PlayerConfig : MonoBehaviour
         if (isAttacked == 0 && HUBSprite == null)
         {
             canBuild = true;
-            buildHint.enabled = true;
+            if (buildHint != null) buildHint.enabled = true;
         }
     }
 }

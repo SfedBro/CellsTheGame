@@ -20,7 +20,7 @@ public class CollectableData : ScriptableObject
     public Vector2 getNewPosition()
     {
         Vector2 vec = Random.insideUnitCircle;
-        return vec * (allowedRadiusMin + vec.magnitude * (allowedRadiusMax - allowedRadiusMin));
+        return vec.normalized * allowedRadiusMin + vec * (allowedRadiusMax - allowedRadiusMin);
     }
 
     public ItemType newType()

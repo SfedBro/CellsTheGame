@@ -81,13 +81,18 @@ public class ResourcesManager : MonoBehaviour, IGameService
         observers.Remove(action);
     }
 
-    public void onPlayerDeath()
+    public void onPlayerDeath(EnemyBase killer)
     {
         if (inventory.slots == null) return;
         var distinctTypes = inventory.slots.Where(s => !s.IsEmpty).Select(s => s.type).Distinct().ToList();
         
         foreach (var slot in inventory.slots)
         {
+            if (slot.amount > 0)
+            {
+                killer.AddLoot(slot.type, slot.amount);
+            }
+
             slot.Clear();
         }
 

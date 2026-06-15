@@ -40,7 +40,7 @@ public class MineData : ScriptableObject
     public Vector2 getSelfPosition()
     {
         Vector2 vec = Random.insideUnitCircle;
-        return vec * (allowedRadiusMin + vec.magnitude * (allowedRadiusMax - allowedRadiusMin));
+        return vec.normalized * allowedRadiusMin + vec * (allowedRadiusMax - allowedRadiusMin);
     }
 
     public Vector2 getResourcePosition()
@@ -52,6 +52,6 @@ public class MineData : ScriptableObject
     public Vector2 getEnemyPosition()
     {
         Vector2 vec = Random.insideUnitCircle;
-        return vec * resourceSpawnRadius;
+        return vec * enemiesSpawnRadius;
     }
 }

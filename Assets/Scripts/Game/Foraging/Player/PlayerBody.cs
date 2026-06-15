@@ -9,8 +9,8 @@ public class PlayerBody : MonoBehaviour
         if (collision.CompareTag("Bullet"))
         {
             Bullet b = collision.gameObject.GetComponent<Bullet>();
-            if (b.isEnemy) {
-                player.getDMG(b.dmg);
+            if (b.enemy != null) {
+                player.getDMG(b.enemy);
                 Destroy(collision.gameObject);
             }
             return;

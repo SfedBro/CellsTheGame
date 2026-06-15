@@ -24,8 +24,10 @@ public class MineManager : MonoBehaviour
             for (int j = 0; j < amount[i]; j++)
             {
                 Vector2 newPos = data.getSelfPosition();
+                print($"initial pos: {newPos.x}, {newPos.y}");
                 Mine m = Instantiate(minePrefab, new Vector3(newPos.x, newPos.y, 2), Quaternion.identity).GetComponent<Mine>();
                 m.transform.SetParent(transform, false);
+                print($"final pos: {m.transform.position.x}, {m.transform.position.y}");
                 m.Setup(data, spawnLoot);
                 mines.Add(m);
             }
@@ -55,10 +57,10 @@ public class MineManager : MonoBehaviour
         {
             if (l.GetItemType() == ItemType.Default)
             {
-                playerExperienceManager.spawnExperience(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetAmount());
+                playerExperienceManager.spawnExperience(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.amount);
                 continue;
             }
-            resourceGenerator.spawnLoot(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetItemType(), l.GetAmount());
+            resourceGenerator.spawnLoot(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetItemType(), l.amount);
         }
     }
 }

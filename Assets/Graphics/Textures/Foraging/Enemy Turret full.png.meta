@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1ed350bbe92f75b46a2bc1c348f3a217
+guid: 87a7e782e7275334984318334bf71b60
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7807345855435258517
-    second: Enemy Turret_0
+      213: 6312450010582321316
+    second: Enemy Turret full_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Enemy Turret_0
+      name: Enemy Turret full_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 59a36dfb0b3495c60800000000000000
-      internalID: 7807345855435258517
+      spriteID: 4a88b2ff6d35a9750800000000000000
+      internalID: 6312450010582321316
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Enemy Turret_0: 7807345855435258517
+      Enemy Turret full_0: 6312450010582321316
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
