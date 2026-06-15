@@ -1183,7 +1183,7 @@ MonoBehaviour:
   - {fileID: 729147793154898138, guid: f6f552472276a8a4fab12a2da5a2eb16, type: 3}
   - {fileID: 7511363498054095083, guid: 8efa8638ff871724a81f2232a427e21a, type: 3}
   - {fileID: -3856633284888853020, guid: 5480f79bafb0356439657c1fd77ce3e9, type: 3}
-  - {fileID: -1014278335334063885, guid: 39ff2f531de31de488734d77135994ac, type: 3}
+  - {fileID: -5315998895232176958, guid: 39ff2f531de31de488734d77135994ac, type: 3}
   - {fileID: 5134288010554056040, guid: 70c29ecd378c11e44b9b140abf5c7982, type: 3}
   - {fileID: -4204262651145609143, guid: 63f1e99f4960166468c1368deeeb473c, type: 3}
   defaultSprite: {fileID: -2369867600477939372, guid: 0c90b3d12cc3b6849a2b71687c92a868, type: 3}
@@ -1486,7 +1486,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 39.35
+  m_fontSize: 40.5
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
