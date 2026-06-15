@@ -16,11 +16,10 @@ public class PlayerConfig : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     private Vector2 moveInput;
 
-    [Header("Shooting Settings")]
+    [Header("Tank Parts Settings")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform bulletParent;
-    [SerializeField] private float shootCooldown = 1f;
-    private float nextShootTime = 0f;
+    private Cannon cannon;
 
     [Header("HUB building")]
     [SerializeField] private GameObject HUBPrefab;
@@ -66,6 +65,8 @@ public class PlayerConfig : MonoBehaviour
         deathScreen.gameObject.SetActive(false);
         
         upgradingManager.correctPlayerStats(this);
+
+        cannon = new DoubleCannon(bulletPrefab, 1);
     }
 
     private void OnEnable()
@@ -146,17 +147,7 @@ public class PlayerConfig : MonoBehaviour
 
     private void OnAttack(InputAction.CallbackContext context)
     {
-        if (Time.time >= nextShootTime)
-        {
-            nextShootTime = Time.time + shootCooldown;
-
-            GameObject b = Instantiate(bulletPrefab, transform.position, transform.rotation);
-            b.transform.Rotate(new Vector3(0, sr.flipX? 180 : 0, 0));
-            b.transform.parent = bulletParent;
-            b.transform.localScale = new Vector3((dmg + 3f) / 8f, (dmg + 3f) / 8f, 1);
-            Bullet bullet = b.GetComponent<Bullet>();
-            bullet.dmg = dmg;
-        }
+        cannon.Shoot(bulletParent, sr.flipX, dmg);
     }
 
     private void Start()
