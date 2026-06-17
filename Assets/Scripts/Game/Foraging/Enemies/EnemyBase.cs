@@ -110,9 +110,7 @@ public class EnemyBase : MonoBehaviour
     {
         if (type == ItemType.Default)
         {
-            print($"Add exp initial: {amount}");
             amount /= 2;
-            print($"Add exp total: {amount}");
         }
         upgradePoints += amount;
 
