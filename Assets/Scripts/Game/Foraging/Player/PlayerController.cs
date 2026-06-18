@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private InputSystem_Actions inputActions;
     private Rigidbody2D rb;
     private SpriteRenderer sr;
+    private PlayerModuleController moduleController;
 
     [Header("Movement")]
     [SerializeField] private float frictionCoefficient = 1f;
@@ -33,8 +34,10 @@ public class PlayerController : MonoBehaviour
     private bool factoryIsEntering = false;
 
     [Header("Atack")]
-    public Action<Transform, bool, int> attackStart;
-    public Action attackEnd;
+    [SerializeField] private Transform bulletParent;
+    public GameObject attackPrefab;
+    public AttackData attackData;
+    public Func<GameObject, AttackData, Transform, float, int> attackStart;
 
     [Header("Stats")]
     [SerializeField] private PlayerStats basicPlayerStats;
@@ -47,7 +50,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     private float nextHit = 0f;
     private bool isInvinsible = true;
-    private Cannon cannon;
 
     #endregion
 
@@ -59,15 +61,11 @@ public class PlayerController : MonoBehaviour
         inputActions = foragingManager.GetInputSystem();
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        moduleController = GetComponent<PlayerModuleController>();
     }
 
     void Start()
     {
-        // Temp: make basic canon
-        cannon = new BasicCannon(bulletPrefab, 1);
-        attackStart = cannon.Shoot;
-        attackEnd = () => {};
-
         // Correct stats
         upgradingManager.correctPlayerStats(this);
         curPlayerStats = basicPlayerStats;
@@ -79,6 +77,9 @@ public class PlayerController : MonoBehaviour
         // Set hints
         hintsController.SetPlayerHP(curHP);
         hintsController.OnPlayerLeaveDanger();
+
+        // Equip modules
+        moduleController.InitializeModules();
     }
 
     void OnEnable()
@@ -88,7 +89,6 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Interact.started += onStartEnteringFactory;
         inputActions.Player.Interact.canceled += onCancelEnteringFactory;
         inputActions.Player.Attack.started += OnAttackStart;
-        inputActions.Player.Attack.canceled += OnAttackEnd;
     }
 
     void OnDisable()
@@ -98,7 +98,6 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Interact.started -= onStartEnteringFactory;
         inputActions.Player.Interact.canceled -= onCancelEnteringFactory;
         inputActions.Player.Attack.started -= OnAttackStart;
-        inputActions.Player.Attack.canceled -= OnAttackEnd;
     }
 
     #endregion
@@ -237,12 +236,8 @@ public class PlayerController : MonoBehaviour
     #region fight
     private void OnAttackStart(InputAction.CallbackContext context)
     {
-        attackStart(transform, sr.flipX, curPlayerStats.dmg);
-    }
-
-    private void OnAttackEnd(InputAction.CallbackContext context)
-    {
-        attackEnd();
+        int cost = attackStart(attackPrefab, attackData, bulletParent, sr.flipX? rb.rotation - 180 : rb.rotation);
+        // if (b != null) apply modifiers
     }
 
     public void getDMG(EnemyBase killer)
@@ -265,6 +260,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void UpdateAttackData()
+    {
+        if (attackData == null) attackData = new();
+
+        attackData.dmg = curPlayerStats.dmg;
+        attackData.speed = 10f;
+        attackData.timeToLive = 2f;
+    }
+
     #endregion
 
 
@@ -285,6 +289,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case StatType.Damage:
                 basicPlayerStats.dmg = (int)newValue;
+                UpdateAttackData();
                 break;
         }
         curPlayerStats = basicPlayerStats;
