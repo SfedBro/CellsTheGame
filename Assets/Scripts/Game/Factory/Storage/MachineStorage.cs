@@ -41,7 +41,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
     public override void Tick()
     {
-        Debug.Log("[Storage] Tick called.");
+        // Debug.Log("[Storage] Tick called.");
         TryOutput();
     }
 
@@ -49,14 +49,14 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     {
         if (inventory.CurrentTotalAmount <= 0) 
         {
-            // Debug.Log("[Storage] Inventory is empty!"); 
+            // // Debug.Log("[Storage] Inventory is empty!"); 
             return;
         }
 
         Port outPort = Ports.Find(p => p.IsOutput && p.ConnectedBlock != null);
         if (outPort == null) 
         {
-            Debug.Log("[Storage] No connected output port found!");
+            // Debug.Log("[Storage] No connected output port found!");
             return;
         }
 
@@ -80,40 +80,45 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
         ConveyorItem item = new ConveyorItem();
         item.Type = typeToOutput;
-        
-        ConveyorItemView itemView = null;
-        if (conveyorItemPrefab != null)
-        {
-            itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
-        }
-        else
-        {
-            GameObject go = new GameObject("ConveyorItem");
-            go.transform.position = transform.position;
-            go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-            itemView = go.AddComponent<ConveyorItemView>();
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sortingOrder = 32767;
-        }
-
-        var sr = itemView.GetComponentInChildren<SpriteRenderer>();
-        if (sr != null) sr.sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
-        item.View = itemView;
 
         if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
         {
-            Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
+            ConveyorItemView itemView = null;
+            if (conveyorItemPrefab != null)
+            {
+                itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
+            }
+            else
+            {
+                GameObject go = new GameObject("ConveyorItem");
+                go.transform.position = transform.position;
+                go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+                itemView = go.AddComponent<ConveyorItemView>();
+                var renderer = go.AddComponent<SpriteRenderer>();
+                renderer.sortingOrder = 32767;
+            }
+
+            var sr = itemView.GetComponentInChildren<SpriteRenderer>();
+            if (sr != null) 
+            {
+                sr.sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
+                sr.sortingOrder = 5;
+            }
+            item.View = itemView;
+
+            // Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
             inventory.RemoveItem(typeToOutput);
         }
         else
         {
-            Debug.Log($"[Storage] Failed to output {typeToOutput} to {outPort.ConnectedBlock.name} (Conveyor full?)");
-            if (itemView != null) Destroy(itemView.gameObject);
+            // Debug.Log($"[Storage] Failed to output {typeToOutput} to {outPort.ConnectedBlock.name} (Conveyor full?)");
         }
     }
 
     public override bool TryReceiveItem(ConveyorItem item, Port receivingPort)
     {
+        if (receivingPort == null || !receivingPort.IsInput) return false;
+
         if (inventory.AddItem(item.Type))
         {
             if (item.View != null)
@@ -135,21 +140,21 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
     public void Interact(PlayerInteractor player)
     {
-        Debug.Log("[MachineStorage] Interact called!");
+        // Debug.Log("[MachineStorage] Interact called!");
         if (StorageWindow.Instance == null)
         {
-            Debug.Log("[MachineStorage] StorageWindow.Instance is null, searching for it...");
+            // Debug.Log("[MachineStorage] StorageWindow.Instance is null, searching for it...");
             StorageWindow.Instance = FindFirstObjectByType<StorageWindow>(FindObjectsInactive.Include);
         }
         
         if (StorageWindow.Instance != null)
         {
-            Debug.Log($"[MachineStorage] Opening StorageWindow: {StorageWindow.Instance.name}");
+            // Debug.Log($"[MachineStorage] Opening StorageWindow: {StorageWindow.Instance.name}");
             StorageWindow.Instance.Open(this);
         }
         else
         {
-            Debug.LogError("[MachineStorage] StorageWindow not found in scene!");
+            // Debug.LogError("[MachineStorage] StorageWindow not found in scene!");
         }
     }
 }

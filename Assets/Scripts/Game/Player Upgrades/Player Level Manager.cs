@@ -35,5 +35,51 @@ public class PlayerLevelManager : MonoBehaviour, IGameService
 
     public void StartService()
     {
+        Load();
+    }
+
+    private string saveKey = "PlayerUpgradesSave";
+
+    private SaveData.PlayerUpgradesData GetSaveSnapshot()
+    {
+        var data = new SaveData.PlayerUpgradesData();
+        foreach (var upg in playerUpgrades)
+        {
+            data.upgrades.Add(new SaveData.UpgradeSaveData
+            {
+                statType = upg.GetStatType().ToString(),
+                curLevel = upg.curLevel
+            });
+        }
+        return data;
+    }
+
+    public void Save()
+    {
+        SaveManager.Save(saveKey, GetSaveSnapshot());
+        Debug.Log("Saved Player Upgrades");
+    }
+
+    public void Load()
+    {
+        var data = SaveManager.Load<SaveData.PlayerUpgradesData>(saveKey);
+        if (data != null && data.upgrades != null)
+        {
+            foreach (var upgSave in data.upgrades)
+            {
+                var match = playerUpgrades.Find(u => u.GetStatType().ToString() == upgSave.statType);
+                if (match != null)
+                {
+                    match.curLevel = upgSave.curLevel;
+                }
+            }
+
+            UpgradingManager um = FindFirstObjectByType<UpgradingManager>();
+            if (um != null)
+            {
+                um.ForceUpdateAfterLoad();
+            }
+        }
+        Debug.Log("Loaded Player Upgrades");
     }
 }
