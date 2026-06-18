@@ -60,5 +60,8 @@ public static class InventoryUtils
             sourceSlot.type = tempType;
             sourceSlot.amount = tempAmount;
         }
+        
+        sourceInv.OnInventoryChanged?.Invoke();
+        if (sourceInv != targetInv) targetInv.OnInventoryChanged?.Invoke();
     }
 }

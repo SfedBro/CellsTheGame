@@ -15,7 +15,7 @@ public class StorageWindow : MonoBehaviour
     [SerializeField] private Transform storageSlotsContainer;
     [SerializeField] private Transform playerSlotsContainer;
 
-    private MachineStorage currentStorage;
+    private IInventoryProvider currentStorage;
     private List<ItemSlotUI> storageSlots = new List<ItemSlotUI>();
     private List<ItemSlotUI> playerSlots = new List<ItemSlotUI>();
 
@@ -25,18 +25,39 @@ public class StorageWindow : MonoBehaviour
         root.SetActive(false);
     }
 
-    public void Open(MachineStorage storage)
+    public void Open(IInventoryProvider storage)
     {
+        if (root.activeSelf) Close();
+        
         currentStorage = storage;
-        if (titleText != null) titleText.text = "Склад";
+        if (titleText != null) titleText.text = "Инвентарь";
         
         GenerateSlots();
         Refresh();
+        
+        if (currentStorage != null && currentStorage.Inventory != null)
+        {
+            currentStorage.Inventory.OnInventoryChanged += Refresh;
+        }
+        if (PlayerInventory.Instance != null && PlayerInventory.Instance.Inventory != null)
+        {
+            PlayerInventory.Instance.Inventory.OnInventoryChanged += Refresh;
+        }
+
         root.SetActive(true);
     }
 
     public void Close()
     {
+        if (currentStorage != null && currentStorage.Inventory != null)
+        {
+            currentStorage.Inventory.OnInventoryChanged -= Refresh;
+        }
+        if (PlayerInventory.Instance != null && PlayerInventory.Instance.Inventory != null)
+        {
+            PlayerInventory.Instance.Inventory.OnInventoryChanged -= Refresh;
+        }
+        
         root.SetActive(false);
         currentStorage = null;
     }

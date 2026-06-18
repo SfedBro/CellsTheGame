@@ -2,17 +2,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class CraftingMachine : FactoryBlock
+public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
 {
     [Header("Recipe Configuration")]
     public List<RecipeData> availableRecipes = new List<RecipeData>();
 
     [Header("Inventory")]
-    public Inventory inventory = new();
+    public Inventory inputInventory = new Inventory { slotCount = 4 };
+    public Inventory outputInventory = new Inventory { slotCount = 1 };
+
+    public Inventory InputInventory => inputInventory;
+    public Inventory OutputInventory => outputInventory;
+    public float ProgressPercentage => (activeRecipe != null && activeRecipe.ProcessTime > 0) ? (progress / activeRecipe.ProcessTime) : 0f;
+    public string RecipeName => activeRecipe != null ? activeRecipe.RecipeName : "Нет рецепта";
 
     [Header("Processing")]
     public float progress;
     private RecipeData activeRecipe; // The recipe currently being processed
+
+    public void Interact(PlayerInteractor player)
+    {
+        if (CraftingWindow.Instance == null)
+        {
+            CraftingWindow.Instance = FindFirstObjectByType<CraftingWindow>(FindObjectsInactive.Include);
+        }
+        
+        if (CraftingWindow.Instance != null)
+        {
+            CraftingWindow.Instance.Open(this);
+        }
+    }
     
     [SerializeField]
     private ConveyorItemView conveyorItemPrefab;
@@ -21,7 +40,8 @@ public class CraftingMachine : FactoryBlock
     private class CraftingSaveState
     {
         public float progress;
-        public Inventory inventory;
+        public Inventory inputInventory;
+        public Inventory outputInventory;
     }
 
     public override string GetSaveState()
@@ -29,7 +49,8 @@ public class CraftingMachine : FactoryBlock
         CraftingSaveState state = new CraftingSaveState
         {
             progress = this.progress,
-            inventory = this.inventory
+            inputInventory = this.inputInventory,
+            outputInventory = this.outputInventory
         };
         return JsonUtility.ToJson(state);
     }
@@ -39,10 +60,16 @@ public class CraftingMachine : FactoryBlock
         if (!string.IsNullOrEmpty(stateJson))
         {
             CraftingSaveState state = new CraftingSaveState();
-            state.inventory = new Inventory(); // ensure it has a valid reference
+            state.inputInventory = new Inventory { slotCount = 4 };
+            state.outputInventory = new Inventory { slotCount = 1 };
             JsonUtility.FromJsonOverwrite(stateJson, state);
             this.progress = state.progress;
-            this.inventory = state.inventory;
+            
+            // In case of old saves, they might not have these, so null check
+            if (state.inputInventory != null && state.inputInventory.slots != null)
+                this.inputInventory = state.inputInventory;
+            if (state.outputInventory != null && state.outputInventory.slots != null)
+                this.outputInventory = state.outputInventory;
         }
     }
 
@@ -70,7 +97,7 @@ public class CraftingMachine : FactoryBlock
             return false;
         }
         
-        if (inventory.AddItem(item.Type))
+        if (inputInventory.AddItem(item.Type))
         {
             GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] accepted item {item.Type}.", gameObject);
             if (item.View != null) Destroy(item.View.gameObject);
@@ -86,13 +113,13 @@ public class CraftingMachine : FactoryBlock
         if (availableRecipes == null || availableRecipes.Count == 0) return;
 
         // If we don't have an active recipe, or the active recipe is no longer valid, find a new one
-        if (activeRecipe == null || !inventory.ContainsItems(activeRecipe.Inputs) || !inventory.CanAddItems(activeRecipe.Outputs))
+        if (activeRecipe == null || !inputInventory.ContainsItems(activeRecipe.Inputs) || !outputInventory.CanAddItems(activeRecipe.Outputs))
         {
             activeRecipe = null;
             progress = 0f;
             foreach (var recipe in availableRecipes)
             {
-                if (inventory.ContainsItems(recipe.Inputs) && inventory.CanAddItems(recipe.Outputs))
+                if (inputInventory.ContainsItems(recipe.Inputs) && outputInventory.CanAddItems(recipe.Outputs))
                 {
                     activeRecipe = recipe;
                     break;
@@ -100,70 +127,84 @@ public class CraftingMachine : FactoryBlock
             }
         }
 
-        // Process the active recipe
-        if (activeRecipe != null)
+        // If we still don't have an active recipe, return
+        if (activeRecipe == null) return;
+
+        // Process the recipe
+        progress += FactoryTickManager.Instance.TickRate;
+
+        if (progress >= activeRecipe.ProcessTime)
         {
-            float tickDelta = FactoryTickManager.Instance.TickRate;
-            if (progress < activeRecipe.ProcessTime)
+            // Complete the recipe
+            if (inputInventory.RemoveItems(activeRecipe.Inputs))
             {
-                progress += tickDelta;
+                outputInventory.AddItems(activeRecipe.Outputs);
+                GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] Crafted {activeRecipe.RecipeName}", gameObject);
+                
+                // Reset progress but keep the recipe active if we can still craft it
+                progress = 0f;
+                if (!inputInventory.ContainsItems(activeRecipe.Inputs) || !outputInventory.CanAddItems(activeRecipe.Outputs))
+                {
+                    activeRecipe = null;
+                }
             }
             else
             {
-                inventory.RemoveItems(activeRecipe.Inputs);
-                inventory.AddItems(activeRecipe.Outputs);
+                // Should not happen as we checked CanRemoveItems earlier, but reset if it does
                 progress = 0f;
-                activeRecipe = null; // Reset to re-evaluate next tick (allows switching recipes)
+                activeRecipe = null;
             }
         }
     }
 
     private void TryOutput()
     {
-        if (availableRecipes == null || availableRecipes.Count == 0) return;
+        if (outputInventory.CurrentTotalAmount <= 0) return;
 
         Port outPort = Ports.Find(p => p.IsOutput && p.ConnectedBlock != null);
         if (outPort == null) return;
 
-        // Gather all possible output types from all recipes
-        var allOutputTypes = availableRecipes.SelectMany(r => r.Outputs).Select(o => o.type).Distinct();
-
-        foreach (var outputType in allOutputTypes)
+        ItemType typeToOutput = ItemType.Default;
+        foreach (var slot in outputInventory.slots)
         {
-            if (inventory.GetAmount(outputType) > 0)
+            if (!slot.IsEmpty)
             {
-                ConveyorItem item = new ConveyorItem();
-                item.Type = outputType;
-
-                if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
-                {
-                    ConveyorItemView itemView = null;
-                    if (conveyorItemPrefab != null)
-                    {
-                        itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
-                    }
-                    else
-                    {
-                        GameObject go = new GameObject("ConveyorItem");
-                        go.transform.position = transform.position;
-                        go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-                        itemView = go.AddComponent<ConveyorItemView>();
-                        var renderer = go.AddComponent<SpriteRenderer>();
-                        renderer.sortingOrder = 32767;
-                    }
-
-                    var sr = itemView.GetComponentInChildren<SpriteRenderer>();
-                    if (sr != null) 
-                    {
-                        sr.sprite = ResourcesManager.instance.getResourceSprite(outputType);
-                        sr.sortingOrder = 32767;
-                    }
-                    item.View = itemView;
-
-                    inventory.RemoveItem(outputType);
-                    break; // Output one item per tick
-                }
+                typeToOutput = slot.type;
+                break;
             }
+        }
+
+        if (typeToOutput == ItemType.Default) return;
+
+        ConveyorItem item = new ConveyorItem();
+        item.Type = typeToOutput;
+
+        if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
+        {
+            ConveyorItemView itemView = null;
+            if (conveyorItemPrefab != null)
+            {
+                itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
+            }
+            else
+            {
+                GameObject go = new GameObject("ConveyorItem");
+                go.transform.position = transform.position;
+                go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+                itemView = go.AddComponent<ConveyorItemView>();
+                var renderer = go.AddComponent<SpriteRenderer>();
+                renderer.sortingOrder = 32767;
+            }
+
+            var sr = itemView.GetComponentInChildren<SpriteRenderer>();
+            if (sr != null) 
+            {
+                sr.sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
+                sr.sortingOrder = 32767;
+            }
+            item.View = itemView;
+
+            outputInventory.RemoveItem(typeToOutput);
         }
     }
 }
