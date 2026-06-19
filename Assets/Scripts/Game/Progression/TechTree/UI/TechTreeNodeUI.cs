@@ -35,18 +35,18 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler
 
         if (isUnlocked)
         {
-            background.color = unlockedColor;
-            icon.color = Color.white;
+            if (background != null) background.color = unlockedColor;
+            if (icon != null) icon.color = Color.white;
         }
         else if (depsMet)
         {
-            background.color = availableColor;
-            icon.color = Color.white;
+            if (background != null) background.color = availableColor;
+            if (icon != null) icon.color = Color.white;
         }
         else
         {
-            background.color = lockedColor;
-            icon.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Darker icon
+            if (background != null) background.color = lockedColor;
+            if (icon != null) icon.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Darker icon
         }
     }
 

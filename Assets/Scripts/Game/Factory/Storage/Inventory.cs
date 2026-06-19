@@ -8,6 +8,8 @@ public class Inventory : ISerializationCallbackReceiver
     public int slotCount = 24;
     public int defaultMaxStackSize = 100;
 
+    public System.Action OnInventoryChanged;
+
     [SerializeField]
     private List<ItemStack> startingItems = new();
 
@@ -75,6 +77,7 @@ public class Inventory : ISerializationCallbackReceiver
                 if (remaining <= space)
                 {
                     slot.amount += remaining;
+                    OnInventoryChanged?.Invoke();
                     return true;
                 }
                 else
@@ -94,6 +97,7 @@ public class Inventory : ISerializationCallbackReceiver
                 if (remaining <= space)
                 {
                     slot.amount = remaining;
+                    OnInventoryChanged?.Invoke();
                     return true;
                 }
                 else
@@ -104,6 +108,7 @@ public class Inventory : ISerializationCallbackReceiver
             }
         }
 
+        if (remaining < amount) OnInventoryChanged?.Invoke();
         return false;
     }
 
@@ -126,16 +131,22 @@ public class Inventory : ISerializationCallbackReceiver
                 if (slot.amount > remaining)
                 {
                     slot.amount -= remaining;
+                    OnInventoryChanged?.Invoke();
                     return true;
                 }
                 else
                 {
                     remaining -= slot.amount;
                     slot.Clear();
-                    if (remaining == 0) return true;
+                    if (remaining == 0) 
+                    {
+                        OnInventoryChanged?.Invoke();
+                        return true;
+                    }
                 }
             }
         }
+        if (remaining < amount) OnInventoryChanged?.Invoke();
         return false;
     }
 

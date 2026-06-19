@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cdc0b2815540d8459c085637f0b88a2, type: 3}
+  m_Name: TestNodeB
+  m_EditorClassIdentifier: 
+  nodeId: TestB
+  displayName: Test Node 2
+  description: Test, that requires Node 1 to be unlocked
+  icon: {fileID: 0}
+  dependencies:
+  - {fileID: 11400000, guid: 6d400e18ecb404c43b79339c35e5130f, type: 2}
+  cost:
+  - type: 4
+    amount: 1
+  - type: 5
+    amount: 1
+  - type: 6
+    amount: 1
+  effects: []
