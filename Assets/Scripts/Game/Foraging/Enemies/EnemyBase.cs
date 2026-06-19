@@ -13,7 +13,7 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected float mapRadius;
 
     [Header("Current stats")]
-    [SerializeField] protected int curHP;
+    [SerializeField] protected float curHP;
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected int dmg;
     [SerializeField] protected EnemyState state;
@@ -80,7 +80,7 @@ public class EnemyBase : MonoBehaviour
         OnStartSeek();
     }
 
-    public void GetDamage(int dmg)
+    public void GetDamage(float dmg)
     {
         curHP -= dmg;
 

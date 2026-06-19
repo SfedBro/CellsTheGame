@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +12,13 @@ public class ForagingManager : MonoBehaviour
     
     [Header("References")]
     [SerializeField] private PlayerController player;
+
+    [Header("Player Mass")]
+    [SerializeField] private int resourcesInMassUnit = 10;
+    private ResourcesManager rm = ResourcesManager.instance;
+    private Dictionary<ItemType, int> resources = new();
+    private int totalResources = 0;
+    private int massAddition;
 
     #endregion
 
@@ -25,18 +34,22 @@ public class ForagingManager : MonoBehaviour
     void Awake()
     {
         inputActions = new InputSystem_Actions();
+
+        resourceRecalculation();
     }
 
     void OnEnable()
     {
         inputActions.Player.Jump.performed += respawnPlayer;
         inputActions.Enable();
+        rm.Subscrive(addResource);
     }
 
     void OnDisable()
     {
         inputActions.Player.Jump.performed -= respawnPlayer;
         inputActions.Disable();
+        rm.Unsubscrive(addResource);
     }
 
     #endregion
@@ -57,6 +70,36 @@ public class ForagingManager : MonoBehaviour
     public void onPlayerDeath()
     {
         isPlayerDead = true;
+    }
+
+    #endregion
+
+
+    #region playerMass
+
+    private void resourceRecalculation()
+    {
+        totalResources = 0;
+        foreach (ItemType t in Enum.GetValues(typeof(ItemType)))
+        {
+            resources[t] = rm.getResourceAmount(t);
+            totalResources += rm.getResourceAmount(t);
+        }
+
+        massAddition = totalResources / resourcesInMassUnit;
+        player.AddMass(massAddition);
+    }
+
+    private void addResource(ItemType itemType, int newAmount)
+    {
+        int increment = newAmount - resources[itemType];
+        resources[itemType] = newAmount;
+
+        totalResources += increment;
+        int massIncrement = (totalResources / resourcesInMassUnit) - massAddition;
+
+        massAddition += massIncrement;
+        player.AddMass(massIncrement);
     }
 
     #endregion

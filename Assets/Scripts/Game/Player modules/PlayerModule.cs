@@ -3,6 +3,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewModule", menuName = "Module/Module")]
 public class PlayerModule : ScriptableObject
 {
+    #region fields
+
+    [Header("UI")]
+    public Sprite sprite;
+    public string title;
+
+    [Header("Mass")]
+    public int mass;
+
     [Header("Type")]
     public ModuleType moduleType;
 
@@ -11,6 +20,11 @@ public class PlayerModule : ScriptableObject
 
     [Header("References")]
     public PlayerModuleController controller;
+
+    #endregion
+
+
+    #region charge
 
     [Header("Charge")]
     public bool isChargable;
@@ -33,6 +47,8 @@ public class PlayerModule : ScriptableObject
     {
         curCharge = maxCharge;
     }
+
+    #endregion
 
     public virtual void Disable() {}
 

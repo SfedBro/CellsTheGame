@@ -3096,6 +3096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 2110928060}
+  resourcesInMassUnit: 10
 --- !u!1 &1406458048
 GameObject:
   m_ObjectHideFlags: 0
@@ -4315,12 +4316,19 @@ MonoBehaviour:
     timeToLive: 0
     speed: 0
   basicPlayerStats:
-    mass: 2
+    mass: 1
     engineForce: 10
     maxSpeed: 20
     rotationSpeed: 360
     maxHP: 1
     dmg: 1
+  curPlayerStats:
+    mass: 0
+    engineForce: 0
+    maxSpeed: 0
+    rotationSpeed: 0
+    maxHP: 0
+    dmg: 0
   invinsibilityTime: 1.5
   invinsibleColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 0}
   bulletPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}

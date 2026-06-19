@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0689c17e5862a54cbf63bbcabd18ec3, type: 3}
   m_Name: DoubleCannon
   m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  title: Double Cannon
+  mass: 5
   moduleType: 0
   conflictGroup: 1
   controller: {fileID: 0}

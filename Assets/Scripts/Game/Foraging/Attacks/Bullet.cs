@@ -3,7 +3,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour, IAttack
 {
     [SerializeField] public float speed;
-    [SerializeField] public int dmg;
+    [SerializeField] public float dmg;
     [SerializeField] public EnemyBase enemy;
 
     public Rigidbody2D rb;
@@ -23,7 +23,7 @@ public class Bullet : MonoBehaviour, IAttack
         float scale = (dmg + 3f) / 8f;
         transform.localScale = new Vector3(scale, scale, 1);
 
-        transform.SetParent(parent, false);
+        transform.SetParent(parent);
 
         rb.SetRotation(rotation);
 

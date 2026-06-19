@@ -10,7 +10,7 @@ interface IAttack
 [Serializable]
 public class AttackData
 {
-    public int dmg;
+    public float dmg;
     public float timeToLive;
     public float speed;
 }

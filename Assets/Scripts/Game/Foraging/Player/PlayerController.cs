@@ -41,8 +41,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Stats")]
     [SerializeField] private PlayerStats basicPlayerStats;
-    private PlayerStats curPlayerStats;
-    private int curHP;
+    [SerializeField] private PlayerStats curPlayerStats;
+    private PlayerStats addIncrements = new();
+    private float curHP;
 
     [Header("Fight")]
     [SerializeField] private float invinsibilityTime = 1.5f;
@@ -109,11 +110,26 @@ public class PlayerController : MonoBehaviour
     {
         // MOVEMENT
         rb.AddForce(moveInput * curPlayerStats.engineForce); // Engine force
-        if (rb.linearVelocity.magnitude > curPlayerStats.maxSpeed) rb.linearVelocity = rb.linearVelocity.normalized * curPlayerStats.maxSpeed; // Upper bound
+        // Friction force
+        if (rb.linearVelocity.magnitude > minAxisSpeed)
+        {
+            Vector2 friction = -rb.linearVelocity.normalized * curPlayerStats.mass * frictionCoefficient;
+
+            if (friction.magnitude > rb.linearVelocity.magnitude / Time.fixedDeltaTime)
+            {
+                friction = -rb.linearVelocity / Time.fixedDeltaTime;
+            }
+
+            rb.AddForce(friction);
+        }
+        // Upper bound
+        if (rb.linearVelocity.magnitude > curPlayerStats.maxSpeed)
+        {
+            rb.linearVelocity = rb.linearVelocity.normalized * curPlayerStats.maxSpeed;
+        }
         // Lower bound
         if (math.abs(rb.linearVelocityX) < minAxisSpeed) rb.linearVelocityX = 0;
         if (math.abs(rb.linearVelocityY) < minAxisSpeed) rb.linearVelocityY = 0;
-        rb.AddForce(rb.linearVelocity.normalized * -curPlayerStats.mass*frictionCoefficient); // Friction Force
     }
 
     void Update()
@@ -280,7 +296,7 @@ public class PlayerController : MonoBehaviour
         {
             case StatType.Speed:
                 basicPlayerStats.engineForce = newValue;
-                basicPlayerStats.maxSpeed = newValue * 2;
+                basicPlayerStats.maxSpeed = newValue * 0.5f;
                 break;
             case StatType.Health:
                 basicPlayerStats.maxHP = (int)newValue;
@@ -292,7 +308,28 @@ public class PlayerController : MonoBehaviour
                 UpdateAttackData();
                 break;
         }
+        
+        recalculateStats();
+    }
+
+    #endregion
+
+
+
+    #region stats
+
+    private void recalculateStats()
+    {
         curPlayerStats = basicPlayerStats;
+
+        curPlayerStats += addIncrements;
+    }
+
+    public void AddMass(int m)
+    {
+        addIncrements.mass += m;
+
+        recalculateStats();
     }
 
     #endregion
@@ -309,6 +346,19 @@ class PlayerStats
     public float rotationSpeed;
 
     [Header("Fight")]
-    public int maxHP;
-    public int dmg;
+    public float maxHP;
+    public float dmg;
+
+    public static PlayerStats operator +(PlayerStats s1, PlayerStats s2)
+    {
+        return new()
+        {
+            mass = s1.mass + s2.mass,
+            engineForce = s1.engineForce + s2.engineForce,
+            maxSpeed = s1.maxSpeed + s2.maxSpeed,
+            rotationSpeed = s1.rotationSpeed + s2.rotationSpeed,
+            maxHP = s1.maxHP + s2.maxHP,
+            dmg = s1.dmg + s2.dmg
+        };
+    }
 }

@@ -59,7 +59,7 @@ public class HintsController : MonoBehaviour
 
     #region  playerHP
 
-    public void SetPlayerHP(int hp) => hpIndicatorUI.text = hp.ToString();
+    public void SetPlayerHP(float hp) => hpIndicatorUI.text = hp.ToString();
 
     #endregion
 }

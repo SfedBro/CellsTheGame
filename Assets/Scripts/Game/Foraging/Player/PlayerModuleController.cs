@@ -36,7 +36,7 @@ public class PlayerModuleController : MonoBehaviour
         }
         else
         {
-            EquipModule(doubleCannon);
+            EquipModule(doubleCannon, true);
             active = true;
             print("equiped double cannon");
         }
@@ -82,20 +82,20 @@ public class PlayerModuleController : MonoBehaviour
     public void InitializeModules()
     {
         // Apply basic attack module
-        EquipModule(basicCannonModule);
+        EquipModule(basicCannonModule, false);
         player.attackPrefab = basicAttack;
 
 
         foreach (PlayerModule m in equipedModules)
         {
-            EquipModule(m);
+            EquipModule(m, false);
         }
 
         // Update player attack
         player.UpdateAttackData();
     }
 
-    public bool EquipModule(PlayerModule module)
+    public bool EquipModule(PlayerModule module, bool add)
     {
         // Check conflicts
         if (module.conflictGroup != ModuleConflict.None) {
@@ -105,6 +105,9 @@ public class PlayerModuleController : MonoBehaviour
             }
         }
 
+        // Equip
+        if (add) equipedModules.Add(module);
+
         // Apply
         switch (module)
         {
@@ -112,6 +115,9 @@ public class PlayerModuleController : MonoBehaviour
                 player.attackStart = cannon.AttackStart;
             break;
         }
+
+        // Add weight
+        player.AddMass(module.mass);
 
         return true;
     }
@@ -132,6 +138,9 @@ public class PlayerModuleController : MonoBehaviour
 
         // Remove conflict
         moduleConflicts.Remove(module.conflictGroup);
+
+        // Remove weight
+        player.AddMass(-module.mass);
 
         // Disable
         module.Disable();
