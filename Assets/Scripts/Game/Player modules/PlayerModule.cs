@@ -83,3 +83,10 @@ public interface IModuleUseE
 {
     void Use(PlayerController player);
 }
+
+
+public interface IModuleStat
+{
+    PlayerStats GetAddChanges();
+    PlayerStats GetMultCganges();
+}

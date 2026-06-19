@@ -70,6 +70,28 @@ public class PlayerModuleController : MonoBehaviour
 
     #endregion
 
+    #region AllStatsUp
+
+    [SerializeField] private PlayerModule statsUp;
+    private bool active3 = false;
+    public void ActivateStatsUp()
+    {
+        if (active3)
+        {
+            print("unequiped All Stats Up");
+            UnequipModule(statsUp);
+            active3 = false;
+        }
+        else
+        {
+            EquipModule(statsUp, true);
+            active3 = true;
+            print("equiped All Stats Up");
+        }
+    }
+
+    #endregion
+
     #endregion
 
 
@@ -90,8 +112,10 @@ public class PlayerModuleController : MonoBehaviour
         // Cheats
         doubleCannon = Instantiate(doubleCannon);
         healer = Instantiate(healer);
+        statsUp = Instantiate(statsUp);
         doubleCannon.controller = this;
         healer.controller = this;
+        statsUp.controller = this;
 
         foreach (PlayerModule m in equipedModules)
         {
@@ -150,6 +174,10 @@ public class PlayerModuleController : MonoBehaviour
             break;
             case IModuleUseE usable:
                 player.activeAbilityE = usable.Use;
+            break;
+            case IModuleStat stat:
+                player.AddAddIncrements(stat.GetAddChanges());
+                player.AddMultIncrements(stat.GetMultCganges());
             break;
         }
 
@@ -230,6 +258,12 @@ public class PlayerModuleController : MonoBehaviour
     public void Disable(IModuleUseE m)
     {
         player.activeAbilityE = null;
+    }
+
+    public void Disable(IModuleStat m)
+    {
+        player.AddAddIncrements(m.GetAddChanges() * -1);
+        player.AddMultIncrements(m.GetMultCganges() * -1);
     }
 
     public void Enable(IModuleCannon m)

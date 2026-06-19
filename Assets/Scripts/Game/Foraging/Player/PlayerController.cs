@@ -43,6 +43,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerStats basicPlayerStats;
     [SerializeField] private PlayerStats curPlayerStats;
     private PlayerStats addIncrements = new();
+    private PlayerStats multIncrements = new()
+        {
+            mass = 1,
+            engineForce = 1,
+            maxSpeed = 1,
+            rotationSpeed = 1,
+            maxHP = 1,
+            dmg = 1
+        };
     private float curHP;
 
     [Header("Fight")]
@@ -328,12 +337,25 @@ public class PlayerController : MonoBehaviour
         curPlayerStats = basicPlayerStats;
 
         curPlayerStats += addIncrements;
+        curPlayerStats *= multIncrements;
     }
 
     public void AddMass(int m)
     {
         addIncrements.mass += m;
 
+        recalculateStats();
+    }
+
+    public void AddAddIncrements(PlayerStats addition)
+    {
+        addIncrements += addition;
+        recalculateStats();
+    }
+
+    public void AddMultIncrements(PlayerStats multiplication)
+    {
+        multIncrements += multiplication;
         recalculateStats();
     }
 
@@ -363,7 +385,7 @@ public class PlayerController : MonoBehaviour
 
 
 [Serializable]
-class PlayerStats
+public class PlayerStats
 {
     [Header("Movement")]
     public float mass;
@@ -385,6 +407,32 @@ class PlayerStats
             rotationSpeed = s1.rotationSpeed + s2.rotationSpeed,
             maxHP = s1.maxHP + s2.maxHP,
             dmg = s1.dmg + s2.dmg
+        };
+    }
+
+    public static PlayerStats operator *(PlayerStats s1, PlayerStats s2)
+    {
+        return new()
+        {
+            mass = s1.mass * s2.mass,
+            engineForce = s1.engineForce * s2.engineForce,
+            maxSpeed = s1.maxSpeed * s2.maxSpeed,
+            rotationSpeed = s1.rotationSpeed * s2.rotationSpeed,
+            maxHP = s1.maxHP * s2.maxHP,
+            dmg = s1.dmg * s2.dmg
+        };
+    }
+
+    public static PlayerStats operator *(PlayerStats s1, int i)
+    {
+        return new()
+        {
+            mass = s1.mass * i,
+            engineForce = s1.engineForce * i,
+            maxSpeed = s1.maxSpeed * i,
+            rotationSpeed = s1.rotationSpeed * i,
+            maxHP = s1.maxHP * i,
+            dmg = s1.dmg * i
         };
     }
 }
