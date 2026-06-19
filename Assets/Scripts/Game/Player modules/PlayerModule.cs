@@ -77,3 +77,9 @@ public interface IModuleCannon
     float GetNextHit();
     void SetNextHit(float next);
 }
+
+
+public interface IModuleUseE
+{
+    void Use(PlayerController player);
+}

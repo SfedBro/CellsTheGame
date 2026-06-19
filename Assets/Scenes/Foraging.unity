@@ -3679,6 +3679,22 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - action: {fileID: 3347426107082821696, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    effect:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2110928061}
+          m_TargetAssemblyTypeName: PlayerModuleController, Assembly-CSharp
+          m_MethodName: ActivateHealer
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1803539773
 GameObject:
   m_ObjectHideFlags: 0
@@ -4330,7 +4346,7 @@ MonoBehaviour:
     maxHP: 0
     dmg: 0
   invinsibilityTime: 1.5
-  invinsibleColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 0}
+  invinsibleColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
   bulletPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
 --- !u!114 &2110928061
 MonoBehaviour:
@@ -4347,6 +4363,7 @@ MonoBehaviour:
   basicCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
   basicAttack: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
   doubleCannon: {fileID: 11400000, guid: ed0da3b9f0f8bd14dbb503b2f2c9a8d3, type: 2}
+  healer: {fileID: 11400000, guid: a33f1ad654655be4bb05f0ecc7ae5a0f, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -20,7 +20,9 @@ public class PlayerModuleController : MonoBehaviour
     #endregion
 
 
-    #region cheat
+    #region cheats
+
+    #region doubleCannon
 
     [SerializeField] private PlayerModule doubleCannon;
     private bool active = false;
@@ -41,6 +43,32 @@ public class PlayerModuleController : MonoBehaviour
             print("equiped double cannon");
         }
     }
+    
+    #endregion
+
+    #region healer
+
+    [SerializeField] private PlayerModule healer;
+    private bool active2 = false;
+    public void ActivateHealer()
+    {
+        healer.Recharge();
+
+        if (active2)
+        {
+            print("unequiped healer - use E");
+            UnequipModule(healer);
+            active2 = false;
+        }
+        else
+        {
+            EquipModule(healer, true);
+            active2 = true;
+            print("equiped healer - use E");
+        }
+    }
+
+    #endregion
 
     #endregion
 
@@ -58,7 +86,13 @@ public class PlayerModuleController : MonoBehaviour
         // Get modules' conflicts
         basicCannonModule.controller = this;
         basicCannon = (IModuleCannon)basicCannonModule;
+
+        // Cheats
+        doubleCannon = Instantiate(doubleCannon);
+        healer = Instantiate(healer);
         doubleCannon.controller = this;
+        healer.controller = this;
+
         foreach (PlayerModule m in equipedModules)
         {
             m.controller = this;
@@ -113,6 +147,9 @@ public class PlayerModuleController : MonoBehaviour
         {
             case IModuleCannon cannon:
                 player.attackStart = cannon.AttackStart;
+            break;
+            case IModuleUseE usable:
+                player.activeAbilityE = usable.Use;
             break;
         }
 
@@ -188,6 +225,11 @@ public class PlayerModuleController : MonoBehaviour
     {
         player.attackStart = basicCannon.AttackStart;
         basicCannon.SetNextHit(m.GetNextHit());
+    }
+
+    public void Disable(IModuleUseE m)
+    {
+        player.activeAbilityE = null;
     }
 
     public void Enable(IModuleCannon m)

@@ -52,6 +52,10 @@ public class PlayerController : MonoBehaviour
     private float nextHit = 0f;
     private bool isInvinsible = true;
 
+    [Header("Active Ability - E")]
+    public Action<PlayerController> activeAbilityE;
+
+
     #endregion
 
 
@@ -87,18 +91,20 @@ public class PlayerController : MonoBehaviour
     {
         inputActions.Player.Move.performed += onMove;
         inputActions.Player.Move.canceled += onMove;
-        inputActions.Player.Interact.started += onStartEnteringFactory;
-        inputActions.Player.Interact.canceled += onCancelEnteringFactory;
+        inputActions.Player.Crouch.started += onStartEnteringFactory;
+        inputActions.Player.Crouch.canceled += onCancelEnteringFactory;
         inputActions.Player.Attack.started += OnAttackStart;
+        inputActions.Player.Interact.started += onActivateAbility;
     }
 
     void OnDisable()
     {
         inputActions.Player.Move.performed -= onMove;
         inputActions.Player.Move.canceled -= onMove;
-        inputActions.Player.Interact.started -= onStartEnteringFactory;
-        inputActions.Player.Interact.canceled -= onCancelEnteringFactory;
+        inputActions.Player.Crouch.started -= onStartEnteringFactory;
+        inputActions.Player.Crouch.canceled -= onCancelEnteringFactory;
         inputActions.Player.Attack.started -= OnAttackStart;
+        inputActions.Player.Interact.started -= onActivateAbility;
     }
 
     #endregion
@@ -315,7 +321,6 @@ public class PlayerController : MonoBehaviour
     #endregion
 
 
-
     #region stats
 
     private void recalculateStats()
@@ -330,6 +335,27 @@ public class PlayerController : MonoBehaviour
         addIncrements.mass += m;
 
         recalculateStats();
+    }
+
+    #endregion
+
+
+    #region activeAbility
+
+    private void onActivateAbility(InputAction.CallbackContext context)
+    {
+        if (activeAbilityE != null) activeAbilityE(this);
+    }
+
+    #endregion
+
+
+    #region modulesFeatures
+
+    public void Heal(float amount)
+    {
+        curHP = Math.Clamp(curHP + amount, 1, curPlayerStats.maxHP);
+        hintsController.SetPlayerHP(curHP);
     }
 
     #endregion
