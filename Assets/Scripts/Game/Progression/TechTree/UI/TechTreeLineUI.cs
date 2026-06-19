@@ -22,6 +22,9 @@ public class TechTreeLineUI : MonoBehaviour
 
     public void Setup(TechTreeNodeUI source, TechTreeNodeUI target)
     {
+        if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
+        if (image == null) image = GetComponent<Image>();
+        
         sourceNode = source;
         targetNode = target;
 
@@ -42,7 +45,13 @@ public class TechTreeLineUI : MonoBehaviour
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         rectTransform.rotation = Quaternion.Euler(0, 0, angle);
 
+        // Distance in world space needs to be converted to local RectTransform space
         float distance = dir.magnitude;
+        if (rectTransform.lossyScale.x != 0)
+        {
+            distance /= rectTransform.lossyScale.x;
+        }
+        
         rectTransform.sizeDelta = new Vector2(distance, rectTransform.sizeDelta.y); // preserve thickness
     }
 

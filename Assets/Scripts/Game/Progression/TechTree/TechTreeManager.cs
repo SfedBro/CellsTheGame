@@ -10,6 +10,14 @@ public class TechTreeManager : MonoBehaviour, IGameService
 
     private string saveKey = "TechTreeSave";
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            InitializeService();
+        }
+    }
+
     public void InitializeService()
     {
         if (Instance != null && Instance != this)
@@ -21,10 +29,18 @@ public class TechTreeManager : MonoBehaviour, IGameService
         DontDestroyOnLoad(gameObject);
     }
 
+    private bool hasStarted = false;
+
     public void StartService()
     {
-        if (Instance != this) return;
+        if (Instance != this || hasStarted) return;
+        hasStarted = true;
         Load();
+    }
+
+    private void Start()
+    {
+        StartService();
     }
 
     public bool IsNodeUnlocked(string nodeId)
