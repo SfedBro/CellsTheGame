@@ -22,7 +22,8 @@ public class EnemySO : ScriptableObject
         List<LootAmount> result = new();
         for (int i = 0; i < tables.Count; i++)
         {
-            result.Add(new LootAmount(types[i], tables[i].GenerateLoot()));
+            int amount = tables[i].GenerateLoot();
+            if (amount > 0) result.Add(new LootAmount(types[i], tables[i].GenerateLoot()));
         }
 
         return result;
@@ -67,11 +68,9 @@ public class LootChanceAmount
 public class LootAmount
 {
     [SerializeField] private ItemType type;
-    [SerializeField] private int amount;
+    [SerializeField] public int amount;
 
     public ItemType GetItemType() => type;
-    public int GetAmount() => amount;
-
     public LootAmount(ItemType t, int a)
     {
         type = t;

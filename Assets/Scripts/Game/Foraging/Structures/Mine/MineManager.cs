@@ -55,10 +55,10 @@ public class MineManager : MonoBehaviour
         {
             if (l.GetItemType() == ItemType.Default)
             {
-                playerExperienceManager.spawnExperience(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetAmount());
+                playerExperienceManager.spawnExperience(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.amount);
                 continue;
             }
-            resourceGenerator.spawnLoot(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetItemType(), l.GetAmount());
+            resourceGenerator.spawnLoot(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetItemType(), l.amount);
         }
     }
 }

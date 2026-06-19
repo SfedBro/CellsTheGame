@@ -259,6 +259,7 @@ MonoBehaviour:
   moveSpeed: 0
   dmg: 0
   state: 0
+  killerSprite: {fileID: 491597234902790309, guid: ec5648b270a602743a19341a782088d8, type: 3}
   sprite: {fileID: -9153389512723893024, guid: 117fb6cdb9a61a5448cdb579b8a4b734, type: 3}
   changeDirectionTime: 3
   pauseTime: 0.7

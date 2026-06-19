@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class PlayerAwareZone : MonoBehaviour
 {
-    [SerializeField] private PlayerConfig player;
+    [SerializeField] private HintsController hintsController;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy"))
         {
-            player.EnemyFound();
+            hintsController.OnPlayerInDanger();
         }
     }
 
@@ -16,7 +16,7 @@ public class PlayerAwareZone : MonoBehaviour
     {
         if (collision.CompareTag("Enemy"))
         {
-            player.EnemyLost();
+            hintsController.OnPlayerLeaveDanger();
         }
     }
 }

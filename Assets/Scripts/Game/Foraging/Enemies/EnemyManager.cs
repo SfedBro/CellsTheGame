@@ -81,15 +81,15 @@ public class EnemyManager : MonoBehaviour
         {
             if (l.GetItemType() == ItemType.Default)
             {
-                playerExperienceManager.spawnExperience(pos + (Vector3)(UnityEngine.Random.insideUnitCircle * 0.5f), l.GetAmount());
+                playerExperienceManager.spawnExperience(pos + (Vector3)(UnityEngine.Random.insideUnitCircle * 0.5f), l.amount);
                 continue;
             }
-            rg.spawnLoot(pos + (Vector3)(UnityEngine.Random.insideUnitCircle * 0.5f), l.GetItemType(), l.GetAmount());
+            rg.spawnLoot(pos + (Vector3)(UnityEngine.Random.insideUnitCircle * 0.5f), l.GetItemType(), l.amount);
         }
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class EnemyLevelGeneration
 {
     [Header("Amount")]
@@ -103,7 +103,7 @@ public class EnemyLevelGeneration
     public Vector3 getNewPosition()
     {
         Vector2 vec = UnityEngine.Random.insideUnitCircle;
-        return vec * (allowedRadiusMin + vec.magnitude * (allowedRadiusMax - allowedRadiusMin));
+        return vec.normalized * allowedRadiusMin + vec * (allowedRadiusMax - allowedRadiusMin);;
     }
 
     public int NextLevel(int cur)

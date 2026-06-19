@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -81,7 +82,16 @@ public class ResourceGenerator : MonoBehaviour
 
         LootItem spawned = Instantiate(resourcePrefab, pos, Quaternion.identity).GetComponent<LootItem>();
         spawned.Setup(resourcesData[index], null, amount);
-        spawned.transform.localScale = new Vector3(amount, amount, 1);
+
+        float scale = getResourceScale(amount); 
+        if (type == ItemType.Default) scale *= 0.5f;
+        spawned.transform.localScale = new Vector3(scale, scale, 1);
+        
         spawned.transform.SetParent(transform, false);
+    }
+
+    private float getResourceScale(int x)
+    {
+        return Math.Clamp(0.02f * x + 0.88f, 0.5f, 2f);
     }
 }

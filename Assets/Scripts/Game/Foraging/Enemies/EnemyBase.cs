@@ -13,13 +13,15 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected float mapRadius;
 
     [Header("Current stats")]
-    [SerializeField] protected int curHP;
+    [SerializeField] protected float curHP;
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected int dmg;
     [SerializeField] protected EnemyState state;
+    [SerializeField] protected Sprite killerSprite;
     private Action<int, List<LootAmount>, Vector3> onKilled;
     private int level;
     private List<LootAmount> loot;
+    private int upgradePoints = 0;
 
     protected Rigidbody2D rb;
     protected SpriteRenderer sr;
@@ -78,13 +80,13 @@ public class EnemyBase : MonoBehaviour
         OnStartSeek();
     }
 
-    public void GetDamage(int dmg)
+    public void GetDamage(float dmg)
     {
         curHP -= dmg;
 
         if (curHP <= 0)
         {   
-            onKilled(level, loot, transform.position);
+            onKilled(math.clamp(level, 1, levelStats.Count), loot, transform.position);
 
             Destroy(gameObject);
         }
@@ -102,6 +104,49 @@ public class EnemyBase : MonoBehaviour
     {
         centerPosition = center;
         mapRadius = radius;
+    }
+
+    public void AddLoot(ItemType type, int amount) 
+    {
+        if (type == ItemType.Default)
+        {
+            amount /= 2;
+        }
+        upgradePoints += amount;
+
+        foreach (LootAmount l in loot)
+        {
+            if (l.GetItemType() == type)
+            {
+                l.amount += amount;
+                return;
+            }
+        }
+
+        loot.Add(new LootAmount(type, amount));
+    }
+
+    public void onPlayerKilled()
+    {
+        sr.sprite = killerSprite;
+
+        if (upgradePoints >= level * 50)
+        {
+            level++;
+            upgradePoints = 0;
+        }
+
+        EnemySO stats = levelStats[math.clamp(level - 1, 0, levelStats.Count)];
+        curHP = stats.GetHP();
+
+        int diff = level - levelStats.Count;
+        if (diff > 0)
+        {
+            curHP += (int)(stats.GetHP() * 0.5 * diff);
+            dmg = stats.getDMG() + diff;
+        }
+
+        transform.localScale = new Vector3((level + 1) * 0.5f, (level + 1) * 0.5f, 1);
     }
 }
 

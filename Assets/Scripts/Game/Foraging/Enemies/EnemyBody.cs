@@ -8,8 +8,8 @@ public class EnemyBody : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            PlayerConfig p = collision.gameObject.GetComponent<PlayerConfig>();
-            p.getDMG(self.GetAttack());
+            PlayerController p = collision.gameObject.GetComponent<PlayerController>();
+            p.getDMG(self);
         }
     }
 
@@ -18,7 +18,7 @@ public class EnemyBody : MonoBehaviour
         if (collision.CompareTag("Bullet"))
         {
             Bullet b = collision.gameObject.GetComponent<Bullet>();
-            if (!b.isEnemy) {
+            if (b.enemy == null) {
                 self.GetDamage(b.dmg);
                 Destroy(collision.gameObject);
             }
