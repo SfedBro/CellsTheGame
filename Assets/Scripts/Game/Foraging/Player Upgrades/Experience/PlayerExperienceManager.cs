@@ -110,7 +110,13 @@ public class PlayerExperienceManager : MonoBehaviour
         ExperienceParticle spawned = Instantiate(experiancePrefab, pos, Quaternion.identity).GetComponent<ExperienceParticle>();
         spawned.Setup(onCollected, amount);
         spawned.transform.SetParent(transform, false);
-        spawned.transform.localScale = new Vector3((amount + 3f) / 4f, (amount + 3f) / 4f, 1);
+        float scale = getExpScale(amount);
+        spawned.transform.localScale = new Vector3(scale, scale, 1);
+    }
+
+    private float getExpScale(int x)
+    {
+        return Math.Clamp(0.02f * x + 0.88f, 0.5f, 2f) * 0.5f;
     }
 
     private void onCollected(int amount)
@@ -155,8 +161,10 @@ public class PlayerExperienceManager : MonoBehaviour
         observers.Add(action);
     }
 
-    public void onPlayerDeath()
+    public void onPlayerDeath(EnemyBase killer)
     {
+        killer.AddLoot(ItemType.Default, curExperience);
+
         curExperience = 0;
         plm.curExperience = 0;
         curLevel = 0;

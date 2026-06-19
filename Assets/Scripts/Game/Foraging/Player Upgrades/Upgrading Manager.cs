@@ -11,7 +11,7 @@ public class UpgradingManager : MonoBehaviour
     [Header("Dependencies")]
     [SerializeField] private PlayerExperienceManager pem;
 
-    private PlayerConfig player;
+    private PlayerController player;
     private ResourcesManager rm = ResourcesManager.instance;
     private List<IncrementInterface> increments = new();
 
@@ -51,12 +51,12 @@ public class UpgradingManager : MonoBehaviour
         rm.Unsubscrive(UpdateCounters);
     }
 
-    public void correctPlayerStats(PlayerConfig player)
+    public void correctPlayerStats(PlayerController player)
     {
         this.player = player;
         foreach (var i in upgrades)
         {
-            player.upgradeStat(i.GetStatType(), i.getCurLevelValue());
+            player.UpgradeStat(i.GetStatType(), i.getCurLevelValue());
         }
     }
 
@@ -85,7 +85,7 @@ public class UpgradingManager : MonoBehaviour
         }
     
         upgrade.curLevel++;
-        player.upgradeStat(upgrade.GetStatType(), upgrade.getCurLevelValue());
+        player.UpgradeStat(upgrade.GetStatType(), upgrade.getCurLevelValue());
         return true;
     }
 

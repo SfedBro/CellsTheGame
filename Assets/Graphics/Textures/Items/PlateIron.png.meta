@@ -3,8 +3,8 @@ guid: 39ff2f531de31de488734d77135994ac
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1014278335334063885
-    second: PlateIron 1_0
+      213: -5315998895232176958
+    second: PlateIron_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PlateIron 1_0
+      name: PlateIron_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3f0e9075a3f8ce1f0800000000000000
-      internalID: -1014278335334063885
+      spriteID: 2cc215f8b27c936b0800000000000000
+      internalID: -5315998895232176958
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PlateIron 1_0: -1014278335334063885
+      PlateIron_0: -5315998895232176958
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

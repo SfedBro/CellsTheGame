@@ -20,12 +20,12 @@ MonoBehaviour:
   - defaultAmount: 10
     table:
     - amount: 10
+      rareness: 5
+    - amount: 1
       rareness: 3
     - amount: 12
-      rareness: 5
-    - amount: 13
       rareness: 3
-    - amount: 14
+    - amount: 13
       rareness: 1
     totalRareness: 12
   - defaultAmount: 2

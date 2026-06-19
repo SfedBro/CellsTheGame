@@ -259,6 +259,7 @@ MonoBehaviour:
   moveSpeed: 0
   dmg: 0
   state: 0
+  killerSprite: {fileID: 6312450010582321316, guid: 87a7e782e7275334984318334bf71b60, type: 3}
   sprite: {fileID: 7807345855435258517, guid: 1ed350bbe92f75b46a2bc1c348f3a217, type: 3}
   changeDirectionTime: 3
   bulletPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}

@@ -14,6 +14,7 @@ public class EnemyTurret : EnemyBase
 
     [Header("Attack")]
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private AttackData attackData;
     [SerializeField] private float reloadTime = 2.0f;
     [SerializeField] private float basetriggerRadius = 5.0f;
     [SerializeField] private float seekTriggerRadius = 10.0f;
@@ -74,12 +75,9 @@ public class EnemyTurret : EnemyBase
         {
             nextShootTime = Time.time + reloadTime;
 
-            GameObject b = Instantiate(bulletPrefab, transform.position, transform.rotation);
-            b.transform.parent = transform;
-            b.transform.localScale = new Vector3((dmg + 3f) / 8f, (dmg + 3f) / 8f, 1);
-            Bullet bullet = b.GetComponent<Bullet>();
-            bullet.dmg = dmg;
-            bullet.isEnemy = true;
+            Bullet bullet = Instantiate(bulletPrefab, transform.position, transform.rotation).GetComponent<Bullet>();
+            bullet.Initialize(attackData, transform, rb.rotation);
+            bullet.enemy = this;
         }
     }
 

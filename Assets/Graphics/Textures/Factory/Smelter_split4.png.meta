@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6fc0ede78f98c074e8fee777e0ae13ec
+guid: adf048dd30780ec4398920e76131fd32
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3701791087735622943
-    second: HUB_0
+      213: 2559222637141691614
+    second: Smelter_split4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 20
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: HUB_0
+      name: Smelter_split4_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 4
-        width: 50
-        height: 46
+        y: 0
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1e2bfce5e9890acc0800000000000000
-      internalID: -3701791087735622943
+      spriteID: edc08fbdd6f248320800000000000000
+      internalID: 2559222637141691614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Smelter_split4_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e447dda41f42d0044847e5d41781ba2b
+      internalID: 701688098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Smelter_split4_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53257cd8a5d87a0418461764fc405e0a
+      internalID: 1259011161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Smelter_split4_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcdf721ba2e90804c8d2c2d08b35adbc
+      internalID: -51003523
       vertices: []
       indices: 
       edges: []
@@ -164,7 +230,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 2951852e853c00047845c3197cc5807b
     internalID: 0
     vertices: []
     indices: 
@@ -174,7 +240,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      HUB_0: -3701791087735622943
+      Smelter_split4_0: 2559222637141691614
+      Smelter_split4_1: 701688098
+      Smelter_split4_2: 1259011161
+      Smelter_split4_3: -51003523
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
