@@ -3,10 +3,10 @@ using UnityEngine;
 
 public enum PortDirection
 {
-    Up,
+    Right,
     Down,
     Left,
-    Right
+    Up
 }
 
 [Serializable]
@@ -39,10 +39,10 @@ public class Port
         Vector3Int pos = GetGlobalPosition(blockGridPosition);
         switch (Direction)
         {
-            case PortDirection.Up: return pos + Vector3Int.up;
+            case PortDirection.Right: return pos + Vector3Int.right;
             case PortDirection.Down: return pos + Vector3Int.down;
             case PortDirection.Left: return pos + Vector3Int.left;
-            case PortDirection.Right: return pos + Vector3Int.right;
+            case PortDirection.Up: return pos + Vector3Int.up;
         }
         return pos;
     }
@@ -51,11 +51,11 @@ public class Port
     {
         switch (Direction)
         {
-            case PortDirection.Up: return PortDirection.Down;
+            case PortDirection.Right: return PortDirection.Left;
             case PortDirection.Down: return PortDirection.Up;
             case PortDirection.Left: return PortDirection.Right;
-            case PortDirection.Right: return PortDirection.Left;
+            case PortDirection.Up: return PortDirection.Down;
         }
-        return PortDirection.Up;
+        return PortDirection.Right;
     }
 }

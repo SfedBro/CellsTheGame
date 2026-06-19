@@ -5,7 +5,7 @@ public class FactoryTickManager : MonoBehaviour, IGameService
 {
     public static FactoryTickManager Instance;
 
-    public float TickRate = 0.1f;
+    public float TickRate = 0.125f;
     private float timer;
 
     private List<FactoryBlock> activeBlocks = new List<FactoryBlock>();

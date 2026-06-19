@@ -53,14 +53,32 @@ public class BuildManager : MonoBehaviour, IGameService
 
         if (cam == null)
             cam = Camera.main;
+            
+        Load();
     }
+
+    private float autoSaveTimer = 0f;
+    private const float AUTO_SAVE_INTERVAL = 10f;
 
     private void Update()
     {
+        autoSaveTimer += Time.deltaTime;
+        if (autoSaveTimer >= AUTO_SAVE_INTERVAL)
+        {
+            autoSaveTimer = 0f;
+            Save();
+        }
+
         if (Input.GetKeyDown(KeyCode.B))
         {
             buildMode = !buildMode;
             ClearAll();
+            
+            if (buildMode && StorageWindow.Instance != null)
+            {
+                StorageWindow.Instance.Close();
+            }
+
             Debug.Log($"Build mode: {buildMode}");
         }
 
@@ -199,6 +217,7 @@ public class BuildManager : MonoBehaviour, IGameService
             if (go.TryGetComponent<FactoryBlock>(out var block))
             {
                 block.blockId = pair.Value.type.buildingName; // Save ID
+                block.Initialize(); // Initialize and register in Grid immediately!
                 block.OnPlaced();
             }
 
@@ -211,6 +230,11 @@ public class BuildManager : MonoBehaviour, IGameService
         }
 
         ClearAll();
+
+        if (changed.Count > 0)
+        {
+            Save();
+        }
     }
 
     public void SpawnBuildingFromSave(string blockId, Vector3Int cell, int rotation, string customState)
@@ -228,6 +252,56 @@ public class BuildManager : MonoBehaviour, IGameService
         }
         
         GridManager.Instance.NotifyNeighbours(cell);
+    }
+
+    private string saveKey = "FactoryBuildingsSave";
+
+    private SaveData.FactoryData GetSaveSnapshot()
+    {
+        var data = new SaveData.FactoryData();
+        FactoryBlock[] allBlocks = FindObjectsByType<FactoryBlock>(FindObjectsSortMode.None);
+        foreach (var block in allBlocks)
+        {
+            if (string.IsNullOrEmpty(block.blockId)) continue; // Can't save blocks without ID
+
+            SaveData.BuildingSaveData bsd = new SaveData.BuildingSaveData
+            {
+                blockId = block.blockId,
+                position = block.GridPosition,
+                zRotation = Mathf.RoundToInt(block.transform.eulerAngles.z),
+                customDataJson = block.GetSaveState()
+            };
+            data.buildings.Add(bsd);
+        }
+        return data;
+    }
+
+    public void Save()
+    {
+        SaveManager.Save(saveKey, GetSaveSnapshot());
+        Debug.Log("Saved Factory Buildings");
+    }
+
+    public void Load()
+    {
+        var data = SaveManager.Load<SaveData.FactoryData>(saveKey);
+        if (data != null && data.buildings != null)
+        {
+            // Destroy existing blocks
+            FactoryBlock[] allBlocks = FindObjectsByType<FactoryBlock>(FindObjectsSortMode.None);
+            foreach (var block in allBlocks)
+            {
+                block.OnRemoved();
+                Destroy(block.gameObject);
+            }
+
+            // Spawn from save
+            foreach (var bsd in data.buildings)
+            {
+                SpawnBuildingFromSave(bsd.blockId, bsd.position, bsd.zRotation, bsd.customDataJson);
+            }
+        }
+        Debug.Log("Loaded Factory Buildings");
     }
     #endregion
 

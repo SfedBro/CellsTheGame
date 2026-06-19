@@ -14,6 +14,7 @@ public static class InventoryUtils
     public static void SwapOrMergeSlots(Inventory sourceInv, int sourceIndex, Inventory targetInv, int targetIndex)
     {
         if (sourceInv == null || targetInv == null) return;
+        if (sourceInv == targetInv && sourceIndex == targetIndex) return;
         if (sourceIndex < 0 || sourceIndex >= sourceInv.slotCount) return;
         if (targetIndex < 0 || targetIndex >= targetInv.slotCount) return;
 

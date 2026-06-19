@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    #region Singleton & State
+    #region Variables
     private static GridManager _instance;
     public static GridManager Instance
     {
@@ -23,7 +23,7 @@ public class GridManager : MonoBehaviour
     private Dictionary<Vector3Int, MonoBehaviour> buildings = new();
     #endregion
 
-    #region Lifecycle
+    #region Singleton Validation
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -65,9 +65,9 @@ public class GridManager : MonoBehaviour
     {
         TryRebuild(pos);
         TryRebuild(pos + Vector3Int.right);
+        TryRebuild(pos + Vector3Int.down);
         TryRebuild(pos + Vector3Int.left);
         TryRebuild(pos + Vector3Int.up);
-        TryRebuild(pos + Vector3Int.down);
     }
 
     private void TryRebuild(Vector3Int pos)
