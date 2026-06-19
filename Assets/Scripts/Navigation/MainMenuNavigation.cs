@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class MainMenuNavigation : MonoBehaviour
@@ -14,5 +15,10 @@ public class MainMenuNavigation : MonoBehaviour
         #else
         Application.Quit();
         #endif
+    }
+
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.R)) PlayerPrefs.DeleteAll();
     }
 }
