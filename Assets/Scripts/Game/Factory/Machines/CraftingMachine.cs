@@ -54,10 +54,11 @@ public class CraftingMachine : FactoryBlock
 
     public override bool TryReceiveItem(ConveyorItem item, Port receivingPort)
     {
-        // Debug.Log($"[CraftingMachine] {gameObject.name} TryReceiveItem {item.Type} on port {receivingPort.Position}");
+        if (receivingPort == null || !receivingPort.IsInput) return false;
+
         if (availableRecipes == null || availableRecipes.Count == 0) 
         {
-            Debug.Log($"[CraftingMachine] {gameObject.name} no recipes available.");
+            GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] no recipes available.", gameObject);
             return false;
         }
 
@@ -65,18 +66,18 @@ public class CraftingMachine : FactoryBlock
         bool isInputItem = availableRecipes.Any(r => r.Inputs.Any(input => input.type == item.Type));
         if (!isInputItem) 
         {
-            Debug.Log($"[CraftingMachine] {gameObject.name} item {item.Type} is not an input for any recipe.");
+            GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] item {item.Type} is not an input for any recipe.", gameObject);
             return false;
         }
         
         if (inventory.AddItem(item.Type))
         {
-            Debug.Log($"[CraftingMachine] {gameObject.name} accepted item {item.Type}.");
+            GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] accepted item {item.Type}.", gameObject);
             if (item.View != null) Destroy(item.View.gameObject);
             return true;
         }
         
-        Debug.Log($"[CraftingMachine] {gameObject.name} inventory full for {item.Type}.");
+        GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] inventory full for {item.Type}.", gameObject);
         return false;
     }
 
@@ -133,34 +134,34 @@ public class CraftingMachine : FactoryBlock
             {
                 ConveyorItem item = new ConveyorItem();
                 item.Type = outputType;
-                
-                ConveyorItemView itemView = null;
-                if (conveyorItemPrefab != null)
-                {
-                    itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
-                }
-                else
-                {
-                    GameObject go = new GameObject("ConveyorItem");
-                    go.transform.position = transform.position;
-                    go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-                    itemView = go.AddComponent<ConveyorItemView>();
-                    var renderer = go.AddComponent<SpriteRenderer>();
-                    renderer.sortingOrder = 32767;
-                }
-
-                var sr = itemView.GetComponentInChildren<SpriteRenderer>();
-                if (sr != null) sr.sprite = ResourcesManager.instance.getResourceSprite(outputType);
-                item.View = itemView;
 
                 if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
                 {
+                    ConveyorItemView itemView = null;
+                    if (conveyorItemPrefab != null)
+                    {
+                        itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
+                    }
+                    else
+                    {
+                        GameObject go = new GameObject("ConveyorItem");
+                        go.transform.position = transform.position;
+                        go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+                        itemView = go.AddComponent<ConveyorItemView>();
+                        var renderer = go.AddComponent<SpriteRenderer>();
+                        renderer.sortingOrder = 32767;
+                    }
+
+                    var sr = itemView.GetComponentInChildren<SpriteRenderer>();
+                    if (sr != null) 
+                    {
+                        sr.sprite = ResourcesManager.instance.getResourceSprite(outputType);
+                        sr.sortingOrder = 32767;
+                    }
+                    item.View = itemView;
+
                     inventory.RemoveItem(outputType);
-                    return; // Output one item per tick max
-                }
-                else
-                {
-                    if (itemView != null) Destroy(itemView.gameObject);
+                    break; // Output one item per tick
                 }
             }
         }

@@ -192,12 +192,12 @@ MonoBehaviour:
   blockId: Storage
   Ports:
   - CellOffset: {x: 0, y: 0}
-    Direction: 3
+    Direction: 0
     IsInput: 1
     IsOutput: 1
     ConnectedBlock: {fileID: 0}
   - CellOffset: {x: 0, y: 0}
-    Direction: 0
+    Direction: 1
     IsInput: 1
     IsOutput: 1
     ConnectedBlock: {fileID: 0}
@@ -207,7 +207,7 @@ MonoBehaviour:
     IsOutput: 1
     ConnectedBlock: {fileID: 0}
   - CellOffset: {x: 0, y: 0}
-    Direction: 1
+    Direction: 3
     IsInput: 1
     IsOutput: 1
     ConnectedBlock: {fileID: 0}

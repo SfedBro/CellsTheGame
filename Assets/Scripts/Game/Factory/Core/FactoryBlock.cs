@@ -8,7 +8,7 @@ public abstract class FactoryBlock : MonoBehaviour
     public Vector2Int Size = Vector2Int.one;
 
     [Header("Save Data")]
-    public string blockId; // Used by SaveSystem to know which prefab to instantiate
+    public string blockId;
 
     [Header("Connections")]
     public List<Port> Ports = new List<Port>();
@@ -93,11 +93,10 @@ public abstract class FactoryBlock : MonoBehaviour
             }
         }
     }
-
     #endregion
 
     #region Port Routing
-        [ContextMenu("Merge Duplicate Ports")]
+    [ContextMenu("Merge Duplicate Ports")]
     public void MergeDuplicatePorts()
     {
         if (Ports == null || Ports.Count == 0) return;
@@ -135,26 +134,18 @@ public abstract class FactoryBlock : MonoBehaviour
             return;
 
         PortDirection expectedDirection = port.GetOppositeDirection();
-        
-        foreach (var neighborPort in neighborBlock.Ports)
+        Vector2Int expectedCellOffset = new Vector2Int(targetPos.x - neighborBlock.gridPosition.x, targetPos.y - neighborBlock.gridPosition.y);
+
+        Port neighborPort = neighborBlock.Ports.Find(p => p.CellOffset == expectedCellOffset && p.Direction == expectedDirection);
+
+        if (neighborPort != null)
         {
-            if (CanPortsConnect(port, targetPos, neighborPort, neighborBlock, expectedDirection))
+            if ((port.IsOutput && neighborPort.IsInput) || (port.IsInput && neighborPort.IsOutput))
             {
                 port.ConnectedBlock = neighborBlock;
                 port.ConnectedPort = neighborPort;
-                return; // Early return once connected
             }
         }
-    }
-
-    private bool CanPortsConnect(Port myPort, Vector3Int myTargetPos, Port neighborPort, FactoryBlock neighborBlock, PortDirection expectedDirection)
-    {
-        if (neighborPort.Direction != expectedDirection) return false;
-        
-        Vector3Int neighborPortPos = neighborPort.GetGlobalPosition(neighborBlock.gridPosition);
-        if (neighborPortPos != myTargetPos) return false;
-
-        return (myPort.IsOutput && neighborPort.IsInput) || (myPort.IsInput && neighborPort.IsOutput);
     }
 
     public virtual bool TryReceiveItem(ConveyorItem item, Port receivingPort)
@@ -169,17 +160,6 @@ public abstract class FactoryBlock : MonoBehaviour
     #endregion
 
     #region Editor / Debug
-#if UNITY_EDITOR
-    public static bool ShowDebugPorts = true;
-
-    [UnityEditor.MenuItem("Factory/Toggle Port Debug")]
-    public static void TogglePortDebug()
-    {
-        ShowDebugPorts = !ShowDebugPorts;
-        UnityEditor.SceneView.RepaintAll();
-    }
-#endif
-
     private int currentPortRotationSteps = 0;
 
     public void UpdateRotation()
@@ -221,6 +201,15 @@ public abstract class FactoryBlock : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    public static bool ShowDebugPorts = true;
+
+    [UnityEditor.MenuItem("Factory/Toggle Port Debug")]
+    public static void TogglePortDebug()
+    {
+        ShowDebugPorts = !ShowDebugPorts;
+        UnityEditor.SceneView.RepaintAll();
+    }
+
     protected virtual void OnDrawGizmos()
     {
         if (!ShowDebugPorts) return;

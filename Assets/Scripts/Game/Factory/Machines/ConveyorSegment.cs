@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 public class ConveyorSegment : FactoryBlock
 {
-    #region State & Configuration
+    #region Variables
     [SerializeField]
     private int slotsLength = 8;
     public ConveyorItem[] Slots;
@@ -95,10 +95,7 @@ public class ConveyorSegment : FactoryBlock
 
     public override bool TryReceiveItem(ConveyorItem item, Port receivingPort)
     {
-        if (item == null || Slots[0] != null)
-            return false;
-
-        if (receivingPort != null && receivingPort.Filter.HasValue && receivingPort.Filter.Value != item.Type)
+        if (item == null || Slots[0] != null || receivingPort == null || !receivingPort.IsInput || (receivingPort.Filter.HasValue && receivingPort.Filter.Value != item.Type))
             return false;
 
         Slots[0] = item;
