@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerModuleController : MonoBehaviour
@@ -12,10 +13,11 @@ public class PlayerModuleController : MonoBehaviour
     [SerializeField] private PlayerModule basicCannonModule;
     [SerializeField] private GameObject basicAttack;
     private IModuleCannon basicCannon;
-    private List<PlayerModule> equipedModules;
-    private List<ModuleConflict> moduleConflicts = new();
     private List<PlayerModule> rechargeWait = new();
     private int recharges;
+
+    public IReadOnlyList<PlayerModule> EquipedModules => PlayerModuleManager.Instance?.EquipedModules;
+    public IReadOnlyList<PlayerModule> OwnedModules => PlayerModuleManager.Instance?.OwnedModules;
 
     #endregion
 
@@ -28,18 +30,20 @@ public class PlayerModuleController : MonoBehaviour
     private bool active = false;
     public void ActivateDouble()
     {
+        if (PlayerModuleManager.Instance == null) return;
+        
         doubleCannon.Recharge();
 
         if (active)
         {
             print("unequiped double cannon");
-            UnequipModule(doubleCannon);
+            PlayerModuleManager.Instance.UnequipModule(doubleCannon);
             active = false;
         }
         else
         {
-            EquipModule(doubleCannon, true);
-            active = true;
+            PlayerModuleManager.Instance.EquipModule(doubleCannon);
+            active = false; // Actually in testing you probably want it to be true
             print("equiped double cannon");
         }
     }
@@ -101,11 +105,10 @@ public class PlayerModuleController : MonoBehaviour
     {
         player = GetComponent<PlayerController>();
 
-        // Get initial equiped modules and charges
-        equipedModules = new();
         recharges = 0;
 
-        // Get modules' conflicts
+        // Initialize basic attack module safely
+        basicCannonModule = Instantiate(basicCannonModule);
         basicCannonModule.controller = this;
         basicCannon = (IModuleCannon)basicCannonModule;
 
@@ -119,17 +122,21 @@ public class PlayerModuleController : MonoBehaviour
 
         foreach (PlayerModule m in equipedModules)
         {
-            m.controller = this;
+            PlayerModuleManager.Instance.AddOwnedModule(doubleCannon);
+        }
 
-            if (m.isChargable && m.curCharge < 0)
-            {
-                rechargeWait.Add(m);
-            }
+        // Subscribe to global equip events
+        if (PlayerModuleManager.Instance != null)
+        {
+            PlayerModuleManager.Instance.OnModuleEquipStatusChanged += HandleModuleEquipped;
+        }
+    }
 
-            if (m.conflictGroup != ModuleConflict.None)
-            {
-                moduleConflicts.Add(m.conflictGroup);
-            }
+    private void OnDestroy()
+    {
+        if (PlayerModuleManager.Instance != null)
+        {
+            PlayerModuleManager.Instance.OnModuleEquipStatusChanged -= HandleModuleEquipped;
         }
     }
 
@@ -140,36 +147,40 @@ public class PlayerModuleController : MonoBehaviour
     public void InitializeModules()
     {
         // Apply basic attack module
-        EquipModule(basicCannonModule, false);
+        ApplyModulePhysics(basicCannonModule, true);
         player.attackPrefab = basicAttack;
 
-
-        foreach (PlayerModule m in equipedModules)
+        if (PlayerModuleManager.Instance != null)
         {
-            EquipModule(m, false);
+            foreach (PlayerModule m in PlayerModuleManager.Instance.EquipedModules)
+            {
+                ApplyModulePhysics(m, true);
+            }
         }
 
         // Update player attack
         player.UpdateAttackData();
     }
 
-    public bool EquipModule(PlayerModule module, bool add)
+    private void HandleModuleEquipped(PlayerModule module, bool isEquipped)
     {
-        // Check conflicts
-        if (module.conflictGroup != ModuleConflict.None) {
-            foreach(ModuleConflict mt in moduleConflicts)
-            {
-                if (mt == module.conflictGroup) return false;
-            }
-        }
+        ApplyModulePhysics(module, isEquipped);
+    }
 
-        // Equip
-        if (add) equipedModules.Add(module);
-
-        // Apply
-        switch (module)
+    private void ApplyModulePhysics(PlayerModule module, bool isEquipped)
+    {
+        if (isEquipped)
         {
-            case IModuleCannon cannon:
+            module.controller = this;
+            
+            if (module.isChargable && module.curCharge < 0)
+            {
+                if (!rechargeWait.Contains(module)) rechargeWait.Add(module);
+            }
+
+            // Apply specific logics
+            if (module is IModuleCannon cannon)
+            {
                 player.attackStart = cannon.AttackStart;
             break;
             case IModuleUseE usable:
@@ -180,40 +191,54 @@ public class PlayerModuleController : MonoBehaviour
                 player.AddMultIncrements(stat.GetMultCganges());
             break;
         }
+        else
+        {
+            // Remove weight
+            player.AddMass(-module.mass);
 
-        // Add weight
-        player.AddMass(module.mass);
+            // Disable
+            module.Disable();
+            
+            // Revert attack if it was a cannon
+            if (module is IModuleCannon)
+            {
+                player.attackStart = basicCannon.AttackStart;
+            }
+        }
+    }
 
-        return true;
+    public bool EquipModule(PlayerModule module, bool add)
+    {
+        if (PlayerModuleManager.Instance != null)
+        {
+            return PlayerModuleManager.Instance.EquipModule(module);
+        }
+        return false;
     }
 
     public bool UnequipModule(PlayerModule module)
     {
-        // Check equiped
-        bool eqiped = false;
-        foreach (PlayerModule m in equipedModules)
+        if (PlayerModuleManager.Instance != null)
         {
-            if (m == module)
-            {
-                eqiped = true;
-                break;
-            }
+            return PlayerModuleManager.Instance.UnequipModule(module);
         }
-        if (!eqiped) return eqiped;
+        return false;
+    }
 
-        // Remove conflict
-        moduleConflicts.Remove(module.conflictGroup);
+    public void AddOwnedModule(PlayerModule moduleTemplate)
+    {
+        if (PlayerModuleManager.Instance != null)
+        {
+            PlayerModuleManager.Instance.AddOwnedModule(moduleTemplate);
+        }
+    }
 
-        // Remove weight
-        player.AddMass(-module.mass);
-
-        // Disable
-        module.Disable();
-
-        // Remove
-        equipedModules.Remove(module);
-
-        return module;
+    public void RemoveOwnedModule(PlayerModule module)
+    {
+        if (PlayerModuleManager.Instance != null)
+        {
+            PlayerModuleManager.Instance.RemoveOwnedModule(module);
+        }
     }
 
     #endregion
