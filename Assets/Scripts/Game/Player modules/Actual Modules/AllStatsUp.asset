@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d78e186ade7dcf84cb60c5303e1cc0ba, type: 3}
+  m_Name: AllStatsUp
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  title: All Stats Up
+  mass: 5
+  moduleType: 1
+  conflictGroup: 0
+  controller: {fileID: 0}
+  isChargable: 0
+  maxCharge: 0
+  curCharge: 0
+  addIncrement:
+    mass: 0
+    engineForce: 0
+    maxSpeed: 0
+    rotationSpeed: 0
+    maxHP: 3
+    dmg: 3
+  multIncrement:
+    mass: 1
+    engineForce: 2
+    maxSpeed: 2
+    rotationSpeed: 2
+    maxHP: 1
+    dmg: 1

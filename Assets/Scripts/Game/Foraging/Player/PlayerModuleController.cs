@@ -22,7 +22,9 @@ public class PlayerModuleController : MonoBehaviour
     #endregion
 
 
-    #region cheat
+    #region cheats
+
+    #region doubleCannon
 
     [SerializeField] private PlayerModule doubleCannon;
     private bool active = false;
@@ -45,6 +47,54 @@ public class PlayerModuleController : MonoBehaviour
             print("equiped double cannon");
         }
     }
+    
+    #endregion
+
+    #region healer
+
+    [SerializeField] private PlayerModule healer;
+    private bool active2 = false;
+    public void ActivateHealer()
+    {
+        healer.Recharge();
+
+        if (active2)
+        {
+            print("unequiped healer - use E");
+            UnequipModule(healer);
+            active2 = false;
+        }
+        else
+        {
+            EquipModule(healer, true);
+            active2 = true;
+            print("equiped healer - use E");
+        }
+    }
+
+    #endregion
+
+    #region AllStatsUp
+
+    [SerializeField] private PlayerModule statsUp;
+    private bool active3 = false;
+    public void ActivateStatsUp()
+    {
+        if (active3)
+        {
+            print("unequiped All Stats Up");
+            UnequipModule(statsUp);
+            active3 = false;
+        }
+        else
+        {
+            EquipModule(statsUp, true);
+            active3 = true;
+            print("equiped All Stats Up");
+        }
+    }
+
+    #endregion
 
     #endregion
 
@@ -62,12 +112,15 @@ public class PlayerModuleController : MonoBehaviour
         basicCannonModule.controller = this;
         basicCannon = (IModuleCannon)basicCannonModule;
 
-        // Initialize double cannon safely
+        // Cheats
         doubleCannon = Instantiate(doubleCannon);
+        healer = Instantiate(healer);
+        statsUp = Instantiate(statsUp);
         doubleCannon.controller = this;
-        
-        // Add double cannon to owned modules for testing (if Manager exists)
-        if (PlayerModuleManager.Instance != null && !PlayerModuleManager.Instance.OwnedModules.Contains(doubleCannon))
+        healer.controller = this;
+        statsUp.controller = this;
+
+        foreach (PlayerModule m in equipedModules)
         {
             PlayerModuleManager.Instance.AddOwnedModule(doubleCannon);
         }
@@ -129,10 +182,14 @@ public class PlayerModuleController : MonoBehaviour
             if (module is IModuleCannon cannon)
             {
                 player.attackStart = cannon.AttackStart;
-            }
-
-            // Add weight
-            player.AddMass(module.mass);
+            break;
+            case IModuleUseE usable:
+                player.activeAbilityE = usable.Use;
+            break;
+            case IModuleStat stat:
+                player.AddAddIncrements(stat.GetAddChanges());
+                player.AddMultIncrements(stat.GetMultCganges());
+            break;
         }
         else
         {
@@ -221,6 +278,17 @@ public class PlayerModuleController : MonoBehaviour
     {
         player.attackStart = basicCannon.AttackStart;
         basicCannon.SetNextHit(m.GetNextHit());
+    }
+
+    public void Disable(IModuleUseE m)
+    {
+        player.activeAbilityE = null;
+    }
+
+    public void Disable(IModuleStat m)
+    {
+        player.AddAddIncrements(m.GetAddChanges() * -1);
+        player.AddMultIncrements(m.GetMultCganges() * -1);
     }
 
     public void Enable(IModuleCannon m)
