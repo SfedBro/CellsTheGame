@@ -145,4 +145,14 @@ MonoBehaviour:
     IsInput: 0
     IsOutput: 1
     ConnectedBlock: {fileID: 0}
+  - CellOffset: {x: 0, y: 0}
+    Direction: 3
+    IsInput: 1
+    IsOutput: 0
+    ConnectedBlock: {fileID: 0}
+  - CellOffset: {x: 0, y: 0}
+    Direction: 1
+    IsInput: 1
+    IsOutput: 0
+    ConnectedBlock: {fileID: 0}
   slotsLength: 8

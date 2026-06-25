@@ -13,6 +13,7 @@ public class PlayerModuleController : MonoBehaviour
     [SerializeField] private PlayerModule basicCannonModule;
     [SerializeField] private GameObject basicAttack;
     private IModuleCannon basicCannon;
+    private List<PlayerModule> equipedModules;
     private List<PlayerModule> rechargeWait = new();
     private int recharges;
 
@@ -179,17 +180,19 @@ public class PlayerModuleController : MonoBehaviour
             }
 
             // Apply specific logics
-            if (module is IModuleCannon cannon)
+            switch (module)
             {
-                player.attackStart = cannon.AttackStart;
-            break;
-            case IModuleUseE usable:
-                player.activeAbilityE = usable.Use;
-            break;
-            case IModuleStat stat:
-                player.AddAddIncrements(stat.GetAddChanges());
-                player.AddMultIncrements(stat.GetMultCganges());
-            break;
+                case IModuleCannon cannon:
+                    player.attackStart = cannon.AttackStart;
+                    break;
+                case IModuleUseE usable:
+                    player.activeAbilityE = usable.Use;
+                    break;
+                case IModuleStat stat:
+                    player.AddAddIncrements(stat.GetAddChanges());
+                    player.AddMultIncrements(stat.GetMultCganges());
+                    break;
+            }
         }
         else
         {
