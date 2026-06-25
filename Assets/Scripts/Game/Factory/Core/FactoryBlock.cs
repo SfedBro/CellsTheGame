@@ -48,9 +48,14 @@ public abstract class FactoryBlock : MonoBehaviour
         }
     }
 
+    public virtual void PreTick()
+    {
+        // Phase 1 of Two-Phase Tick system. For moving internal items.
+    }
+
     public virtual void Tick()
     {
-        // To be overridden by mechanisms that need tick logic (like Conveyors, Presses)
+        // Phase 2 of Two-Phase Tick system. For pushing items out.
     }
     
     public virtual string GetSaveState()

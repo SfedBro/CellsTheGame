@@ -53,30 +53,22 @@ public class ConveyorSegment : FactoryBlock
     #endregion
 
     #region Logic & Movement
-    public override void Tick()
+    public override void PreTick()
     {
-        MoveItems();
+        MoveInternalItems();
     }
 
-    private void MoveItems()
+    public override void Tick()
+    {
+        PushItemsToNext();
+    }
+
+    private void MoveInternalItems()
     {
         for (int i = 0; i < slotsLength; i++)
         {
             if (Slots[i] != null)
                 Slots[i].movedThisTick = false;
-        }
-
-        var lastItem = Slots[slotsLength - 1];
-        if (lastItem != null)
-        {
-            Port outPort = Ports.Find(p => p.IsOutput && p.ConnectedBlock != null);
-            if (outPort != null)
-            {
-                if (outPort.ConnectedBlock.TryReceiveItem(lastItem, outPort.ConnectedPort))
-                {
-                    Slots[slotsLength - 1] = null;
-                }
-            }
         }
 
         for (int i = slotsLength - 2; i >= 0; i--)
@@ -89,6 +81,22 @@ public class ConveyorSegment : FactoryBlock
                 Slots[i + 1] = Slots[i];
                 Slots[i + 1].movedThisTick = true;
                 Slots[i] = null;
+            }
+        }
+    }
+
+    private void PushItemsToNext()
+    {
+        var lastItem = Slots[slotsLength - 1];
+        if (lastItem != null)
+        {
+            Port outPort = Ports.Find(p => p.IsOutput && p.ConnectedBlock != null);
+            if (outPort != null)
+            {
+                if (outPort.ConnectedBlock.TryReceiveItem(lastItem, outPort.ConnectedPort))
+                {
+                    Slots[slotsLength - 1] = null;
+                }
             }
         }
     }

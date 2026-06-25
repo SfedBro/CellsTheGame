@@ -248,8 +248,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 266707fc31d7f534c87ad55683b9115f, type: 2}
   - {fileID: 11400000, guid: 369fa6e678f44ca4bb5b25a822620f4e, type: 2}
   - {fileID: 11400000, guid: 2eb50d171af712848b77318a380e4ce7, type: 2}
-  inventory:
-    slotCount: 24
+  inputInventory:
+    slotCount: 4
     defaultMaxStackSize: 100
     startingItems: []
     slots:
@@ -261,45 +261,12 @@ MonoBehaviour:
       amount: 0
     - type: 0
       amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
-    - type: 0
-      amount: 0
+  outputInventory:
+    slotCount: 1
+    defaultMaxStackSize: 100
+    startingItems: []
+    slots:
     - type: 0
       amount: 0
   progress: 0
-  conveyorItemPrefab: {fileID: 6583885564060920282, guid: d608c5e4eadc8d044b02390f8b83a729, type: 3}
+  conveyorItemPrefab: {fileID: 0}
