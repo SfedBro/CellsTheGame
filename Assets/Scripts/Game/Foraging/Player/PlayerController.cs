@@ -37,7 +37,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform bulletParent;
     public GameObject attackPrefab;
     public AttackData attackData;
-    public Func<GameObject, AttackData, Transform, float, int> attackStart;
+    public IModuleCannon baseCannon;
+    public IModuleCannon curCannon;
+    private int attackActivateFrames = -1;
+    private int attackActivateTimer = 0;
 
     [Header("Stats")]
     [SerializeField] private PlayerStats basicPlayerStats;
@@ -103,6 +106,7 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Crouch.started += onStartEnteringFactory;
         inputActions.Player.Crouch.canceled += onCancelEnteringFactory;
         inputActions.Player.Attack.started += OnAttackStart;
+        inputActions.Player.Attack.canceled += OnAttackEnd;
         inputActions.Player.Interact.started += onActivateAbility;
     }
 
@@ -113,6 +117,7 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Crouch.started -= onStartEnteringFactory;
         inputActions.Player.Crouch.canceled -= onCancelEnteringFactory;
         inputActions.Player.Attack.started -= OnAttackStart;
+        inputActions.Player.Attack.canceled -= OnAttackEnd;
         inputActions.Player.Interact.started -= onActivateAbility;
     }
 
@@ -145,6 +150,17 @@ public class PlayerController : MonoBehaviour
         // Lower bound
         if (math.abs(rb.linearVelocityX) < minAxisSpeed) rb.linearVelocityX = 0;
         if (math.abs(rb.linearVelocityY) < minAxisSpeed) rb.linearVelocityY = 0;
+
+        // ATTACK
+        if (attackActivateFrames > 0) {
+            attackActivateTimer++;
+
+            if (attackActivateFrames == attackActivateTimer)
+            {
+                attackActivateTimer = 0;
+                curCannon.ActivateAttack();
+            }
+        }
     }
 
     void Update()
@@ -267,8 +283,18 @@ public class PlayerController : MonoBehaviour
     #region fight
     private void OnAttackStart(InputAction.CallbackContext context)
     {
-        int cost = attackStart(attackPrefab, attackData, bulletParent, sr.flipX? rb.rotation - 180 : rb.rotation);
-        // if (b != null) apply modifiers
+        // Update attack data
+        attackData.attakCoolDown = curPlayerStats.attackCoolDown;
+
+        // Attack
+        curCannon.AttackStart(attackPrefab, attackData, bulletParent, sr.flipX? rb.rotation - 180 : rb.rotation);
+
+        attackActivateFrames = attackData.activationFrames;
+    }
+
+    private void OnAttackEnd(InputAction.CallbackContext context)
+    {
+        curCannon.AttackEnd(attackData.activationFrames > 0);
     }
 
     public void getDMG(EnemyBase killer)
@@ -396,6 +422,7 @@ public class PlayerStats
     [Header("Fight")]
     public float maxHP;
     public float dmg;
+    public float attackCoolDown;
 
     public static PlayerStats operator +(PlayerStats s1, PlayerStats s2)
     {
@@ -406,7 +433,8 @@ public class PlayerStats
             maxSpeed = s1.maxSpeed + s2.maxSpeed,
             rotationSpeed = s1.rotationSpeed + s2.rotationSpeed,
             maxHP = s1.maxHP + s2.maxHP,
-            dmg = s1.dmg + s2.dmg
+            dmg = s1.dmg + s2.dmg,
+            attackCoolDown = s1.attackCoolDown + s2.attackCoolDown
         };
     }
 
@@ -419,7 +447,8 @@ public class PlayerStats
             maxSpeed = s1.maxSpeed * s2.maxSpeed,
             rotationSpeed = s1.rotationSpeed * s2.rotationSpeed,
             maxHP = s1.maxHP * s2.maxHP,
-            dmg = s1.dmg * s2.dmg
+            dmg = s1.dmg * s2.dmg,
+            attackCoolDown = s1.attackCoolDown * s2.attackCoolDown
         };
     }
 
@@ -432,7 +461,8 @@ public class PlayerStats
             maxSpeed = s1.maxSpeed * i,
             rotationSpeed = s1.rotationSpeed * i,
             maxHP = s1.maxHP * i,
-            dmg = s1.dmg * i
+            dmg = s1.dmg * i,
+            attackCoolDown = s1.attackCoolDown * i
         };
     }
 }

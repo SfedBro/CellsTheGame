@@ -4447,9 +4447,11 @@ MonoBehaviour:
   bulletParent: {fileID: 1619093619}
   attackPrefab: {fileID: 0}
   attackData:
-    dmg: 0
-    timeToLive: 0
-    speed: 0
+    dmg: 1
+    timeToLive: 2
+    speed: 10
+    attakCoolDown: 1
+    activationFrames: -1
   basicPlayerStats:
     mass: 1
     engineForce: 10
@@ -4457,6 +4459,7 @@ MonoBehaviour:
     rotationSpeed: 360
     maxHP: 1
     dmg: 1
+    attackCoolDown: 1
   curPlayerStats:
     mass: 0
     engineForce: 0
@@ -4464,6 +4467,7 @@ MonoBehaviour:
     rotationSpeed: 0
     maxHP: 0
     dmg: 0
+    attackCoolDown: 0
   invinsibilityTime: 1.5
   invinsibleColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
   bulletPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
