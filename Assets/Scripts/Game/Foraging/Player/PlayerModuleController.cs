@@ -120,7 +120,7 @@ public class PlayerModuleController : MonoBehaviour
         healer.controller = this;
         statsUp.controller = this;
 
-        foreach (PlayerModule m in equipedModules)
+        foreach (PlayerModule m in EquipedModules)
         {
             PlayerModuleManager.Instance.AddOwnedModule(doubleCannon);
         }
@@ -179,17 +179,19 @@ public class PlayerModuleController : MonoBehaviour
             }
 
             // Apply specific logics
-            if (module is IModuleCannon cannon)
+            switch (module)
             {
-                player.attackStart = cannon.AttackStart;
-            break;
-            case IModuleUseE usable:
-                player.activeAbilityE = usable.Use;
-            break;
-            case IModuleStat stat:
-                player.AddAddIncrements(stat.GetAddChanges());
-                player.AddMultIncrements(stat.GetMultCganges());
-            break;
+                case IModuleCannon cannon:
+                    player.curCannon = cannon;
+                break;
+                case IModuleUseE usable:
+                    player.activeAbilityE = usable.Use;
+                break;
+                case IModuleStat stat:
+                    player.AddAddIncrements(stat.GetAddChanges());
+                    player.AddMultIncrements(stat.GetMultCganges());
+                break;
+            }
         }
         else
         {
@@ -202,7 +204,7 @@ public class PlayerModuleController : MonoBehaviour
             // Revert attack if it was a cannon
             if (module is IModuleCannon)
             {
-                player.attackStart = basicCannon.AttackStart;
+                player.curCannon = basicCannon;
             }
         }
     }
