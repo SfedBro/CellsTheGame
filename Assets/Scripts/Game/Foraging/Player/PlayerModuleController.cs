@@ -13,6 +13,7 @@ public class PlayerModuleController : MonoBehaviour
     [SerializeField] private PlayerModule basicCannonModule;
     [SerializeField] private GameObject basicAttack;
     private IModuleCannon basicCannon;
+    private List<PlayerModule> equipedModules;
     private List<PlayerModule> rechargeWait = new();
     private int recharges;
 

@@ -9,6 +9,25 @@ public class ModuleEquipmentWindow : MonoBehaviour
     public PlayerModuleController playerController;
     public GameObject rootPanel;
 
+    [Header("Input")]
+    private InputSystem_Actions inputActions;
+
+    private void Awake()
+    {
+        inputActions = new InputSystem_Actions();
+        inputActions.UI.OpenModules.performed += _ => ToggleWindow();
+    }
+
+    private void OnEnable()
+    {
+        inputActions.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Disable();
+    }
+
     [Header("Equipment Slots")]
     public ModuleSlotUI cannonSlot;
     public ModuleSlotUI bodySlot;
@@ -37,13 +56,10 @@ public class ModuleEquipmentWindow : MonoBehaviour
         if (moveSlot != null) moveSlot.SetupEquipmentSlot(ModuleType.Move, this);
     }
 
-    private void Update()
+    private void ToggleWindow()
     {
-        if (Input.GetKeyDown(KeyCode.M)) // Hotkey M for Modules
-        {
-            if (rootPanel.activeSelf) Close();
-            else Open();
-        }
+        if (rootPanel.activeSelf) Close();
+        else Open();
     }
 
     public void Open()
