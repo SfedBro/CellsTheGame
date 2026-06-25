@@ -51,7 +51,7 @@ public class HintsController : MonoBehaviour
 
     public void OnPlayerLeaveDanger()
     {
-        hintFactoryEntering.SetActive(true);
+         if (hintFactoryEntering != null) hintFactoryEntering.SetActive(true);
     }
 
     #endregion

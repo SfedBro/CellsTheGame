@@ -263,7 +263,12 @@ MonoBehaviour:
   sprite: {fileID: 7807345855435258517, guid: 1ed350bbe92f75b46a2bc1c348f3a217, type: 3}
   changeDirectionTime: 3
   bulletPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
-  reloadTime: 2
+  attackData:
+    dmg: 1
+    timeToLive: 2
+    speed: 10
+    attakCoolDown: 2
+    activationFrames: -1
   basetriggerRadius: 5
   seekTriggerRadius: 10
   trigger: {fileID: 2297251964580457677}

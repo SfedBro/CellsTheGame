@@ -2,11 +2,18 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour, IAttack
 {
+    #region fields
+    
     [SerializeField] public float speed;
     [SerializeField] public float dmg;
     [SerializeField] public EnemyBase enemy;
 
     public Rigidbody2D rb;
+
+    #endregion
+
+
+    #region initialization
 
     void Awake()
     {
@@ -30,4 +37,15 @@ public class Bullet : MonoBehaviour, IAttack
         float angleRad = rotation * Mathf.Deg2Rad;
         rb.linearVelocity = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)) * speed;
     }
+
+    #endregion
+
+    #region attack
+
+    public void Activate()
+    {
+        Debug.LogError("Trying activate regular bullet");
+    }
+
+    #endregion
 }

@@ -170,7 +170,7 @@ public class PlayerModuleController : MonoBehaviour
         switch (module)
         {
             case IModuleCannon cannon:
-                player.attackStart = cannon.AttackStart;
+                player.curCannon = cannon;
             break;
             case IModuleUseE usable:
                 player.activeAbilityE = usable.Use;
@@ -251,7 +251,7 @@ public class PlayerModuleController : MonoBehaviour
 
     public void Disable(IModuleCannon m)
     {
-        player.attackStart = basicCannon.AttackStart;
+        player.curCannon = null;
         basicCannon.SetNextHit(m.GetNextHit());
     }
 
@@ -268,7 +268,7 @@ public class PlayerModuleController : MonoBehaviour
 
     public void Enable(IModuleCannon m)
     {
-        player.attackStart = m.AttackStart;
+        player.curCannon = m;
         m.SetNextHit(basicCannon.GetNextHit());
     }
 
