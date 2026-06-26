@@ -77,10 +77,14 @@ public class BuildManager : MonoBehaviour, IGameService
         Load();
     }
 
+    public static BuildManager Instance { get; private set; }
     private InputSystem_Actions inputActions;
 
     private void Awake()
     {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+
         inputActions = new InputSystem_Actions();
     }
 
@@ -106,17 +110,31 @@ public class BuildManager : MonoBehaviour, IGameService
             Save();
         }
 
-        if (inputActions.Factory.ToggleBuildMode.WasPressedThisFrame())
-        {
-            buildMode = !buildMode;
-            ClearAll();
-            
-            if (buildMode && StorageWindow.Instance != null)
-            {
-                StorageWindow.Instance.Close();
-            }
+        bool bPressed = inputActions.Factory.ToggleBuildMode.WasPressedThisFrame();
 
-            Debug.Log($"Build mode: {buildMode}");
+        if (bPressed)
+        {
+            if (buildMode)
+            {
+                // Если стройка активна, B отменяет стройку
+                buildMode = false;
+                ClearAll();
+                Debug.Log("Build mode cancelled.");
+
+                // И открывает меню
+                if (BuildMenuWindow.Instance != null)
+                {
+                    BuildMenuWindow.Instance.Open();
+                }
+            }
+            else
+            {
+                // Если стройка неактивна, B открывает/закрывает меню зданий
+                if (BuildMenuWindow.Instance != null)
+                {
+                    BuildMenuWindow.Instance.ToggleWindow();
+                }
+            }
         }
 
         if (!buildMode)
@@ -156,6 +174,31 @@ public class BuildManager : MonoBehaviour, IGameService
     [Header("Available Buildings")]
     public List<BuildingData> availableBuildings = new List<BuildingData>();
 
+    public void OnBuildUIButtonClicked()
+    {
+        if (buildMode)
+        {
+            // Отменяем режим строительства
+            buildMode = false;
+            ClearAll();
+            Debug.Log("Build mode cancelled via UI button.");
+
+            // И открываем меню (как при нажатии B)
+            if (BuildMenuWindow.Instance != null)
+            {
+                BuildMenuWindow.Instance.Open();
+            }
+        }
+        else
+        {
+            // Открываем/закрываем меню
+            if (BuildMenuWindow.Instance != null)
+            {
+                BuildMenuWindow.Instance.ToggleWindow();
+            }
+        }
+    }
+
     void HandleBuildingSelection()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1) && availableBuildings.Count > 0)
@@ -177,35 +220,109 @@ public class BuildManager : MonoBehaviour, IGameService
         }
     }
 
+    private Vector3Int lastDraggedCell;
+    private int selectedBuildingTempRotation = 0;
     private bool deletingRectangle = false;
 
     void HandleSelection()
     {
+        bool pointerOverUI = UnityEngine.EventSystems.EventSystem.current != null && 
+                             UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+
         if (isPasteMode)
         {
-            HandlePasteMode();
+            if (!pointerOverUI) HandlePasteMode();
             return;
         }
 
         // 1. Постройка (Левая кнопка мыши)
         if (inputActions.Factory.Select.WasPressedThisFrame() && !inputActions.Factory.MultiBuild.IsPressed())
         {
+            if (pointerOverUI) return;
+
             anchorA = WorldToCell(GetMouseWorld());
+            lastDraggedCell = anchorA;
+            selectedBuildingTempRotation = 0;
             ToggleCell(anchorA, false); // false = не удалять, а строить
         }
         else if (inputActions.Factory.Select.IsPressed() && !inputActions.Factory.MultiBuild.IsPressed())
         {
-            // Непрерывная постройка при зажатии (кисть)
+            if (pointerOverUI) return;
+
+            // Непрерывная постройка при зажатии (линия)
             Vector3Int currentCell = WorldToCell(GetMouseWorld());
-            if (!selectedCells.Contains(currentCell))
+            if (currentCell != lastDraggedCell)
             {
-                ToggleCell(currentCell, false);
+                if (selectedBuilding != null && selectedBuilding.buildingName == "Conveyor")
+                {
+                    Vector3Int dir = currentCell - lastDraggedCell;
+                    int angle = 0;
+                    if (dir.x > 0) angle = 0;
+                    else if (dir.x < 0) angle = 180;
+                    else if (dir.y > 0) angle = 90;
+                    else if (dir.y < 0) angle = -90;
+
+                    if (plannedBuilds.TryGetValue(lastDraggedCell, out var lastBuild))
+                    {
+                        if (lastBuild.type.buildingName == "Conveyor")
+                        {
+                            int prevAngle = lastBuild.rotation;
+                            if (prevAngle != angle)
+                            {
+                                // Угол изменился! Заменяем прямой на угловой
+                                BuildingData cornerData = DetermineCorner(prevAngle, angle, out int cornerRot);
+                                if (cornerData != null)
+                                {
+                                    lastBuild.type = cornerData;
+                                    lastBuild.rotation = cornerRot;
+                                    if (buildGhosts.TryGetValue(lastDraggedCell, out var lastGhost))
+                                    {
+                                        Destroy(lastGhost);
+                                        buildGhosts.Remove(lastDraggedCell);
+                                        CreateBuildGhost(lastDraggedCell, cornerData, cornerRot);
+                                    }
+                                }
+                                else
+                                {
+                                    // Fallback if corners missing
+                                    lastBuild.rotation = angle;
+                                    if (buildGhosts.TryGetValue(lastDraggedCell, out var lastGhost))
+                                    {
+                                        lastGhost.transform.rotation = Quaternion.Euler(0, 0, angle);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    selectedBuildingTempRotation = angle;
+                    PaintCell(currentCell, false);
+                    selectedBuildingTempRotation = 0;
+                }
+                else
+                {
+                    PaintCell(currentCell, false);
+                }
+                lastDraggedCell = currentCell;
             }
         }
-        else if (inputActions.Factory.Select.WasPressedThisFrame() && inputActions.Factory.MultiBuild.IsPressed())
+        // 2. Выделение рамкой (Shift + ЛКМ)
+        if (inputActions.Factory.Select.WasPressedThisFrame() && inputActions.Factory.MultiBuild.IsPressed())
         {
-            anchorA = WorldToCell(GetMouseWorld());
+            if (pointerOverUI) return;
             selectingRectangle = true;
+            anchorA = WorldToCell(GetMouseWorld());
+            deletingRectangle = false;
+        }
+
+        // 3. Удаление (Правая кнопка мыши)
+        if (inputActions.Factory.Delete.WasPressedThisFrame() && inputActions.Factory.MultiBuild.IsPressed())
+        {
+            if (pointerOverUI) return;
+            anchorA = WorldToCell(GetMouseWorld());
+            ToggleCell(anchorA, true); // true = удалять
+            deletingRectangle = true;
+            selectingRectangle = true; // Запускаем выделение рамкой для удаления
         }
 
         if (inputActions.Factory.Select.WasReleasedThisFrame() && selectingRectangle)
@@ -218,17 +335,15 @@ public class BuildManager : MonoBehaviour, IGameService
         // 2. Удаление (Правая кнопка мыши)
         if (inputActions.Factory.Delete.WasPressedThisFrame() && !inputActions.Factory.MultiBuild.IsPressed())
         {
+            if (pointerOverUI) return;
             anchorA = WorldToCell(GetMouseWorld());
-            ToggleCell(anchorA, true); // true = режим удаления
+            ToggleCell(anchorA, true); // Клик - переключает
         }
         else if (inputActions.Factory.Delete.IsPressed() && !inputActions.Factory.MultiBuild.IsPressed())
         {
             // Непрерывное удаление при зажатии (кисть)
             Vector3Int currentCell = WorldToCell(GetMouseWorld());
-            if (!selectedCells.Contains(currentCell))
-            {
-                ToggleCell(currentCell, true);
-            }
+            PaintCell(currentCell, true); // Зажатие - закрашивает
         }
         else if (inputActions.Factory.Delete.WasPressedThisFrame() && inputActions.Factory.MultiBuild.IsPressed())
         {
@@ -242,6 +357,30 @@ public class BuildManager : MonoBehaviour, IGameService
             Vector3Int anchorB = WorldToCell(GetMouseWorld());
             SelectRectangle(anchorA, anchorB, true);
         }
+    }
+
+    private BuildingData DetermineCorner(int prevAngle, int newAngle, out int cornerRot)
+    {
+        cornerRot = 0;
+        prevAngle = ((prevAngle % 360) + 360) % 360;
+        newAngle = ((newAngle % 360) + 360) % 360;
+
+        BuildingData leftCorner = availableBuildings.Find(b => b.buildingName == "ConveyorCornerLeft");
+        BuildingData rightCorner = availableBuildings.Find(b => b.buildingName == "ConveyorCornerRight");
+
+        // LEFT TURNS
+        if (prevAngle == 0 && newAngle == 90) { cornerRot = 0; return leftCorner; }
+        if (prevAngle == 90 && newAngle == 180) { cornerRot = 90; return leftCorner; }
+        if (prevAngle == 180 && newAngle == 270) { cornerRot = 180; return leftCorner; }
+        if (prevAngle == 270 && newAngle == 0) { cornerRot = 270; return leftCorner; }
+
+        // RIGHT TURNS
+        if (prevAngle == 0 && newAngle == 270) { cornerRot = 0; return rightCorner; }
+        if (prevAngle == 270 && newAngle == 180) { cornerRot = 270; return rightCorner; }
+        if (prevAngle == 180 && newAngle == 90) { cornerRot = 180; return rightCorner; }
+        if (prevAngle == 90 && newAngle == 0) { cornerRot = 90; return rightCorner; }
+
+        return null;
     }
 
     void HandleRotation()
@@ -372,6 +511,23 @@ public class BuildManager : MonoBehaviour, IGameService
         {
             Save();
         }
+    }
+
+    public void SetSelectedBuilding(BuildingData data)
+    {
+        if (data == null) return;
+        
+        buildMode = true;
+        selectedBuilding = data;
+        selectedBuildingTempRotation = 0;
+        
+        // Закрываем окно склада, если оно открыто
+        if (StorageWindow.Instance != null)
+        {
+            StorageWindow.Instance.Close();
+        }
+        
+        Debug.Log($"Selected building from menu: {data.buildingName}");
     }
 
     public void SpawnBuildingFromSave(string blockId, Vector3Int cell, int rotation, string customState)
@@ -626,43 +782,69 @@ public class BuildManager : MonoBehaviour, IGameService
             return;
         }
 
-        selectedCells.Add(cell);
+        PaintCell(cell, deleteMode);
+    }
 
+    void PaintCell(Vector3Int cell, bool deleteMode)
+    {
         if (deleteMode)
         {
-            plannedDeletes.Add(cell);
-            CreateDeleteMarker(cell);
+            if (plannedBuilds.ContainsKey(cell))
+            {
+                plannedBuilds.Remove(cell);
+                RemoveBuildGhost(cell);
+            }
+            if (!plannedDeletes.Contains(cell))
+            {
+                selectedCells.Add(cell);
+                plannedDeletes.Add(cell);
+                CreateDeleteMarker(cell);
+            }
             return;
+        }
+
+        if (selectedBuilding == null) return; // Prevent NullReferenceException
+
+        if (plannedDeletes.Contains(cell))
+        {
+            plannedDeletes.Remove(cell);
+            RemoveDeleteMarker(cell);
         }
 
         if (!GridManager.Instance.IsOccupied(cell))
         {
-            plannedBuilds[cell] =
-                new PlannedBuild(
-                    selectedBuilding,
-                    0
-                );
-
-            CreateBuildGhost(
-                cell,
-                selectedBuilding,
-                0
-            );
+            selectedCells.Add(cell);
+            
+            if (!plannedBuilds.ContainsKey(cell))
+            {
+                plannedBuilds[cell] = new PlannedBuild(selectedBuilding, selectedBuildingTempRotation);
+                CreateBuildGhost(cell, selectedBuilding, selectedBuildingTempRotation);
+            }
+            else
+            {
+                plannedBuilds[cell].type = selectedBuilding;
+                plannedBuilds[cell].rotation = selectedBuildingTempRotation;
+                RemoveBuildGhost(cell);
+                CreateBuildGhost(cell, selectedBuilding, selectedBuildingTempRotation);
+            }
         }
         else
         {
-            // Подсветка уже существующих зданий зелёным при выделении
-            MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
-            if (building != null)
+            if (!selectedCells.Contains(cell))
             {
-                if (!rotationGhosts.TryGetValue(cell, out var ghost))
+                selectedCells.Add(cell);
+                MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
+                if (building != null)
                 {
-                    ghost = new GameObject($"GhostRotation_{building.name}");
-                    ghost.transform.position = building.transform.position; // Использовать позицию самого здания
-                    CopySprites(building.gameObject, ghost);
-                    rotationGhosts[cell] = ghost;
+                    if (!rotationGhosts.TryGetValue(cell, out var ghost))
+                    {
+                        ghost = new GameObject($"GhostRotation_{building.name}");
+                        ghost.transform.position = building.transform.position; 
+                        CopySprites(building.gameObject, ghost);
+                        rotationGhosts[cell] = ghost;
+                    }
+                    ghost.transform.rotation = Quaternion.Euler(0, 0, Mathf.RoundToInt(building.transform.eulerAngles.z));
                 }
-                ghost.transform.rotation = Quaternion.Euler(0, 0, Mathf.RoundToInt(building.transform.eulerAngles.z));
             }
         }
     }
@@ -862,6 +1044,8 @@ public class BuildManager : MonoBehaviour, IGameService
             copy.sprite = renderer.sprite;
             copy.sortingLayerID = renderer.sortingLayerID;
             copy.sortingOrder = renderer.sortingOrder;
+            copy.flipX = renderer.flipX;
+            copy.flipY = renderer.flipY;
 
             copy.color = new Color(0, 1, 0, 0.5f);
         }
