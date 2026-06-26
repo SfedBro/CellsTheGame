@@ -41,6 +41,10 @@ public class BuildManager : MonoBehaviour, IGameService
     [SerializeField]
     private bool buildMode = false;
     public bool IsBuildMode => buildMode;
+
+    [SerializeField]
+    private bool editMode = false;
+    public bool IsEditMode => editMode;
     private Grid grid;
 
     public BuildingData selectedBuilding;
@@ -114,6 +118,8 @@ public class BuildManager : MonoBehaviour, IGameService
 
         if (bPressed)
         {
+            editMode = false;
+
             if (buildMode)
             {
                 // Если стройка активна, B отменяет стройку
@@ -137,14 +143,20 @@ public class BuildManager : MonoBehaviour, IGameService
             }
         }
 
-        if (!buildMode)
+        if (!buildMode && !editMode)
             return;
 
-        HandleBuildingSelection();
-        HandleSelection();
+        if (buildMode)
+            HandleBuildingSelection();
+
+        if (buildMode)
+            HandleSelection();
+        else if (editMode)
+            HandleEditSelection();
+
         HandleRotation();
 
-        if (inputActions.Factory.Apply.WasPressedThisFrame())
+        if (inputActions.Factory.Apply.WasPressedThisFrame() && buildMode)
             ApplyChanges();
 
         bool ctrl = UnityEngine.InputSystem.Keyboard.current.ctrlKey.isPressed;
@@ -176,6 +188,8 @@ public class BuildManager : MonoBehaviour, IGameService
 
     public void OnBuildUIButtonClicked()
     {
+        editMode = false;
+        
         if (buildMode)
         {
             // Отменяем режим строительства
@@ -199,8 +213,31 @@ public class BuildManager : MonoBehaviour, IGameService
         }
     }
 
+    public void OnEditUIButtonClicked()
+    {
+        if (editMode)
+        {
+            editMode = false;
+            ClearAll();
+            Debug.Log("Edit mode disabled.");
+        }
+        else
+        {
+            editMode = true;
+            buildMode = false;
+            ClearAll();
+            if (BuildMenuWindow.Instance != null)
+            {
+                BuildMenuWindow.Instance.Close();
+            }
+            Debug.Log("Edit mode enabled.");
+        }
+    }
+
     void HandleBuildingSelection()
     {
+        if (!buildMode) return;
+        
         if (Input.GetKeyDown(KeyCode.Alpha1) && availableBuildings.Count > 0)
         {
             selectedBuilding = availableBuildings[0];
@@ -359,6 +396,178 @@ public class BuildManager : MonoBehaviour, IGameService
         }
     }
 
+    void HandleEditSelection()
+    {
+        bool pointerOverUI = UnityEngine.EventSystems.EventSystem.current != null && 
+                             UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+
+        if (isPasteMode)
+        {
+            if (!pointerOverUI) HandlePasteMode();
+            return;
+        }
+
+        // Dragging logic for selected buildings
+        if (inputActions.Factory.Select.WasPressedThisFrame() && !inputActions.Factory.MultiBuild.IsPressed())
+        {
+            if (pointerOverUI) return;
+            anchorA = WorldToCell(GetMouseWorld());
+            
+            // Если кликнули на невыделенное здание, сбрасываем выделение и выделяем его
+            if (GridManager.Instance.IsOccupied(anchorA) && !selectedCells.Contains(anchorA))
+            {
+                ClearAll();
+                ToggleEditCell(anchorA);
+            }
+            
+            lastDraggedCell = anchorA;
+            isDraggingSelection = true;
+        }
+        else if (inputActions.Factory.Select.IsPressed() && isDraggingSelection)
+        {
+            Vector3Int currentCell = WorldToCell(GetMouseWorld());
+            if (currentCell != lastDraggedCell)
+            {
+                Vector3Int diff = currentCell - lastDraggedCell;
+                if (diff.sqrMagnitude > 0 && selectedCells.Count > 0 && !hasCopiedForDrag)
+                {
+                    // Сначала копируем выделенные здания и сразу удаляем оригиналы (Cut)
+                    CopySelected();
+                    
+                    // Мы не вызываем CutSelected(), потому что он вызовет ApplyChanges и ClearAll().
+                    // Мы вручную удаляем их:
+                    foreach (var cell in selectedCells)
+                    {
+                        plannedDeletes.Add(cell);
+                        CreateDeleteMarker(cell);
+                    }
+                    hasCopiedForDrag = true;
+                }
+                
+                if (hasCopiedForDrag)
+                {
+                    // Очищаем предыдущие призраки перетаскивания
+                    foreach (var cell in new List<Vector3Int>(plannedBuilds.Keys))
+                    {
+                        plannedBuilds.Remove(cell);
+                        RemoveBuildGhost(cell);
+                    }
+                    
+                    // Создаем новые призраки на новой позиции
+                    foreach (var item in clipboard)
+                    {
+                        Vector3Int targetCell = currentCell + item.offset;
+                        if (!GridManager.Instance.IsOccupied(targetCell) && !plannedBuilds.ContainsKey(targetCell))
+                        {
+                            plannedBuilds[targetCell] = new PlannedBuild(item.type, item.rotation);
+                            CreateBuildGhost(targetCell, item.type, item.rotation);
+                        }
+                    }
+                }
+                lastDraggedCell = currentCell;
+            }
+        }
+        
+        if (inputActions.Factory.Select.WasReleasedThisFrame())
+        {
+            if (isDraggingSelection && hasCopiedForDrag)
+            {
+                ApplyChanges();
+            }
+            isDraggingSelection = false;
+            hasCopiedForDrag = false;
+        }
+
+        // 2. Выделение рамкой (Shift + ЛКМ)
+        if (inputActions.Factory.Select.WasPressedThisFrame() && inputActions.Factory.MultiBuild.IsPressed())
+        {
+            if (pointerOverUI) return;
+            selectingRectangle = true;
+            anchorA = WorldToCell(GetMouseWorld());
+        }
+
+        if (inputActions.Factory.Select.WasReleasedThisFrame() && selectingRectangle)
+        {
+            selectingRectangle = false;
+            Vector3Int anchorB = WorldToCell(GetMouseWorld());
+            SelectEditRectangle(anchorA, anchorB);
+        }
+
+        // 3. Удаление (Правая кнопка мыши)
+        if (inputActions.Factory.Delete.WasPressedThisFrame())
+        {
+            if (pointerOverUI) return;
+            Vector3Int clickCell = WorldToCell(GetMouseWorld());
+            
+            // Если кликнули на здание, удаляем его
+            if (GridManager.Instance.IsOccupied(clickCell))
+            {
+                plannedDeletes.Add(clickCell);
+                CreateDeleteMarker(clickCell);
+                ApplyChanges(); // Немедленно удаляем
+            }
+            else if (selectedCells.Count > 0)
+            {
+                // Удаляем все выделенные
+                foreach (var cell in selectedCells)
+                {
+                    plannedDeletes.Add(cell);
+                }
+                ApplyChanges();
+            }
+        }
+    }
+    
+    private bool isDraggingSelection = false;
+    private bool hasCopiedForDrag = false;
+
+    void ToggleEditCell(Vector3Int cell)
+    {
+        if (selectedCells.Contains(cell))
+        {
+            selectedCells.Remove(cell);
+            RemoveBuildGhost(cell);
+            return;
+        }
+
+        if (GridManager.Instance.IsOccupied(cell))
+        {
+            selectedCells.Add(cell);
+            // Визуализируем выделение (например, призраком или маркером)
+            MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
+            if (building != null && !buildGhosts.ContainsKey(cell))
+            {
+                GameObject ghost = new GameObject($"EditSelection_{building.name}");
+                ghost.transform.position = building.transform.position;
+                ghost.transform.rotation = building.transform.rotation;
+                CopySprites(building.gameObject, ghost);
+                // Make it look selected (e.g., slightly blue or white overlay)
+                SpriteRenderer[] srs = ghost.GetComponentsInChildren<SpriteRenderer>();
+                foreach (var sr in srs)
+                {
+                    sr.color = new Color(0.5f, 0.8f, 1f, 0.7f); // Голубоватый цвет
+                    sr.sortingOrder += 10;
+                }
+                buildGhosts[cell] = ghost;
+            }
+        }
+    }
+
+    void SelectEditRectangle(Vector3Int a, Vector3Int b)
+    {
+        int minX = Mathf.Min(a.x, b.x);
+        int maxX = Mathf.Max(a.x, b.x);
+        int minY = Mathf.Min(a.y, b.y);
+        int maxY = Mathf.Max(a.y, b.y);
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                ToggleEditCell(new Vector3Int(x, y, 0));
+            }
+        }
+    }
     private BuildingData DetermineCorner(int prevAngle, int newAngle, out int cornerRot)
     {
         cornerRot = 0;
@@ -670,6 +879,7 @@ public class BuildManager : MonoBehaviour, IGameService
         if (inputActions.Factory.Select.WasPressedThisFrame())
         {
             // Вставляем!
+            bool pasted = false;
             foreach (var item in clipboard)
             {
                 Vector3Int targetCell = currentCenter + item.offset;
@@ -677,7 +887,14 @@ public class BuildManager : MonoBehaviour, IGameService
                 {
                     plannedBuilds[targetCell] = new PlannedBuild(item.type, item.rotation);
                     CreateBuildGhost(targetCell, item.type, item.rotation);
+                    pasted = true;
                 }
+            }
+            
+            if (pasted && editMode)
+            {
+                ApplyChanges();
+                // We keep paste mode active to allow pasting again, but the user can right click to cancel
             }
         }
 
@@ -757,6 +974,11 @@ public class BuildManager : MonoBehaviour, IGameService
                     CreateDeleteMarker(cell);
                 }
             }
+        }
+        
+        if (editMode)
+        {
+            ApplyChanges();
         }
     }
 
@@ -887,7 +1109,7 @@ public class BuildManager : MonoBehaviour, IGameService
                 }
                 changed.Add(cell);
             }
-            else
+            else if (editMode)
             {
                 MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
                 if (building != null)

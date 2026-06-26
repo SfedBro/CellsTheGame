@@ -28,7 +28,7 @@ public class PlayerInteractor : MonoBehaviour
         {
             TryInteract();
         }
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.X) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.RightControl))
         {
             SceneManager.LoadScene("Foraging");
         }
@@ -43,9 +43,9 @@ public class PlayerInteractor : MonoBehaviour
     private void TryInteract()
     {
         BuildManager buildManager = FindFirstObjectByType<BuildManager>();
-        if (buildManager != null && buildManager.IsBuildMode)
+        if (buildManager != null && (buildManager.IsBuildMode || buildManager.IsEditMode))
         {
-            return; // Don't allow interaction in build mode
+            return; // Don't allow interaction in build/edit mode
         }
 
         // Debug.Log("[PlayerInteractor] TryInteract called!");
