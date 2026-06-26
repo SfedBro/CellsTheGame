@@ -15,6 +15,13 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     {
         base.Start();
         resourcesManager = FindAnyObjectByType<ResourcesManager>();
+        if (resourcesManager != null) resourcesManager.RegisterStorage(this);
+    }
+
+    public override void OnRemoved()
+    {
+        base.OnRemoved();
+        if (resourcesManager != null) resourcesManager.UnregisterStorage(this);
     }
 
     [SerializeField]
@@ -92,7 +99,8 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
             {
                 GameObject go = new GameObject("ConveyorItem");
                 go.transform.position = transform.position;
-                go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+                float scale = ResourcesManager.instance.getResourceScale(typeToOutput);
+                go.transform.localScale = new Vector3(scale, scale, 1f);
                 itemView = go.AddComponent<ConveyorItemView>();
                 var renderer = go.AddComponent<SpriteRenderer>();
                 renderer.sortingOrder = 32767;

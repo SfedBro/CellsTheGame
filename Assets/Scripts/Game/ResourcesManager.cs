@@ -8,7 +8,18 @@ public class ResourcesManager : MonoBehaviour, IGameService
     public static ResourcesManager instance;
     [SerializeField] private List<Sprite> ResourceSpritesForItemSprites;
     [SerializeField] private Sprite defaultSprite;
+    [SerializeField] private float defaultScale = 1f;
     protected Inventory inventory;
+
+    [System.Serializable]
+    public struct ResourceVisualData
+    {
+        public ItemType type;
+        public float conveyorScale;
+    }
+
+    [Header("Visual Overrides")]
+    public List<ResourceVisualData> resourceVisuals = new List<ResourceVisualData>();
 
     private List<Action<ItemType, int>> observers = new List<Action<ItemType, int>>();
     
@@ -48,9 +59,39 @@ public class ResourcesManager : MonoBehaviour, IGameService
         return defaultSprite;
     }
 
+    private List<MachineStorage> allStorages = new List<MachineStorage>();
+
+    public void RegisterStorage(MachineStorage s)
+    {
+        if (!allStorages.Contains(s)) allStorages.Add(s);
+    }
+
+    public void UnregisterStorage(MachineStorage s)
+    {
+        allStorages.Remove(s);
+    }
+
+    public float getResourceScale(ItemType type)
+    {
+        if (resourceVisuals != null)
+        {
+            foreach (var visual in resourceVisuals)
+            {
+                if (visual.type == type) return visual.conveyorScale;
+            }
+        }
+        return defaultScale;
+    }
+
     public int getResourceAmount(ItemType t)
     {
-        return inventory.GetAmount(t);
+        int total = inventory.GetAmount(t);
+        foreach (var s in allStorages)
+        {
+            if (s != null && s.Inventory != null)
+                total += s.Inventory.GetAmount(t);
+        }
+        return total;
     }
 
     public void addResourceAmount(ItemType t, int amount)
@@ -58,7 +99,32 @@ public class ResourcesManager : MonoBehaviour, IGameService
         if (amount < 0)
         {
             amount *= -1;
-            inventory.RemoveItem(t, amount);
+            
+            // Сначала списываем с хранилищ на базе
+            for (int i = allStorages.Count - 1; i >= 0; i--)
+            {
+                var s = allStorages[i];
+                if (s == null)
+                {
+                    allStorages.RemoveAt(i);
+                    continue;
+                }
+
+                int available = s.Inventory.GetAmount(t);
+                int toRemove = Mathf.Min(amount, available);
+                if (toRemove > 0)
+                {
+                    s.Inventory.RemoveItem(t, toRemove);
+                    amount -= toRemove;
+                }
+                if (amount <= 0) break;
+            }
+
+            // Если не хватило на складах, списываем из личного инвентаря
+            if (amount > 0)
+            {
+                inventory.RemoveItem(t, amount);
+            }
         }
         else
         {

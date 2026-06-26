@@ -42,17 +42,25 @@ public class FactoryTickManager : MonoBehaviour, IGameService
         {
             timer -= TickRate;
             
-            // To handle modifications during iteration (e.g. destruction) safely,
-            // we iterate backwards or use a copy, but backwards is generally faster if blocks remove themselves.
+            // Phase 1: Internal movement
+            for (int i = activeBlocks.Count - 1; i >= 0; i--)
+            {
+                if (activeBlocks[i] != null)
+                {
+                    activeBlocks[i].PreTick();
+                }
+                else
+                {
+                    activeBlocks.RemoveAt(i);
+                }
+            }
+
+            // Phase 2: Push items out
             for (int i = activeBlocks.Count - 1; i >= 0; i--)
             {
                 if (activeBlocks[i] != null)
                 {
                     activeBlocks[i].Tick();
-                }
-                else
-                {
-                    activeBlocks.RemoveAt(i);
                 }
             }
         }
