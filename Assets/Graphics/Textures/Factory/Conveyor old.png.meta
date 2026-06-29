@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4d613f4ca361f414785f46ee93b0aa1e
+guid: 6e783937f794c6948a1401407f65fc13
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5377951765773399919
-    second: press2_split7_0
+      213: 6803873404882588446
+    second: Conveyor_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -110,19 +110,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: WindowsStoreApps
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -139,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: press2_split7_0
+      name: Conveyor_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,14 +141,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f67bb1a23a252aa40800000000000000
-      internalID: 5377951765773399919
+      spriteID: e1311c230d63c6e50800000000000000
+      internalID: 6803873404882588446
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: press2_split7_1
+      name: Conveyor_1
       rect:
         serializedVersion: 2
         x: 32
@@ -176,14 +163,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c1e7e762c2af5304480fc1647d9863d0
-      internalID: -1954226141
+      spriteID: 6c3ff0c06ee470240a272467900ccbba
+      internalID: 363886145
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: press2_split7_2
+      name: Conveyor_2
       rect:
         serializedVersion: 2
         x: 64
@@ -198,14 +185,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b8dfa516289097429ab9e854be699dd
-      internalID: -1767130782
+      spriteID: c9b0a1e2cef0ce34d9e61cefed7993e1
+      internalID: 1867852711
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: press2_split7_3
+      name: Conveyor_3
       rect:
         serializedVersion: 2
         x: 96
@@ -220,14 +207,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f98b650d4f116a84787eb73c3a9a5ed5
-      internalID: -1434237009
+      spriteID: ede3fe70bae75a642a88dd42952ffb0c
+      internalID: 1946324982
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: press2_split7_4
+      name: Conveyor_4
       rect:
         serializedVersion: 2
         x: 128
@@ -242,14 +229,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b0d164ffa612bec4d954927a20b80109
-      internalID: 291018766
+      spriteID: 17182a0701e303446b7c9d5ae0e68ee4
+      internalID: 600806141
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: press2_split7_5
+      name: Conveyor_5
       rect:
         serializedVersion: 2
         x: 160
@@ -264,14 +251,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86797975b8eac674991d1cf735f44a67
-      internalID: 1280500149
+      spriteID: 6d4c4c20cb50c8340a16d8ea306bcdc7
+      internalID: 1665066385
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: press2_split7_6
+      name: Conveyor_6
       rect:
         serializedVersion: 2
         x: 192
@@ -286,8 +273,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5334431c03828154f85d25a8b3425717
-      internalID: 1808184865
+      spriteID: f24e7bc5ef444ba4295be59b043065d4
+      internalID: 1736524207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Conveyor_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7feb4cb23e982f34397c6b01281f9909
+      internalID: -343945059
       vertices: []
       indices: 
       edges: []
@@ -296,7 +305,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: e53e26391f00a184e95cafe01800e845
+    spriteID: bcc021962fd45cf4188586339858607c
     internalID: 0
     vertices: []
     indices: 
@@ -306,13 +315,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      press2_split7_0: 5377951765773399919
-      press2_split7_1: -1954226141
-      press2_split7_2: -1767130782
-      press2_split7_3: -1434237009
-      press2_split7_4: 291018766
-      press2_split7_5: 1280500149
-      press2_split7_6: 1808184865
+      Conveyor_0: 6803873404882588446
+      Conveyor_1: 363886145
+      Conveyor_2: 1867852711
+      Conveyor_3: 1946324982
+      Conveyor_4: 600806141
+      Conveyor_5: 1665066385
+      Conveyor_6: 1736524207
+      Conveyor_7: -343945059
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

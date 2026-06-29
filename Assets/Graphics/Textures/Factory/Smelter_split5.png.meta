@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f6f552472276a8a4fab12a2da5a2eb16
+guid: a8652fcc6097a4942beba0114a5a1e56
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 729147793154898138
-    second: IngotIron_0
+      213: -3506363582324081841
+    second: Smelter_split5_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IngotIron_0
+      name: Smelter_split5_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 2
-        width: 15
-        height: 14
+        y: 0
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,96 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ad8f1cffd047e1a00800000000000000
-      internalID: 729147793154898138
+      spriteID: f4bf43e36e4e65fc0800000000000000
+      internalID: -3506363582324081841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Smelter_split5_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 734ac0b520eb44041b288d568dcabfb3
+      internalID: 335838828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Smelter_split5_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e375705542617947b23dc024866afc6
+      internalID: -685190276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Smelter_split5_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c0438a4bb8291b4e85d0c6e0a67a5cf
+      internalID: -1060075632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Smelter_split5_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed34ba7753788d44cab16dd1f72b1194
+      internalID: 1628590144
       vertices: []
       indices: 
       edges: []
@@ -164,7 +252,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: d5461f26907cf9a44869057d45e444c4
     internalID: 0
     vertices: []
     indices: 
@@ -174,7 +262,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      IngotIron_0: 729147793154898138
+      Smelter_split5_0: -3506363582324081841
+      Smelter_split5_1: 335838828
+      Smelter_split5_2: -685190276
+      Smelter_split5_3: -1060075632
+      Smelter_split5_4: 1628590144
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f6f552472276a8a4fab12a2da5a2eb16
+guid: 20bda5fee6b6e354bba1d7d0b596a446
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 729147793154898138
-    second: IngotIron_0
+      213: -2185676154247177902
+    second: IngotSilver_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IngotIron_0
+      name: IngotSilver_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 2
-        width: 15
-        height: 14
+        y: 1
+        width: 16
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ad8f1cffd047e1a00800000000000000
-      internalID: 729147793154898138
+      spriteID: 2591e003e1beaa1e0800000000000000
+      internalID: -2185676154247177902
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      IngotIron_0: 729147793154898138
+      IngotSilver_0: -2185676154247177902
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
