@@ -1,3 +1,5 @@
+using SaveData;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -19,6 +21,13 @@ public class MainMenuNavigation : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.R)) PlayerPrefs.DeleteAll();
+        if (Input.GetKey(KeyCode.R))
+        {
+            string saveKey = "TechTreeSave";
+            var data = new SaveData.TechTreeData();
+            data.unlockedNodeIds = new List<string>();
+            SaveManager.Save(saveKey, data);
+            Debug.Log("Saved Tech Tree");
+        }
     }
 }

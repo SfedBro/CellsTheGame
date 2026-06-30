@@ -16,6 +16,8 @@ public class PlayerInteractor : MonoBehaviour
 
     private void Update()
     {
+        if (PauseMenu.Instance != null && PauseMenu.Instance.IsPaused) return;
+        
         HandleInput();
         Move();
     }
