@@ -15,7 +15,6 @@ public class BuildManager : MonoBehaviour, IGameService
             this.rotation = rotation;
         }
     }
-    // (List of prefabs removed, use BuildingData directly)
     [SerializeField]
     private bool buildMode = false;
     public bool IsBuildMode => buildMode;
@@ -34,7 +33,6 @@ public class BuildManager : MonoBehaviour, IGameService
     public Dictionary<Vector3Int, PlannedBuild> plannedBuilds = new();
     public HashSet<Vector3Int> plannedDeletes = new();
     public Dictionary<Vector3Int, int> plannedRotations = new Dictionary<Vector3Int, int>();
-    // (Clipboard logic moved to ClipboardManager)
     private Vector3Int lastPasteCenter;
     private Dictionary<Vector3Int, GameObject> pasteGhosts = new Dictionary<Vector3Int, GameObject>();
     private bool selectingRectangle;
@@ -71,6 +69,8 @@ public class BuildManager : MonoBehaviour, IGameService
     private const float AUTO_SAVE_INTERVAL = 10f;
     private void Update()
     {
+        if (inputActions.Factory.Undo.WasPressedThisFrame()) UndoLastAction();
+        if (inputActions.Factory.Redo.WasPressedThisFrame()) RedoLastAction();
         autoSaveTimer += Time.deltaTime;
         if (autoSaveTimer >= AUTO_SAVE_INTERVAL)
         {
@@ -83,8 +83,7 @@ public class BuildManager : MonoBehaviour, IGameService
         editMode = FactoryStateManager.Instance.CurrentState == FactoryStateManager.FactoryState.EditMode;
         if (!buildMode && !editMode)
             return;
-        if (buildMode)
-            HandleBuildingSelection();
+        
         if (buildMode)
             HandleSelection();
         else if (editMode)
@@ -103,7 +102,7 @@ public class BuildManager : MonoBehaviour, IGameService
             if (editState != EditInteractionState.MovingSelection)
             {
                 ClipboardManager.Instance.Cut(selectedCells);
-                CutSelected(); // Keeps the delete logic
+                CutSelected();
                 editState = EditInteractionState.None;
             }
         }
@@ -126,26 +125,6 @@ public class BuildManager : MonoBehaviour, IGameService
     public void OnEditUIButtonClicked()
     {
         if (FactoryStateManager.Instance != null) FactoryStateManager.Instance.OnEditUIButtonClicked();
-    }
-    void HandleBuildingSelection()
-    {
-        if (!buildMode) return;
-
-        if (Input.GetKeyDown(KeyCode.Alpha1) && availableBuildings.Count > 0)
-        {
-            selectedBuilding = availableBuildings[0];
-            Debug.Log("Selected: " + selectedBuilding.buildingName);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2) && availableBuildings.Count > 1)
-        {
-            selectedBuilding = availableBuildings[1];
-            Debug.Log("Selected: " + selectedBuilding.buildingName);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3) && availableBuildings.Count > 2)
-        {
-            selectedBuilding = availableBuildings[2];
-            Debug.Log("Selected: " + selectedBuilding.buildingName);
-        }
     }
 
     public enum EditInteractionState
@@ -173,7 +152,6 @@ public class BuildManager : MonoBehaviour, IGameService
             return;
         }
         Vector3Int currentCell = WorldToCell(GetMouseWorld());
-        // 1. Постройка (ЛКМ)
         if (inputActions.Factory.Select.WasPressedThisFrame() && !inputActions.Factory.MultiBuild.IsPressed())
         {
             if (pointerOverUI) return;
@@ -242,7 +220,6 @@ public class BuildManager : MonoBehaviour, IGameService
         {
             isPaintingBuild = false;
         }
-        // 2. Рамка (Shift + ЛКМ)
         if (inputActions.Factory.Select.WasPressedThisFrame() && inputActions.Factory.MultiBuild.IsPressed())
         {
             if (pointerOverUI) return;
@@ -254,7 +231,6 @@ public class BuildManager : MonoBehaviour, IGameService
             selectingRectangle = false;
             SelectRectangle(anchorA, currentCell, false);
         }
-        // 3. Отмена/Удаление кистью (ПКМ)
         if (inputActions.Factory.Delete.WasPressedThisFrame() && !inputActions.Factory.MultiBuild.IsPressed())
         {
             if (pointerOverUI) return;
@@ -275,7 +251,6 @@ public class BuildManager : MonoBehaviour, IGameService
         {
             isPaintingCancel = false;
         }
-        // 4. Удаление рамкой (Shift + ПКМ)
         if (inputActions.Factory.Delete.WasPressedThisFrame() && inputActions.Factory.MultiBuild.IsPressed())
         {
             if (pointerOverUI) return;
@@ -419,7 +394,6 @@ public class BuildManager : MonoBehaviour, IGameService
         }
         else if (editState == EditInteractionState.MovingSelection)
         {
-            // Update ghost positions to follow mouse
             UpdateMovingSelectionGhosts(currentCell);
             if (inputActions.Factory.Select.WasReleasedThisFrame())
             {
@@ -475,7 +449,6 @@ public class BuildManager : MonoBehaviour, IGameService
             else if (inputActions.Factory.Delete.WasPressedThisFrame())
             {
                 if (pointerOverUI) return;
-                // Отмена
                 ClearAll();
                 editState = EditInteractionState.None;
             }
@@ -483,25 +456,21 @@ public class BuildManager : MonoBehaviour, IGameService
     }
     void TransitionToMovingSelection()
     {
-        // 1. Calculate center
         Vector3Int center = ClipboardManager.Instance.GetCenterOfSelection(selectedCells);
         movingSelectionCenter = new Vector2Int(center.x, center.y);
-        // 2. Cut to clipboard
         ClipboardManager.Instance.Copy(selectedCells);
 
-        // Mark for deletion
         foreach (var cell in selectedCells)
         {
             plannedDeletes.Add(cell);
             BuildGhostManager.Instance.CreateDeleteMarker(cell);
-            BuildGhostManager.Instance.RemoveBuildGhost(cell); // remove painting ghosts
+            BuildGhostManager.Instance.RemoveBuildGhost(cell);
         }
         editState = EditInteractionState.MovingSelection;
         UpdateMovingSelectionGhosts(WorldToCell(GetMouseWorld()));
     }
     void UpdateMovingSelectionGhosts(Vector3Int mouseCell)
     {
-        // Очищаем старые призраки
         foreach (var cell in new List<Vector3Int>(plannedBuilds.Keys))
         {
             BuildGhostManager.Instance.RemoveBuildGhost(cell);
@@ -510,14 +479,7 @@ public class BuildManager : MonoBehaviour, IGameService
         Vector3Int offset = new Vector3Int(mouseCell.x - movingSelectionCenter.x, mouseCell.y - movingSelectionCenter.y, 0);
         foreach (var item in ClipboardManager.Instance.GetClipboard())
         {
-            // item.offset is relative to the original minimum bounding box, we need it relative to our center
-            // wait, ClipboardManager.Copy calculates offset from minX, minY.
-            // Let's rely on item.offset being relative to minX, minY.
-            // Actually, we can just use the clipboard's Paste logic but visually.
-            // It's easier to just re-use ClipboardManager's offset.
             Vector3Int targetCell = mouseCell + item.offset;
-            // Wait! The clipboard's offset is based on the mouse position during copy, but ClipboardManager calculates it based on `min` coordinates.
-            // Let's adjust targetCell properly.
 
             if (!plannedBuilds.ContainsKey(targetCell))
             {
@@ -537,7 +499,6 @@ public class BuildManager : MonoBehaviour, IGameService
         if (GridManager.Instance.IsOccupied(cell))
         {
             selectedCells.Add(cell);
-            // Визуализируем выделение (например, призраком или маркером)
             MonoBehaviour building = GridManager.Instance.GetBuilding(cell);
             if (building != null && !BuildGhostManager.Instance.HasBuildGhost(cell))
             {
@@ -545,11 +506,10 @@ public class BuildManager : MonoBehaviour, IGameService
                 ghost.transform.position = building.transform.position;
                 ghost.transform.rotation = building.transform.rotation;
                 BuildGhostManager.Instance.CopySprites(building.gameObject, ghost);
-                // Make it look selected (e.g., slightly blue or white overlay)
                 SpriteRenderer[] srs = ghost.GetComponentsInChildren<SpriteRenderer>();
                 foreach (var sr in srs)
                 {
-                    sr.color = new Color(0.5f, 0.8f, 1f, 0.7f); // Голубоватый цвет
+                    sr.color = new Color(0.5f, 0.8f, 1f, 0.7f);
                     sr.sortingOrder += 10;
                 }
                 BuildGhostManager.Instance.AddBuildGhost(cell, ghost);
@@ -577,12 +537,10 @@ public class BuildManager : MonoBehaviour, IGameService
         newAngle = ((newAngle % 360) + 360) % 360;
         BuildingData leftCorner = availableBuildings.Find(b => b.buildingName == "ConveyorCornerLeft");
         BuildingData rightCorner = availableBuildings.Find(b => b.buildingName == "ConveyorCornerRight");
-        // LEFT TURNS
         if (prevAngle == 0 && newAngle == 90) { cornerRot = 0; return leftCorner; }
         if (prevAngle == 90 && newAngle == 180) { cornerRot = 90; return leftCorner; }
         if (prevAngle == 180 && newAngle == 270) { cornerRot = 180; return leftCorner; }
         if (prevAngle == 270 && newAngle == 0) { cornerRot = 270; return leftCorner; }
-        // RIGHT TURNS
         if (prevAngle == 0 && newAngle == 270) { cornerRot = 0; return rightCorner; }
         if (prevAngle == 270 && newAngle == 180) { cornerRot = 270; return rightCorner; }
         if (prevAngle == 180 && newAngle == 90) { cornerRot = 180; return rightCorner; }
@@ -591,7 +549,7 @@ public class BuildManager : MonoBehaviour, IGameService
     }
     void HandleRotation()
     {
-        bool pivotAroundCenter = !inputActions.Factory.MultiBuild.IsPressed(); // Shift = MultiBuild
+        bool pivotAroundCenter = !inputActions.Factory.MultiBuild.IsPressed();
         if (inputActions.Factory.RotateLeft.WasPressedThisFrame())
         {
             if (editMode && (editState == EditInteractionState.MovingSelection || ClipboardManager.Instance.isPasteMode))
@@ -609,7 +567,6 @@ public class BuildManager : MonoBehaviour, IGameService
             else if (buildMode)
             {
                 selectedBuildingTempRotation = (selectedBuildingTempRotation + 90) % 360;
-                // If we are currently painting, we should update the ghost under mouse
                 if (isPaintingBuild)
                 {
                     Vector3Int currentCell = WorldToCell(GetMouseWorld());
@@ -727,7 +684,6 @@ public class BuildManager : MonoBehaviour, IGameService
         {
             if (GridManager.Instance.IsOccupied(pair.Key))
                 continue;
-            // Check resources before building
             bool canAfford = true;
             if (pair.Value.type.cost != null && pair.Value.type.cost.Count > 0)
             {
@@ -745,12 +701,10 @@ public class BuildManager : MonoBehaviour, IGameService
                 Debug.Log($"Not enough resources to build {pair.Value.type.buildingName}!");
                 continue;
             }
-            // Spend resources
             if (pair.Value.type.cost != null)
             {
                 foreach (var stack in pair.Value.type.cost)
                 {
-                    // addResourceAmount supports subtracting if amount is negative
                     ResourcesManager.instance.addResourceAmount(stack.type, -stack.amount);
                 }
             }
@@ -762,8 +716,8 @@ public class BuildManager : MonoBehaviour, IGameService
 
             if (go.TryGetComponent<FactoryBlock>(out var block))
             {
-                block.blockId = pair.Value.type.buildingName; // Save ID
-                block.Initialize(); // Initialize and register in Grid immediately!
+                block.blockId = pair.Value.type.buildingName;
+                block.Initialize();
                 block.OnPlaced();
             }
             changed.Add(pair.Key);
@@ -786,7 +740,6 @@ public class BuildManager : MonoBehaviour, IGameService
         selectedBuilding = data;
         selectedBuildingTempRotation = 0;
 
-        // Закрываем окно склада, если оно открыто
         if (StorageWindow.Instance != null)
         {
             StorageWindow.Instance.Close();
@@ -802,7 +755,7 @@ public class BuildManager : MonoBehaviour, IGameService
         if (go.TryGetComponent<FactoryBlock>(out var block))
         {
             block.blockId = blockId;
-            block.Initialize(); // Initialize and register in Grid immediately!
+            block.Initialize();
             block.LoadSaveState(customState);
             block.OnPlaced();
         }
@@ -816,7 +769,7 @@ public class BuildManager : MonoBehaviour, IGameService
         FactoryBlock[] allBlocks = FindObjectsByType<FactoryBlock>(FindObjectsSortMode.None);
         foreach (var block in allBlocks)
         {
-            if (string.IsNullOrEmpty(block.blockId)) continue; // Can't save blocks without ID
+            if (string.IsNullOrEmpty(block.blockId)) continue;
             SaveData.BuildingSaveData bsd = new SaveData.BuildingSaveData
             {
                 blockId = block.blockId,
@@ -838,14 +791,12 @@ public class BuildManager : MonoBehaviour, IGameService
         var data = SaveManager.Load<SaveData.FactoryData>(saveKey);
         if (data != null && data.buildings != null)
         {
-            // Destroy existing blocks
             FactoryBlock[] allBlocks = FindObjectsByType<FactoryBlock>(FindObjectsSortMode.None);
             foreach (var block in allBlocks)
             {
                 block.OnRemoved();
                 Destroy(block.gameObject);
             }
-            // Spawn from save
             foreach (var bsd in data.buildings)
             {
                 SpawnBuildingFromSave(bsd.blockId, bsd.position, bsd.zRotation, bsd.customDataJson);
@@ -988,7 +939,7 @@ public class BuildManager : MonoBehaviour, IGameService
             }
             return;
         }
-        if (selectedBuilding == null) return; // Prevent NullReferenceException
+        if (selectedBuilding == null) return;
         if (plannedDeletes.Contains(cell))
         {
             plannedDeletes.Remove(cell);
@@ -1108,7 +1059,73 @@ public class BuildManager : MonoBehaviour, IGameService
     }
     #endregion
     #region Visuals & Ghosts
+
+    public void UndoLastAction()
+    {
+        if (undoStack.Count == 0) return;
+        
+        EditAction action = undoStack.Pop();
+        redoStack.Push(action);
+        
+        ClearAll();
+        
+        foreach (var kvp in action.builtCells)
+        {
+            plannedDeletes.Add(kvp.Key);
+        }
+        
+        foreach (var kvp in action.originalRotations)
+        {
+            plannedRotations[kvp.Key] = kvp.Value;
+        }
+        
+        foreach (var kvp in action.deletedBuildings)
+        {
+            plannedBuilds[kvp.Key] = kvp.Value;
+        }
+        
+        isUndoingOrRedoing = true;
+        ApplyChanges(true);
+        isUndoingOrRedoing = false;
+    }
+    
+    public void RedoLastAction()
+    {
+        if (redoStack.Count == 0) return;
+        
+        EditAction action = redoStack.Pop();
+        undoStack.Push(action);
+        
+        ClearAll();
+        
+        foreach (var kvp in action.deletedBuildings)
+        {
+            plannedDeletes.Add(kvp.Key);
+        }
+        
+        foreach (var kvp in action.newRotations)
+        {
+            plannedRotations[kvp.Key] = kvp.Value;
+        }
+        
+        foreach (var kvp in action.builtCells)
+        {
+            plannedBuilds[kvp.Key] = kvp.Value;
+        }
+        
+        isUndoingOrRedoing = true;
+        ApplyChanges(true);
+        isUndoingOrRedoing = false;
+    }
+    
+    public void ClearHistory()
+    {
+        undoStack.Clear();
+        redoStack.Clear();
+    }
+    
     public bool ClearAll()
+
     {
         bool clearedSomething = true;
         BuildGhostManager.Instance.ClearAllGhosts();

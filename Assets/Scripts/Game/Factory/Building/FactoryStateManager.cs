@@ -46,18 +46,16 @@ public class FactoryStateManager : MonoBehaviour, IGameService
     {
         if (PauseMenu.Instance != null && PauseMenu.Instance.IsPaused) return;
 
-        // Escape handling
         if (UnityEngine.InputSystem.Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (currentState != FactoryState.None)
             {
-                bool cleared = BuildManager.Instance.ClearAll(); // Clear selections/ghosts
+                bool cleared = BuildManager.Instance.ClearAll();
                 
                 SetState(FactoryState.None);
             }
             else
             {
-                // We are in None mode, clear selections first
                 bool cleared = BuildManager.Instance.ClearAll();
                 if (!cleared && PauseMenu.Instance != null)
                 {
@@ -66,7 +64,6 @@ public class FactoryStateManager : MonoBehaviour, IGameService
             }
         }
 
-        // B key handling
         if (inputActions.Factory.ToggleBuildMode.WasPressedThisFrame())
         {
             if (currentState == FactoryState.BuildMode)
@@ -83,6 +80,11 @@ public class FactoryStateManager : MonoBehaviour, IGameService
     public void SetState(FactoryState newState)
     {
         if (currentState == newState) return;
+
+        if (currentState == FactoryState.EditMode)
+        {
+            BuildManager.Instance.ClearHistory();
+        }
 
         currentState = newState;
         Debug.Log($"Factory State changed to: {currentState}");

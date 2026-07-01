@@ -71,7 +71,6 @@ public class ClipboardManager : MonoBehaviour
     public void Cut(HashSet<Vector3Int> selectedCells)
     {
         Copy(selectedCells);
-        // Deletion is handled by BuildManager
     }
 
     public List<ClipboardItem> GetClipboard()
@@ -88,7 +87,6 @@ public class ClipboardManager : MonoBehaviour
 
             if (rotateMatrix)
             {
-                // Поворот координат матрицы (offset) на 90 или -90 градусов
                 int newX = item.offset.x;
                 int newY = item.offset.y;
                 if (angle == 90 || angle == -270)
@@ -109,7 +107,6 @@ public class ClipboardManager : MonoBehaviour
                 item.offset = new Vector3Int(newX, newY, 0);
             }
             
-            // Normalize rotation
             item.rotation = ((item.rotation % 360) + 360) % 360;
             clipboard[i] = item;
         }
