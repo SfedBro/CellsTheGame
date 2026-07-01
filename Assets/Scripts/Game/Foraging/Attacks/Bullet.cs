@@ -22,6 +22,8 @@ public class Bullet : MonoBehaviour, IAttack
 
     public void Initialize(AttackData data, Transform parent, float rotation)
     {
+        transform.SetParent(parent);
+
         dmg = data.dmg;
         speed = data.speed;
 
@@ -30,9 +32,7 @@ public class Bullet : MonoBehaviour, IAttack
         float scale = (dmg + 3f) / 8f;
         transform.localScale = new Vector3(scale, scale, 1);
 
-        transform.SetParent(parent);
-
-        rb.SetRotation(rotation);
+        transform.Rotate(0, 0, rotation);
 
         float angleRad = rotation * Mathf.Deg2Rad;
         rb.linearVelocity = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)) * speed;
