@@ -9,6 +9,8 @@ public class PauseMenu : MonoBehaviour
     private bool isPaused = false;
     public bool IsPaused => isPaused;
 
+    private InputSystem_Actions inputActions;
+
     private void Awake()
     {
         if (Instance == null)
@@ -19,6 +21,21 @@ public class PauseMenu : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        inputActions = new InputSystem_Actions();
+        
+        // Встроенный экшен Cancel идеально подходит для паузы
+        inputActions.UI.Cancel.performed += ctx => Toggle();
+    }
+
+    private void OnEnable()
+    {
+        inputActions.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Disable();
     }
 
     public void Toggle()
@@ -41,6 +58,7 @@ public class PauseMenu : MonoBehaviour
         }
         Time.timeScale = 1f;
         isPaused = false;
+        if (TutorialManager.Instance != null) TutorialManager.Instance.NotifyAction("Action_Resume");
     }
 
     public void Pause()
@@ -57,6 +75,7 @@ public class PauseMenu : MonoBehaviour
         
         Time.timeScale = 0f;
         isPaused = true;
+        if (TutorialManager.Instance != null) TutorialManager.Instance.NotifyAction("Action_Pause");
     }
 
     public void LoadMainMenu()

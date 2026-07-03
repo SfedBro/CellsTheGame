@@ -29,5 +29,20 @@ public class MainMenuNavigation : MonoBehaviour
             SaveManager.Save(saveKey, data);
             Debug.Log("Saved Tech Tree");
         }
+
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            DeleteAllSaves();
+        }
+    }
+
+    public void DeleteAllSaves()
+    {
+        string dir = SaveManager.GetSavesDirectory();
+        if (System.IO.Directory.Exists(dir))
+        {
+            System.IO.Directory.Delete(dir, true);
+            Debug.Log("Deleted ALL saves directory: " + dir);
+        }
     }
 }

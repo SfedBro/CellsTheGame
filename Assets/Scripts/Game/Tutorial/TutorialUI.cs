@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
 
 public class TutorialUI : MonoBehaviour
 {
     [Header("UI Elements")]
     public GameObject tutorialPanel;
-    public Text stepNameText;
-    public Text descriptionText;
+    public TextMeshProUGUI stepNameText;
+    public TextMeshProUGUI descriptionText;
     public Button nextButton;
     public Button skipButton;
 
@@ -70,16 +71,60 @@ public class TutorialUI : MonoBehaviour
 
     private Canvas targetCanvasOverride;
     private int originalSortingOrder;
+    private bool canvasWasAdded = false;
+    private GameObject currentTargetObj = null;
 
     private void HandleHighlight(string tagOrName)
     {
+        // First find the new target
+        GameObject newTargetObj = null;
+        if (!string.IsNullOrEmpty(tagOrName))
+        {
+            try 
+            {
+                newTargetObj = GameObject.FindGameObjectWithTag(tagOrName);
+            }
+            catch (UnityException) {}
+
+            if (newTargetObj == null)
+            {
+                Transform[] allTransforms = Resources.FindObjectsOfTypeAll<Transform>();
+                foreach(var t in allTransforms)
+                {
+                    if (t.name == tagOrName && t.gameObject.scene.isLoaded)
+                    {
+                        newTargetObj = t.gameObject;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // If it's the exact same object as before, don't recreate the Canvas
+        if (newTargetObj != null && newTargetObj == currentTargetObj)
+        {
+            if (maskOverlay != null) maskOverlay.SetActive(true);
+            return;
+        }
+
         // Cleanup previous highlight
         if (targetCanvasOverride != null)
         {
-            Destroy(targetCanvasOverride.GetComponent<GraphicRaycaster>());
-            Destroy(targetCanvasOverride);
+            if (canvasWasAdded)
+            {
+                Destroy(targetCanvasOverride.GetComponent<GraphicRaycaster>());
+                Destroy(targetCanvasOverride);
+            }
+            else
+            {
+                targetCanvasOverride.overrideSorting = false;
+                targetCanvasOverride.sortingOrder = originalSortingOrder;
+            }
             targetCanvasOverride = null;
+            canvasWasAdded = false;
         }
+        
+        currentTargetObj = newTargetObj;
 
         if (maskOverlay != null)
         {
@@ -88,20 +133,42 @@ public class TutorialUI : MonoBehaviour
 
         if (string.IsNullOrEmpty(tagOrName)) return;
 
-        GameObject targetObj = GameObject.FindGameObjectWithTag(tagOrName);
-        if (targetObj == null)
-        {
-            // Fallback to name search
-            targetObj = GameObject.Find(tagOrName);
-        }
+        GameObject targetObj = newTargetObj;
 
         if (targetObj != null)
         {
+            Debug.Log($"[TutorialUI] Нашли объект для подсветки: {targetObj.name}. Добавляем Canvas...");
             // Add canvas override to pop it in front of the mask
-            targetCanvasOverride = targetObj.AddComponent<Canvas>();
-            targetCanvasOverride.overrideSorting = true;
-            targetCanvasOverride.sortingOrder = 30000; // ensure it's above the mask
-            targetObj.AddComponent<GraphicRaycaster>(); // ensure it can be clicked
+            Canvas existingCanvas = targetObj.GetComponent<Canvas>();
+            if (existingCanvas == null)
+            {
+                targetCanvasOverride = targetObj.AddComponent<Canvas>();
+                targetCanvasOverride.overrideSorting = true;
+                
+                // Скопируем слой у родительского канваса, чтобы точно быть выше маски в том же слое
+                Canvas parentCanvas = targetObj.transform.parent != null ? targetObj.transform.parent.GetComponentInParent<Canvas>() : null;
+                if (parentCanvas != null)
+                {
+                    targetCanvasOverride.sortingLayerID = parentCanvas.sortingLayerID;
+                }
+                
+                targetCanvasOverride.sortingOrder = 30000; // ensure it's above the mask
+                targetObj.AddComponent<GraphicRaycaster>(); // ensure it can be clicked
+                canvasWasAdded = true;
+            }
+            else
+            {
+                Debug.Log($"[TutorialUI] У объекта {targetObj.name} уже есть Canvas! Изменяем его Sorting Order.");
+                existingCanvas.overrideSorting = true;
+                originalSortingOrder = existingCanvas.sortingOrder;
+                existingCanvas.sortingOrder = 30000;
+                targetCanvasOverride = existingCanvas;
+                canvasWasAdded = false;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[TutorialUI] Объект с именем или тегом '{tagOrName}' НЕ НАЙДЕН на сцене!");
         }
     }
 

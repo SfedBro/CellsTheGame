@@ -88,6 +88,8 @@ public class FactoryStateManager : MonoBehaviour, IGameService
 
         currentState = newState;
         Debug.Log($"Factory State changed to: {currentState}");
+        
+        if (TutorialManager.Instance != null) TutorialManager.Instance.NotifyAction("State_" + currentState.ToString());
 
         BuildManager.Instance.ClearAll();
 

@@ -210,6 +210,8 @@ public class BuildManager : MonoBehaviour, IGameService
         buildMode = true;
         selectedBuilding = data;
         Interaction.selectedBuildingTempRotation = 0;
+        
+        if (TutorialManager.Instance != null) TutorialManager.Instance.NotifyAction("Select_" + data.buildingName);
 
         if (StorageWindow.Instance != null)
         {
@@ -379,6 +381,7 @@ public class BuildManager : MonoBehaviour, IGameService
             {
                 plannedBuilds[cell] = new PlannedBuild(selectedBuilding, Interaction.selectedBuildingTempRotation);
                 BuildGhostManager.Instance.CreateBuildGhost(cell, selectedBuilding, Interaction.selectedBuildingTempRotation);
+                if (TutorialManager.Instance != null) TutorialManager.Instance.NotifyAction("Place_" + selectedBuilding.buildingName);
             }
             else
             {
@@ -386,6 +389,7 @@ public class BuildManager : MonoBehaviour, IGameService
                 plannedBuilds[cell].rotation = Interaction.selectedBuildingTempRotation;
                 BuildGhostManager.Instance.RemoveBuildGhost(cell);
                 BuildGhostManager.Instance.CreateBuildGhost(cell, selectedBuilding, Interaction.selectedBuildingTempRotation);
+                if (TutorialManager.Instance != null) TutorialManager.Instance.NotifyAction("Place_" + selectedBuilding.buildingName);
             }
         }
         else
