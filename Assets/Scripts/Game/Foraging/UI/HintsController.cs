@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HintsController : MonoBehaviour
+public class HintsController : MonoBehaviour, IPausable
 {
     #region fields
 
@@ -13,6 +13,10 @@ public class HintsController : MonoBehaviour
     [Header("Player Health")]
     [SerializeField] private TMPro.TextMeshProUGUI hpIndicatorUI;
 
+    [Header("Pause Menu")]
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private PauseController pauseController;
+
     #endregion
 
 
@@ -22,6 +26,12 @@ public class HintsController : MonoBehaviour
     {
         deathScreen.SetActive(false);
         hintFactoryEntering.SetActive(true);
+        pausePanel.SetActive(false);
+    }
+
+    void Start()
+    {
+        pauseController.Subscribe(this);
     }
 
     #endregion
@@ -60,6 +70,16 @@ public class HintsController : MonoBehaviour
     #region  playerHP
 
     public void SetPlayerHP(float hp) => hpIndicatorUI.text = hp.ToString();
+
+    #endregion
+
+
+    #region pause
+
+    public void SetPause(bool pause)
+    {
+        pausePanel.SetActive(pause);
+    }
 
     #endregion
 }

@@ -178,5 +178,10 @@ public class PlayerExperienceManager : MonoBehaviour
         curLevelUI.text = curLevel.ToString();
         nextLevelUI.text = (curLevel + 1).ToString();
         experienceIndicator.fillAmount = Mathf.Clamp01(curExperience / curLevelRequirement);
+
+        foreach (Action<ItemType, int> action in observers)
+        {
+            action(ItemType.Default, upgradePoints);
+        }
     }
 }

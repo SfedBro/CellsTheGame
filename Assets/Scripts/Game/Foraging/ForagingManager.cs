@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class ForagingManager : MonoBehaviour
 {
@@ -12,13 +11,15 @@ public class ForagingManager : MonoBehaviour
     
     [Header("References")]
     [SerializeField] private PlayerController player;
+    [SerializeField] private PauseController pauseController;
 
-    [Header("Player Mass")]
-    [SerializeField] private int resourcesInMassUnit = 10;
-    private ResourcesManager rm = ResourcesManager.instance;
-    private Dictionary<ItemType, int> resources = new();
-    private int totalResources = 0;
-    private int massAddition;
+    [Header("Managers")]
+    [SerializeField] private UpgradingManager upgradingManager;
+    [SerializeField] private PlayerExperienceManager playerExperienceManager;
+
+    [Header("Tutorial")]
+    [SerializeField] private TutorialController tutorialController;
+    [SerializeField] private HintsController hintsController;
 
     #endregion
 
@@ -34,22 +35,24 @@ public class ForagingManager : MonoBehaviour
     void Awake()
     {
         inputActions = new InputSystem_Actions();
+        tutorialController.Hide();
+    }
 
-        resourceRecalculation();
+    void Start()
+    {
+        upgradingManager.correctPlayerStats(player);
     }
 
     void OnEnable()
     {
         inputActions.Player.Jump.performed += respawnPlayer;
         inputActions.Enable();
-        rm.Subscrive(addResource);
     }
 
     void OnDisable()
     {
         inputActions.Player.Jump.performed -= respawnPlayer;
         inputActions.Disable();
-        rm.Unsubscrive(addResource);
     }
 
     #endregion
@@ -67,39 +70,41 @@ public class ForagingManager : MonoBehaviour
         player.Respawn();
     }
 
-    public void onPlayerDeath()
+    public void onPlayerDeath(EnemyBase killer)
     {
         isPlayerDead = true;
+
+        // Notify managers
+        upgradingManager.onPlayerDeath();
+        upgradingManager.correctPlayerStats(player);
+        playerExperienceManager.onPlayerDeath(killer);
+        ResourcesManager.instance.onPlayerDeath(killer);
+        killer.onPlayerKilled();
     }
 
     #endregion
 
 
-    #region playerMass
+    #region pause menu
 
-    private void resourceRecalculation()
+    public void ExitScene()
     {
-        totalResources = 0;
-        foreach (ItemType t in Enum.GetValues(typeof(ItemType)))
-        {
-            resources[t] = rm.getResourceAmount(t);
-            totalResources += rm.getResourceAmount(t);
-        }
-
-        massAddition = totalResources / resourcesInMassUnit;
-        player.AddMass(massAddition);
+        pauseController.Resume();
+        SceneManager.LoadScene("MainMenu");
     }
 
-    private void addResource(ItemType itemType, int newAmount)
+    public void StartTutorial()
     {
-        int increment = newAmount - resources[itemType];
-        resources[itemType] = newAmount;
+        pauseController.enabled = false;
+        hintsController.SetPause(false);
+        tutorialController.Show();
+    }
 
-        totalResources += increment;
-        int massIncrement = (totalResources / resourcesInMassUnit) - massAddition;
-
-        massAddition += massIncrement;
-        player.AddMass(massIncrement);
+    public void EndTutorial()
+    {
+        tutorialController.Hide();
+        hintsController.SetPause(true);
+        pauseController.enabled = true;
     }
 
     #endregion

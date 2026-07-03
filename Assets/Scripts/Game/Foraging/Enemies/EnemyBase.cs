@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class EnemyBase : MonoBehaviour
+public class EnemyBase : MonoBehaviour, IPausable
 {
     [Header("Levels")]
     [SerializeField] protected List<EnemySO> levelStats;
@@ -22,6 +22,7 @@ public class EnemyBase : MonoBehaviour
     private int level;
     private List<LootAmount> loot;
     private int upgradePoints = 0;
+    private PauseController pauseController;
 
     protected Rigidbody2D rb;
     protected SpriteRenderer sr;
@@ -32,10 +33,12 @@ public class EnemyBase : MonoBehaviour
     protected float lostPlayerTime = 4f;
     protected float seekTimer = 0f;
 
-    public void Prepare(int level, Action<int, List<LootAmount>, Vector3> killed)
+    public void Prepare(int level, Action<int, List<LootAmount>, Vector3> killed, PauseController pause)
     {
         onKilled = killed;
         this.level = level;
+        pauseController = pause;
+        pause.Subscribe(this);
 
         EnemySO stats = levelStats[math.clamp(level - 1, 0, levelStats.Count)];
         curHP = stats.GetHP();
@@ -85,7 +88,9 @@ public class EnemyBase : MonoBehaviour
         curHP -= dmg;
 
         if (curHP <= 0)
-        {   
+        {
+            pauseController.Unsubscribe(this);
+            
             onKilled(math.clamp(level, 1, levelStats.Count), loot, transform.position);
 
             Destroy(gameObject);
@@ -147,6 +152,11 @@ public class EnemyBase : MonoBehaviour
         }
 
         transform.localScale = new Vector3((level + 1) * 0.5f, (level + 1) * 0.5f, 1);
+    }
+
+    public void SetPause(bool pause)
+    {
+        enabled = !pause;
     }
 }
 
