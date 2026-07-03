@@ -104,6 +104,8 @@ public class BuildGhostManager : MonoBehaviour, IGameService
 
             SpriteRenderer newSr = child.AddComponent<SpriteRenderer>();
             newSr.sprite = sr.sprite;
+            newSr.flipX = sr.flipX;
+            newSr.flipY = sr.flipY;
             newSr.color = new Color(1, 1, 1, 0.5f);
             newSr.sortingLayerID = sr.sortingLayerID;
             newSr.sortingOrder = sr.sortingOrder + 5;

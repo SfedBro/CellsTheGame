@@ -90,6 +90,10 @@ public class ForagingManager : MonoBehaviour
     public void ExitScene()
     {
         pauseController.Resume();
+        if (AutoSaveManager.Instance != null)
+        {
+            AutoSaveManager.Instance.SaveAll();
+        }
         SceneManager.LoadScene("MainMenu");
     }
 
