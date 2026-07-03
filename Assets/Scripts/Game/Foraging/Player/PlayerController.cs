@@ -1,6 +1,4 @@
 using System;
-using System.Resources;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -12,20 +10,13 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     [SerializeField] private ForagingManager foragingManager;
     [SerializeField] private HintsController hintsController;
-    [SerializeField] private Camera playerCamera;
-    [SerializeField] private UpgradingManager upgradingManager;
-    [SerializeField] private PlayerExperienceManager playerExperienceManager;
     private InputSystem_Actions inputActions;
     private Rigidbody2D rb;
     private SpriteRenderer sr;
-    private PlayerModuleController moduleController;
 
-    [Header("Movement")]
-    [SerializeField] private float frictionCoefficient = 1f;
-    [SerializeField] private float minAxisSpeed = 0.01f;
-    private Vector2 moveInput;
-    private float targetAngle;
-    private float curAngle;
+    [Header("Player Parts")]
+    [SerializeField] private PlayerMovement movement;
+    [SerializeField] private PlayerModuleController moduleController;
 
     [Header("Factory Entering")]
     [SerializeField] private float factoryEnteringTime = 2f;
@@ -36,37 +27,27 @@ public class PlayerController : MonoBehaviour
     [Header("Atack")]
     [SerializeField] private Transform bulletParent;
     public GameObject attackPrefab;
-    public AttackData attackData;
+    public AttackData attackData = new();
     public IModuleCannon baseCannon;
     public IModuleCannon curCannon;
-    private int attackActivateFrames = -1;
-    private int attackActivateTimer = 0;
+    private float attackActivateTime = -1;
+    private float attackActivateTimer = 0;
 
     [Header("Stats")]
     [SerializeField] private PlayerStats basicPlayerStats;
     [SerializeField] private PlayerStats curPlayerStats;
-    private PlayerStats addIncrements = new();
-    private PlayerStats multIncrements = new()
-        {
-            mass = 1,
-            engineForce = 1,
-            maxSpeed = 1,
-            rotationSpeed = 1,
-            maxHP = 1,
-            dmg = 1
-        };
+    private PlayerStats addIncrements = new(0);
+    private PlayerStats multIncrements = new(1);
     private float curHP;
 
     [Header("Fight")]
     [SerializeField] private float invinsibilityTime = 1.5f;
     [SerializeField] private Color invinsibleColor;
-    [SerializeField] private GameObject bulletPrefab;
     private float nextHit = 0f;
     private bool isInvinsible = true;
 
     [Header("Active Ability - E")]
     public Action<PlayerController> activeAbilityE;
-
 
     #endregion
 
@@ -78,17 +59,15 @@ public class PlayerController : MonoBehaviour
         inputActions = foragingManager.GetInputSystem();
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
-        moduleController = GetComponent<PlayerModuleController>();
     }
 
     void Start()
     {
         // Correct stats
-        upgradingManager.correctPlayerStats(this);
-        curPlayerStats = basicPlayerStats;
+        recalculateStats();
+        movement.curPlayerStats = curPlayerStats;
 
         curHP = curPlayerStats.maxHP;
-        curAngle = rb.rotation;
         nextHit = Time.time + invinsibilityTime;
 
         // Set hints
@@ -126,43 +105,6 @@ public class PlayerController : MonoBehaviour
 
     #region lifecycle
 
-    void FixedUpdate()
-    {
-        // MOVEMENT
-        rb.AddForce(moveInput * curPlayerStats.engineForce); // Engine force
-        // Friction force
-        if (rb.linearVelocity.magnitude > minAxisSpeed)
-        {
-            Vector2 friction = -rb.linearVelocity.normalized * curPlayerStats.mass * frictionCoefficient;
-
-            if (friction.magnitude > rb.linearVelocity.magnitude / Time.fixedDeltaTime)
-            {
-                friction = -rb.linearVelocity / Time.fixedDeltaTime;
-            }
-
-            rb.AddForce(friction);
-        }
-        // Upper bound
-        if (rb.linearVelocity.magnitude > curPlayerStats.maxSpeed)
-        {
-            rb.linearVelocity = rb.linearVelocity.normalized * curPlayerStats.maxSpeed;
-        }
-        // Lower bound
-        if (math.abs(rb.linearVelocityX) < minAxisSpeed) rb.linearVelocityX = 0;
-        if (math.abs(rb.linearVelocityY) < minAxisSpeed) rb.linearVelocityY = 0;
-
-        // ATTACK
-        if (attackActivateFrames > 0) {
-            attackActivateTimer++;
-
-            if (attackActivateFrames == attackActivateTimer)
-            {
-                attackActivateTimer = 0;
-                curCannon.ActivateAttack();
-            }
-        }
-    }
-
     void Update()
     {
         // ENTERING HUB
@@ -185,23 +127,16 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // ROTATION
-        Vector2 direction = (playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position).normalized;
-        targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        curAngle = Mathf.MoveTowardsAngle(curAngle, targetAngle, curPlayerStats.rotationSpeed * Time.deltaTime);
-        bool flip = false;
+        // ATTACK
+        if (attackActivateTime > 0) {
+            attackActivateTimer += Time.deltaTime;
 
-        if (curAngle > 90f || curAngle < -90f)
-        {
-            rb.MoveRotation(curAngle - 180);
-            flip = true;
+            if (attackActivateTimer <= attackActivateTime)
+            {
+                attackActivateTimer = 0;
+                curCannon.ActivateAttack();
+            }
         }
-        else
-        {
-            rb.MoveRotation(curAngle);
-        }
-
-        sr.flipX = flip;
     }
 
     #endregion
@@ -215,7 +150,7 @@ public class PlayerController : MonoBehaviour
         transform.position = Vector2.zero;
 
         // Update hp
-        curHP = curPlayerStats.maxHP;  
+        curHP = curPlayerStats.maxHP;
         hintsController.SetPlayerHP(curHP);
 
         // Notify
@@ -229,17 +164,12 @@ public class PlayerController : MonoBehaviour
     private void Die(EnemyBase killer)
     {
         // Stop moving
-        moveInput = Vector2.zero;
+        movement.moveInput = Vector2.zero;
         rb.linearVelocity = Vector2.zero;
 
         // Notify
-        foragingManager.onPlayerDeath();
+        foragingManager.onPlayerDeath(killer);
         hintsController.OnPlayerDeath();
-        ResourcesManager.instance.onPlayerDeath(killer);
-        upgradingManager.onPlayerDeath();
-        upgradingManager.correctPlayerStats(this);
-        playerExperienceManager.onPlayerDeath(killer);
-        killer.onPlayerKilled();
 
         // Death
         gameObject.SetActive(false);
@@ -252,7 +182,7 @@ public class PlayerController : MonoBehaviour
 
     private void onMove(InputAction.CallbackContext context)
     {
-        moveInput = context.ReadValue<Vector2>().normalized;
+        movement.moveInput = context.ReadValue<Vector2>().normalized;
     }
 
     #endregion
@@ -289,12 +219,12 @@ public class PlayerController : MonoBehaviour
         // Attack
         curCannon.AttackStart(attackPrefab, attackData, bulletParent, sr.flipX? rb.rotation - 180 : rb.rotation);
 
-        attackActivateFrames = attackData.activationFrames;
+        attackActivateTime = attackData.activationTime;
     }
 
     private void OnAttackEnd(InputAction.CallbackContext context)
     {
-        curCannon.AttackEnd(attackData.activationFrames > 0);
+        curCannon.AttackEnd(attackData.activationTime > 0);
     }
 
     public void getDMG(EnemyBase killer)
@@ -319,8 +249,6 @@ public class PlayerController : MonoBehaviour
 
     public void UpdateAttackData()
     {
-        if (attackData == null) attackData = new();
-
         attackData.dmg = curPlayerStats.dmg;
         attackData.speed = 10f;
         attackData.timeToLive = 2f;
@@ -340,14 +268,15 @@ public class PlayerController : MonoBehaviour
                 basicPlayerStats.maxSpeed = newValue * 0.5f;
                 break;
             case StatType.Health:
-                basicPlayerStats.maxHP = (int)newValue;
+                basicPlayerStats.maxHP = newValue;
                 curHP = basicPlayerStats.maxHP;
                 hintsController.SetPlayerHP(curHP);
                 break;
             case StatType.Damage:
-                basicPlayerStats.dmg = (int)newValue;
+                basicPlayerStats.dmg = newValue;
+                recalculateStats();
                 UpdateAttackData();
-                break;
+                return;
         }
         
         recalculateStats();
@@ -360,10 +289,9 @@ public class PlayerController : MonoBehaviour
 
     private void recalculateStats()
     {
-        curPlayerStats = basicPlayerStats;
-
-        curPlayerStats += addIncrements;
-        curPlayerStats *= multIncrements;
+        curPlayerStats.Copy(basicPlayerStats);
+        curPlayerStats.Add(addIncrements);
+        curPlayerStats.Multiply(multIncrements);
     }
 
     public void AddMass(int m)
@@ -375,13 +303,13 @@ public class PlayerController : MonoBehaviour
 
     public void AddAddIncrements(PlayerStats addition)
     {
-        addIncrements += addition;
+        addIncrements.Add(addition);
         recalculateStats();
     }
 
     public void AddMultIncrements(PlayerStats multiplication)
     {
-        multIncrements += multiplication;
+        multIncrements.Add(multiplication);
         recalculateStats();
     }
 
@@ -417,6 +345,7 @@ public class PlayerStats
     public float mass;
     public float engineForce;
     public float maxSpeed;
+    public float minSpeed;
     public float rotationSpeed;
 
     [Header("Fight")]
@@ -424,45 +353,68 @@ public class PlayerStats
     public float dmg;
     public float attackCoolDown;
 
-    public static PlayerStats operator +(PlayerStats s1, PlayerStats s2)
+    public PlayerStats(int initial)
     {
-        return new()
-        {
-            mass = s1.mass + s2.mass,
-            engineForce = s1.engineForce + s2.engineForce,
-            maxSpeed = s1.maxSpeed + s2.maxSpeed,
-            rotationSpeed = s1.rotationSpeed + s2.rotationSpeed,
-            maxHP = s1.maxHP + s2.maxHP,
-            dmg = s1.dmg + s2.dmg,
-            attackCoolDown = s1.attackCoolDown + s2.attackCoolDown
-        };
+        mass = initial;
+        engineForce = initial;
+        maxSpeed = initial;
+        rotationSpeed = initial;
+        maxHP = initial;
+        minSpeed = initial;
+        dmg = initial;
+        attackCoolDown = initial;
     }
 
-    public static PlayerStats operator *(PlayerStats s1, PlayerStats s2)
+    public void Add(PlayerStats other)
     {
-        return new()
-        {
-            mass = s1.mass * s2.mass,
-            engineForce = s1.engineForce * s2.engineForce,
-            maxSpeed = s1.maxSpeed * s2.maxSpeed,
-            rotationSpeed = s1.rotationSpeed * s2.rotationSpeed,
-            maxHP = s1.maxHP * s2.maxHP,
-            dmg = s1.dmg * s2.dmg,
-            attackCoolDown = s1.attackCoolDown * s2.attackCoolDown
-        };
+        mass += other.mass;
+        engineForce += other.engineForce;
+        maxSpeed += other.maxSpeed;
+        rotationSpeed += other.rotationSpeed;
+        maxHP += other.maxHP;
+        minSpeed += other.minSpeed;
+        dmg += other.dmg;
+        attackCoolDown += other.attackCoolDown;
     }
 
-    public static PlayerStats operator *(PlayerStats s1, int i)
+    public void Multiply(PlayerStats other)
     {
-        return new()
-        {
-            mass = s1.mass * i,
-            engineForce = s1.engineForce * i,
-            maxSpeed = s1.maxSpeed * i,
-            rotationSpeed = s1.rotationSpeed * i,
-            maxHP = s1.maxHP * i,
-            dmg = s1.dmg * i,
-            attackCoolDown = s1.attackCoolDown * i
-        };
+        mass *= other.mass;
+        engineForce *= other.engineForce;
+        maxSpeed *= other.maxSpeed;
+        rotationSpeed *= other.rotationSpeed;
+        maxHP *= other.maxHP;
+        minSpeed *= other.minSpeed;
+        dmg *= other.dmg;
+        attackCoolDown *= other.attackCoolDown;
+    }
+
+    public static PlayerStats operator *(PlayerStats s1, float multiplication)
+    {
+        PlayerStats result = new(0);
+        result.Copy(s1);
+        
+        result.mass *= multiplication;
+        result.engineForce *= multiplication;
+        result.maxSpeed *= multiplication;
+        result.rotationSpeed *= multiplication;
+        result.maxHP *= multiplication;
+        result.minSpeed *= multiplication;
+        result.dmg *= multiplication;
+        result.attackCoolDown *= multiplication;
+
+        return result;
+    }
+
+    public void Copy(PlayerStats other)
+    {
+        mass = other.mass;
+        engineForce = other.engineForce;
+        maxSpeed = other.maxSpeed;
+        rotationSpeed = other.rotationSpeed;
+        maxHP = other.maxHP;
+        minSpeed = other.minSpeed;
+        dmg = other.dmg;
+        attackCoolDown = other.attackCoolDown;
     }
 }

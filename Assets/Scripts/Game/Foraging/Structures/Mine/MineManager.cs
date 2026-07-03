@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MineManager : MonoBehaviour
+public class MineManager : MonoBehaviour, IPausable
 {
     [Header("Dependencies")]
     [SerializeField] private PlayerExperienceManager playerExperienceManager;
     [SerializeField] private ResourceGenerator resourceGenerator;
+    [SerializeField] private PauseController pauseController;
 
     [Header("Resource generation")]
     [SerializeField] private GameObject minePrefab;
@@ -14,6 +15,7 @@ public class MineManager : MonoBehaviour
     [SerializeField] private float mineTick = 1f;
     private List<Mine> mines = new();
     private float nextTick = 0f;
+    private bool pause = false;
 
     void Start()
     {
@@ -26,7 +28,7 @@ public class MineManager : MonoBehaviour
                 Vector2 newPos = data.getSelfPosition();
                 Mine m = Instantiate(minePrefab, new Vector3(newPos.x, newPos.y, 2), Quaternion.identity).GetComponent<Mine>();
                 m.transform.SetParent(transform, false);
-                m.Setup(data, spawnLoot);
+                m.Setup(data, spawnLoot, pauseController);
                 mines.Add(m);
             }
         }
@@ -43,6 +45,8 @@ public class MineManager : MonoBehaviour
 
     private void Tick()
     {
+        if (pause) return;
+        
         foreach (Mine m in mines)
         {
             m.Tick();
@@ -60,5 +64,10 @@ public class MineManager : MonoBehaviour
             }
             resourceGenerator.spawnLoot(pos + (Vector3)(Random.insideUnitCircle * 0.5f), l.GetItemType(), l.amount);
         }
+    }
+
+    public void SetPause(bool pause)
+    {
+        this.pause = pause;
     }
 }

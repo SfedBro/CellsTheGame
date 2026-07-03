@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] private PauseController pauseController;
+
     [Header("Enemy spawning")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private int generationMaxAttemp = 5;
@@ -66,7 +69,7 @@ public class EnemyManager : MonoBehaviour
         GameObject spawned = Instantiate(enemies[UnityEngine.Random.Range(0, enemies.Count)].gameObject, newPos, Quaternion.identity);
         spawned.transform.parent = transform;
         spawned.transform.localScale = new Vector3((level + 1) * 0.5f, (level + 1) * 0.5f, 0);
-        spawned.GetComponent<EnemyBase>().Prepare(level, onKilled);
+        spawned.GetComponent<EnemyBase>().Prepare(level, onKilled, pauseController);
     }
 
     void onKilled(int level, List<LootAmount> loot, Vector3 pos)

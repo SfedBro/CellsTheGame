@@ -76,7 +76,7 @@ public class EnemyTurret : EnemyBase
         {
             nextShootTime = Time.time + attackData.attakCoolDown;
 
-            Bullet bullet = Instantiate(bulletPrefab, transform.position, transform.rotation).GetComponent<Bullet>();
+            Bullet bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity).GetComponent<Bullet>();
             bullet.Initialize(attackData, transform, rb.rotation);
             bullet.enemy = this;
         }

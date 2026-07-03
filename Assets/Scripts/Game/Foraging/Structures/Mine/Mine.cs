@@ -8,6 +8,7 @@ public class Mine : MonoBehaviour
     private SpriteRenderer sr;
     private List<TickEvent> actions = new();
     private Action<List<LootAmount>, Vector3> spawnLoot;
+    private PauseController pauseController;
 
     [Header("Resource Spawn")]
     [SerializeField] private GameObject resourcePrefab;
@@ -26,11 +27,12 @@ public class Mine : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
     }
 
-    public void Setup(MineData d, Action<List<LootAmount>, Vector3> s)
+    public void Setup(MineData d, Action<List<LootAmount>, Vector3> s, PauseController pause)
     {
         data = d;
         sr.sprite = d.GetSprite();
         spawnLoot = s;
+        pauseController = pause;
 
         resourceData = d.GeItemData();
         resourceCapacity = d.GetMaxResources();
@@ -70,7 +72,7 @@ public class Mine : MonoBehaviour
 
         Vector2 newPos = data.getEnemyPosition();
         EnemyBase spawned = Instantiate(enemyBase.gameObject, new Vector3(newPos.x, newPos.y, -2), Quaternion.identity).GetComponent<EnemyBase>();
-        spawned.Prepare(enemyLevel, onKilled);
+        spawned.Prepare(enemyLevel, onKilled, pauseController);
         spawned.transform.SetParent(transform, false);
         spawned.SetBounds(transform.position, enemyWalkRadius);
         curEnemies++;

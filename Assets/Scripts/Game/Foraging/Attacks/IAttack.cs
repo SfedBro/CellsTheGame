@@ -18,5 +18,5 @@ public class AttackData
 
     [Header("Cannon settings")]
     public float attakCoolDown;
-    public int activationFrames;
+    public float activationTime;
 }
