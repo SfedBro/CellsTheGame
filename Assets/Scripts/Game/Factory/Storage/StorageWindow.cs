@@ -25,8 +25,12 @@ public class StorageWindow : MonoBehaviour
         root.SetActive(false);
     }
 
+    public bool IsOpen => root.activeSelf;
+
     public void Open(IInventoryProvider storage)
     {
+        if (PauseMenu.Instance != null && PauseMenu.Instance.IsPaused) return;
+        if (CraftingWindow.Instance != null && CraftingWindow.Instance.IsOpen) return;
         if (root.activeSelf) Close();
         
         currentStorage = storage;

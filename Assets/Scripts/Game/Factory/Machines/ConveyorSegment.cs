@@ -33,6 +33,7 @@ public class ConveyorSegment : FactoryBlock
 
     public override void Initialize()
     {
+        if (isInitialized) return;
         if (Ports == null) Ports = new System.Collections.Generic.List<Port>();
         if (Ports.Count == 0)
         {
@@ -75,8 +76,8 @@ public class ConveyorSegment : FactoryBlock
                 {
                     ItemType t = (ItemType)data.SlotItems[i];
                     ConveyorItem item = new ConveyorItem { Type = t };
-                    
                     GameObject go = new GameObject("ConveyorItem");
+                    go.transform.SetParent(this.transform);
                     float scale = ResourcesManager.instance != null ? ResourcesManager.instance.getResourceScale(t) : 0.5f;
                     go.transform.localScale = new Vector3(scale, scale, 1f);
                     item.View = go.AddComponent<ConveyorItemView>();

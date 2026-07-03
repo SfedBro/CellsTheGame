@@ -1,3 +1,5 @@
+using SaveData;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,5 +16,32 @@ public class MainMenuNavigation : MonoBehaviour
         #else
         Application.Quit();
         #endif
+    }
+
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.R))
+        {
+            string saveKey = "TechTreeSave";
+            var data = new SaveData.TechTreeData();
+            data.unlockedNodeIds = new List<string>();
+            SaveManager.Save(saveKey, data);
+            Debug.Log("Saved Tech Tree");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            DeleteAllSaves();
+        }
+    }
+
+    public void DeleteAllSaves()
+    {
+        string dir = SaveManager.GetSavesDirectory();
+        if (System.IO.Directory.Exists(dir))
+        {
+            System.IO.Directory.Delete(dir, true);
+            Debug.Log("Deleted ALL saves directory: " + dir);
+        }
     }
 }

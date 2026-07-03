@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 public class TechTreeManager : MonoBehaviour, IGameService
 {
@@ -12,6 +13,7 @@ public class TechTreeManager : MonoBehaviour, IGameService
 
     private void Awake()
     {
+        
         if (Instance == null)
         {
             InitializeService();
@@ -26,6 +28,7 @@ public class TechTreeManager : MonoBehaviour, IGameService
             return;
         }
         Instance = this;
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
     }
 

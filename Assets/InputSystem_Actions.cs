@@ -1419,6 +1419,24 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Undo"",
+                    ""type"": ""Button"",
+                    ""id"": ""77c7f8dd-9b5b-4591-85c8-0674453dda2f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Redo"",
+                    ""type"": ""Button"",
+                    ""id"": ""96afd139-9f27-4f6d-b371-656e971efe80"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1597,6 +1615,72 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Paste"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""caef36b9-d95b-43a7-adff-e6f2e5cc7cb0"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""97776be1-8148-44da-85ee-cafaaa716c8e"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""228db1f6-9f50-480c-b10b-4c822a73dcfc"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""660bfd31-ad45-40fd-9532-5f0ce0e12633"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""18d147dd-b724-4e18-9bde-d47f1a867028"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""dbcc1b02-ae47-4ec2-aaa2-9cacd47ac199"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -1713,6 +1797,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Factory_Copy = m_Factory.FindAction("Copy", throwIfNotFound: true);
         m_Factory_Cut = m_Factory.FindAction("Cut", throwIfNotFound: true);
         m_Factory_Paste = m_Factory.FindAction("Paste", throwIfNotFound: true);
+        m_Factory_Undo = m_Factory.FindAction("Undo", throwIfNotFound: true);
+        m_Factory_Redo = m_Factory.FindAction("Redo", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -2402,6 +2488,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Factory_Copy;
     private readonly InputAction m_Factory_Cut;
     private readonly InputAction m_Factory_Paste;
+    private readonly InputAction m_Factory_Undo;
+    private readonly InputAction m_Factory_Redo;
     /// <summary>
     /// Provides access to input actions defined in input action map "Factory".
     /// </summary>
@@ -2453,6 +2541,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Factory/Paste".
         /// </summary>
         public InputAction @Paste => m_Wrapper.m_Factory_Paste;
+        /// <summary>
+        /// Provides access to the underlying input action "Factory/Undo".
+        /// </summary>
+        public InputAction @Undo => m_Wrapper.m_Factory_Undo;
+        /// <summary>
+        /// Provides access to the underlying input action "Factory/Redo".
+        /// </summary>
+        public InputAction @Redo => m_Wrapper.m_Factory_Redo;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2509,6 +2605,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Paste.started += instance.OnPaste;
             @Paste.performed += instance.OnPaste;
             @Paste.canceled += instance.OnPaste;
+            @Undo.started += instance.OnUndo;
+            @Undo.performed += instance.OnUndo;
+            @Undo.canceled += instance.OnUndo;
+            @Redo.started += instance.OnRedo;
+            @Redo.performed += instance.OnRedo;
+            @Redo.canceled += instance.OnRedo;
         }
 
         /// <summary>
@@ -2550,6 +2652,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Paste.started -= instance.OnPaste;
             @Paste.performed -= instance.OnPaste;
             @Paste.canceled -= instance.OnPaste;
+            @Undo.started -= instance.OnUndo;
+            @Undo.performed -= instance.OnUndo;
+            @Undo.canceled -= instance.OnUndo;
+            @Redo.started -= instance.OnRedo;
+            @Redo.performed -= instance.OnRedo;
+            @Redo.canceled -= instance.OnRedo;
         }
 
         /// <summary>
@@ -2966,5 +3074,19 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPaste(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Undo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUndo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Redo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRedo(InputAction.CallbackContext context);
     }
 }

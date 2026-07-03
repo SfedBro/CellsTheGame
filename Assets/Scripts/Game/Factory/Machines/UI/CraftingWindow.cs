@@ -32,8 +32,12 @@ public class CraftingWindow : MonoBehaviour
         root.SetActive(false);
     }
 
+    public bool IsOpen => root.activeSelf;
+
     public void Open(ICraftingProvider provider)
     {
+        if (PauseMenu.Instance != null && PauseMenu.Instance.IsPaused) return;
+        if (StorageWindow.Instance != null && StorageWindow.Instance.IsOpen) return;
         if (root.activeSelf) Close();
         
         currentProvider = provider;

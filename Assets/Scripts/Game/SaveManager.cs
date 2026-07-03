@@ -1,11 +1,47 @@
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class SaveManager
 {
+    public static string CurrentSaveName = "Default";
+
+    public static string GetSavesDirectory()
+    {
+        string dir = Path.Combine(Application.persistentDataPath, "Saves");
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+        return dir;
+    }
+
+    public static string GetCurrentSaveDirectory()
+    {
+        string dir = Path.Combine(GetSavesDirectory(), CurrentSaveName);
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+        return dir;
+    }
+
+    public static List<string> GetAvailableSaves()
+    {
+        string dir = GetSavesDirectory();
+        return Directory.GetDirectories(dir).Select(d => new DirectoryInfo(d).Name).ToList();
+    }
+
+    public static void DeleteSave(string saveName)
+    {
+        string path = Path.Combine(GetSavesDirectory(), saveName);
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+            Debug.Log($"[SaveManager] Deleted save '{saveName}'");
+        }
+    }
+
     private static string GetFilePath(string key)
     {
-        return Path.Combine(Application.persistentDataPath, key + ".json");
+        return Path.Combine(GetCurrentSaveDirectory(), key + ".json");
     }
 
     public static void Save<T>(string key, T saveData)

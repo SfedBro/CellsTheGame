@@ -29,6 +29,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
     public override void Initialize()
     {
+        if (isInitialized) return;
         base.Initialize();
         inventory.Initialize(startingSlotCount); // Limit storage to slots
     }
