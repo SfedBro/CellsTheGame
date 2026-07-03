@@ -23,8 +23,11 @@ public abstract class FactoryBlock : MonoBehaviour
         Initialize();
     }
 
+    protected bool isInitialized = false;
     public virtual void Initialize()
     {
+        if (isInitialized) return;
+        isInitialized = true;
         ApplyRotationToPorts();
         MergeDuplicatePorts();
         GetGridPosition();

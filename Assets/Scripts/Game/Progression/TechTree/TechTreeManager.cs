@@ -28,6 +28,7 @@ public class TechTreeManager : MonoBehaviour, IGameService
             return;
         }
         Instance = this;
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
     }
 

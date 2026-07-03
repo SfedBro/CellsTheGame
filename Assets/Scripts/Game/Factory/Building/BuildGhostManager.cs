@@ -26,7 +26,7 @@ public class BuildGhostManager : MonoBehaviour, IGameService
         if (buildGhosts.ContainsKey(cell)) RemoveBuildGhost(cell);
 
         GameObject ghost = new GameObject($"Ghost_{type.buildingName}");
-        ghost.transform.position = BuildManager.Instance.CellToWorld(cell);
+        ghost.transform.position = BuildGridUtils.CellToWorld(BuildManager.Instance, cell);
         ghost.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
         GameObject prefab = BuildManager.Instance.GetPrefab(type);
@@ -56,7 +56,7 @@ public class BuildGhostManager : MonoBehaviour, IGameService
 
         if (deleteMarkerPrefab != null)
         {
-            GameObject marker = Instantiate(deleteMarkerPrefab, BuildManager.Instance.CellToWorld(cell), Quaternion.identity);
+            GameObject marker = Instantiate(deleteMarkerPrefab, BuildGridUtils.CellToWorld(BuildManager.Instance, cell), Quaternion.identity);
             deleteMarkers[cell] = marker;
         }
     }
@@ -73,7 +73,7 @@ public class BuildGhostManager : MonoBehaviour, IGameService
     public void CreatePasteGhost(Vector3Int cell, BuildingData type, int rotation)
     {
         GameObject ghost = new GameObject($"PasteGhost_{type.buildingName}");
-        ghost.transform.position = BuildManager.Instance.CellToWorld(cell);
+        ghost.transform.position = BuildGridUtils.CellToWorld(BuildManager.Instance, cell);
         ghost.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
         GameObject prefab = BuildManager.Instance.GetPrefab(type);

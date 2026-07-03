@@ -83,7 +83,7 @@ public class FactoryStateManager : MonoBehaviour, IGameService
 
         if (currentState == FactoryState.EditMode)
         {
-            BuildManager.Instance.ClearHistory();
+            BuildManager.Instance.History.ClearHistory();
         }
 
         currentState = newState;
