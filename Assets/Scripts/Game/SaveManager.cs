@@ -1,21 +1,32 @@
+using System.IO;
 using UnityEngine;
+
 public static class SaveManager
 {
+    private static string GetFilePath(string key)
+    {
+        return Path.Combine(Application.persistentDataPath, key + ".json");
+    }
+
     public static void Save<T>(string key, T saveData)
     {
         string jsonDataString = JsonUtility.ToJson(saveData, true);
-        PlayerPrefs.SetString(key, jsonDataString);
+        string path = GetFilePath(key);
+        File.WriteAllText(path, jsonDataString);
+        Debug.Log($"[SaveManager] Saved {key} to {path}");
     }
+
     public static T Load<T>(string key) where T : new()
     {
-        if (PlayerPrefs.HasKey(key))
+        string path = GetFilePath(key);
+        if (File.Exists(path))
         {
-            string loadedString = PlayerPrefs.GetString(key);
+            string loadedString = File.ReadAllText(path);
             return JsonUtility.FromJson<T>(loadedString);
         }
         else
         {
-            Debug.Log("Horrible case");
+            Debug.Log($"[SaveManager] No save found for {key} at {path}. Creating default.");
             return new T();
         }
     }

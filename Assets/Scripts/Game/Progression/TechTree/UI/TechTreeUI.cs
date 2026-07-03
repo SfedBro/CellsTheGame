@@ -13,10 +13,25 @@ public class TechTreeUI : MonoBehaviour
     private TechTreeNodeUI[] nodes;
     private System.Collections.Generic.List<TechTreeLineUI> generatedLines = new System.Collections.Generic.List<TechTreeLineUI>();
 
+    private InputSystem_Actions inputActions;
+
     private void Awake()
     {
         Instance = this;
         if (rootPanel != null) rootPanel.SetActive(false);
+
+        inputActions = new InputSystem_Actions();
+        inputActions.UI.OpenTechTree.performed += _ => ToggleWindow();
+    }
+
+    private void OnEnable()
+    {
+        inputActions.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Disable();
     }
 
     private void Start()
@@ -50,19 +65,15 @@ public class TechTreeUI : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void ToggleWindow()
     {
-        // Open/Close toggle (e.g., T key)
-        if (Input.GetKeyDown(KeyCode.T))
+        if (rootPanel != null && rootPanel.activeSelf)
         {
-            if (rootPanel != null && rootPanel.activeSelf)
-            {
-                Close();
-            }
-            else
-            {
-                Open();
-            }
+            Close();
+        }
+        else
+        {
+            Open();
         }
     }
 

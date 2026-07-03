@@ -190,7 +190,8 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
             {
                 GameObject go = new GameObject("ConveyorItem");
                 go.transform.position = transform.position;
-                go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+                float scale = ResourcesManager.instance.getResourceScale(typeToOutput);
+                go.transform.localScale = new Vector3(scale, scale, 1f);
                 itemView = go.AddComponent<ConveyorItemView>();
                 var renderer = go.AddComponent<SpriteRenderer>();
                 renderer.sortingOrder = 32767;

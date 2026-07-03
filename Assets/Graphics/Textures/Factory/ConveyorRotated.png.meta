@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: ea7ddc6e5666faa449fc91775b10ccc0
+guid: 8f57e39e35d4cec478e6bce947eed1c3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3048499642358425110
-    second: Experience_0
+      213: -5860467053223900118
+    second: ConveyorRotated_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -110,19 +110,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: WindowsStoreApps
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -139,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Experience_0
+      name: ConveyorRotated_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ae912571abd81b5d0800000000000000
-      internalID: -3048499642358425110
+      spriteID: a2c85b2e3407baea0800000000000000
+      internalID: -5860467053223900118
       vertices: []
       indices: 
       edges: []
@@ -174,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Experience_0: -3048499642358425110
+      ConveyorRotated_0: -5860467053223900118
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
