@@ -168,7 +168,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Sprint"",
                     ""type"": ""Button"",
                     ""id"": ""641cd816-40e6-41b4-8c3d-04687c349290"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -682,6 +682,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenHideMap"",
+                    ""type"": ""Button"",
+                    ""id"": ""b805d28d-1a55-4ea4-a93b-4f335b3487ab"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1133,6 +1142,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""OpenTechTree"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3769043f-c98d-4ce1-a89d-515f42967c29"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenHideMap"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1774,6 +1794,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_UI_OpenModules = m_UI.FindAction("OpenModules", throwIfNotFound: true);
         m_UI_OpenTechTree = m_UI.FindAction("OpenTechTree", throwIfNotFound: true);
         m_UI_Pause = m_UI.FindAction("Pause", throwIfNotFound: true);
+        m_UI_OpenHideMap = m_UI.FindAction("OpenHideMap", throwIfNotFound: true);
         // Cheats
         m_Cheats = asset.FindActionMap("Cheats", throwIfNotFound: true);
         m_Cheats__1 = m_Cheats.FindAction("1", throwIfNotFound: true);
@@ -2079,6 +2100,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_OpenModules;
     private readonly InputAction m_UI_OpenTechTree;
     private readonly InputAction m_UI_Pause;
+    private readonly InputAction m_UI_OpenHideMap;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -2142,6 +2164,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/Pause".
         /// </summary>
         public InputAction @Pause => m_Wrapper.m_UI_Pause;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/OpenHideMap".
+        /// </summary>
+        public InputAction @OpenHideMap => m_Wrapper.m_UI_OpenHideMap;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2207,6 +2233,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @OpenHideMap.started += instance.OnOpenHideMap;
+            @OpenHideMap.performed += instance.OnOpenHideMap;
+            @OpenHideMap.canceled += instance.OnOpenHideMap;
         }
 
         /// <summary>
@@ -2257,6 +2286,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @OpenHideMap.started -= instance.OnOpenHideMap;
+            @OpenHideMap.performed -= instance.OnOpenHideMap;
+            @OpenHideMap.canceled -= instance.OnOpenHideMap;
         }
 
         /// <summary>
@@ -2925,6 +2957,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPause(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenHideMap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenHideMap(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Cheats" which allows adding and removing callbacks.
