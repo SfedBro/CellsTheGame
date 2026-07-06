@@ -3,13 +3,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IPausable
 {
     #region fields
 
     [Header("References")]
     [SerializeField] private ForagingManager foragingManager;
     [SerializeField] private HintsController hintsController;
+    [SerializeField] private PauseController pauseController;
     private InputSystem_Actions inputActions;
     private Rigidbody2D rb;
     private SpriteRenderer sr;
@@ -45,6 +46,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Color invinsibleColor;
     private float nextHit = 0f;
     private bool isInvinsible = true;
+    private bool onPause = false;
+    private bool endAttack = false;
 
     [Header("Active Ability - E")]
     public Action<PlayerController> activeAbilityE;
@@ -76,6 +79,8 @@ public class PlayerController : MonoBehaviour
 
         // Equip modules
         moduleController.InitializeModules();
+
+        pauseController.Subscribe(this);
     }
 
     void OnEnable()
@@ -213,6 +218,7 @@ public class PlayerController : MonoBehaviour
     #region fight
     private void OnAttackStart(InputAction.CallbackContext context)
     {
+        if (onPause) return;
         // Update attack data
         attackData.attakCoolDown = curPlayerStats.attackCoolDown;
 
@@ -224,6 +230,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnAttackEnd(InputAction.CallbackContext context)
     {
+        if (onPause)
+        {
+            endAttack = true;
+            return;
+        }
         curCannon.AttackEnd(attackData.activationTime > 0);
     }
 
@@ -332,6 +343,17 @@ public class PlayerController : MonoBehaviour
     {
         curHP = Math.Clamp(curHP + amount, 1, curPlayerStats.maxHP);
         hintsController.SetPlayerHP(curHP);
+    }
+    
+    #endregion
+
+
+    #region pause
+
+    public void SetPause(bool pause)
+    {
+        onPause = pause;
+        if (endAttack) curCannon.AttackEnd(attackData.activationTime > 0);
     }
 
     #endregion

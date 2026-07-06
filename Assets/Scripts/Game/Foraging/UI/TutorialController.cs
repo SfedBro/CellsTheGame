@@ -20,6 +20,11 @@ public class TutorialController : MonoBehaviour
     [SerializeField] private List<string> titles;
     private int curFrame = 0;
 
+    [Header("Booster")]
+    [SerializeField] private bool boost;
+    [SerializeField] private RenderTexture renderTexture;
+    [SerializeField] private List<VideoPlayer> players;
+
     #endregion
 
 
@@ -28,6 +33,14 @@ public class TutorialController : MonoBehaviour
     void Awake()
     {
         leftButton.SetActive(false);
+
+        if (boost) {
+            foreach (VideoPlayer vp in players)
+            {
+                vp.Prepare();
+                vp.prepareCompleted += PlayVideo;
+            }
+        }
     }
 
     #endregion
@@ -48,9 +61,15 @@ public class TutorialController : MonoBehaviour
 
     private void showSlide(int page)
     {
-        videoPlayer.clip = tutorialClips[page];
-        videoPlayer.Prepare();
-        videoPlayer.prepareCompleted += PlayVideo;
+        if (boost)
+        {
+            players[page].targetTexture = renderTexture;
+        }
+        else {
+            videoPlayer.clip = tutorialClips[page];
+            videoPlayer.Prepare();
+            videoPlayer.prepareCompleted += PlayVideo;
+        }
 
         label.text = titles[page];
     }
@@ -63,6 +82,7 @@ public class TutorialController : MonoBehaviour
 
     public void NextTutorialFrame()
     {
+        if (boost) players[curFrame].targetTexture = null;
         curFrame++;
 
         leftButton.SetActive(true);
@@ -76,6 +96,7 @@ public class TutorialController : MonoBehaviour
 
     public void PreviousTutorialFrame()
     {
+        if (boost) players[curFrame].targetTexture = null;
         curFrame--;
 
         rightButton.SetActive(true);

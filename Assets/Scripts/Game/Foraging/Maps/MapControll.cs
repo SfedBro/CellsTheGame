@@ -26,18 +26,19 @@ public class MapControll : MonoBehaviour, IPausable, IGameService
         bigMap.SetActive(false);
     }
 
-    public void StartService() {}
+    public void StartService()
+    {
+        pauseController.Subscribe(this);
+    }
 
     void OnEnable()
     {
         inputActions.UI.OpenHideMap.performed += onMapOpenHide;
-        pauseController.Subscribe(this);
     }
 
     void OnDisable()
     {
         inputActions.UI.OpenHideMap.performed -= onMapOpenHide;
-        pauseController.Unsubscribe(this);
     }
 
     #endregion
