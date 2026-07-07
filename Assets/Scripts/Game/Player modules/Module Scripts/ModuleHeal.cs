@@ -17,10 +17,5 @@ public class ModuleHeal : PlayerModule, IModuleUseE
         player.Heal(healAmount);
 
         SpendCharges(1);
-    }
-
-    public override void Disable()
-    {
-        controller.Disable(this);
-    }
+    } 
 }

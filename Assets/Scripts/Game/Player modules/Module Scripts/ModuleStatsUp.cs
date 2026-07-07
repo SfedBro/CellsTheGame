@@ -10,10 +10,5 @@ public class ModuleStatsUp : PlayerModule, IModuleStat
     public PlayerStats GetAddChanges() => addIncrement;
 
     public PlayerStats GetMultCganges() => multIncrement;
-
-    public override void Disable()
-    {
-        controller.Disable(this);
-    }
 }
 

@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40537e44daf8f924095a3c9c9831faf2, type: 3}
   m_Name: BasicHeal
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: -3048499642358425110, guid: ea7ddc6e5666faa449fc91775b10ccc0, type: 3}
   title: Small Player Healler
-  mass: 1
   moduleType: 1
   conflictGroup: 2
   controller: {fileID: 0}
@@ -22,4 +21,4 @@ MonoBehaviour:
   maxCharge: 5
   curCharge: 5
   healAmount: 1
-  coolDown: 0
+  coolDown: 1

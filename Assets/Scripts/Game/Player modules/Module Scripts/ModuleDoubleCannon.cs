@@ -7,37 +7,8 @@ public class ModuleDoubleCannon : PlayerModule, IModuleCannon
 
     [Header("Shooting settings")]
     [SerializeField] private float shootCoolDownMultiplier = 1.5f;
-    [SerializeField] private int shootCost = 3;
+    [SerializeField] private int shootCost = 2;
     private float nextShootTime = 0f;
-
-    #endregion
-
-
-    #region getters and setters
-
-    public float GetNextHit()
-    {
-        return nextShootTime;
-    }
-
-    public void SetNextHit(float next)
-    {
-        nextShootTime = next;
-    }
-
-    #endregion
-
-    #region module
-
-    public override void Disable()
-    {
-        controller.Disable(this);
-    }
-
-    public override void Enable()
-    {
-        controller.Enable(this);
-    }
 
     #endregion
 
@@ -75,7 +46,7 @@ public class ModuleDoubleCannon : PlayerModule, IModuleCannon
         return shootCost;
     }
 
-    public void AttackEnd(bool destroy)
+    public void AttackEnd()
     {
         if (lastAttackObject1 != null) Destroy(lastAttackObject1);
         if (lastAttackObject2 != null) Destroy(lastAttackObject2);

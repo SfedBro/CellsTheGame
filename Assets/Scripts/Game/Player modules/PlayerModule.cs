@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewModule", menuName = "Module/Module")]
@@ -8,9 +9,6 @@ public class PlayerModule : ScriptableObject
     [Header("UI")]
     public Sprite sprite;
     public string title;
-
-    [Header("Mass")]
-    public int mass;
 
     [Header("Type")]
     public ModuleType moduleType;
@@ -39,7 +37,7 @@ public class PlayerModule : ScriptableObject
 
         if (curCharge < 0)
         {
-            controller.Recharge(this);
+            controller.DisableModule(this);
         }
     }
 
@@ -49,10 +47,6 @@ public class PlayerModule : ScriptableObject
     }
 
     #endregion
-
-    public virtual void Disable() {}
-
-    public virtual void Enable() {}
 }
 
 
@@ -70,14 +64,11 @@ public enum ModuleConflict
     E
 }
 
-
 public interface IModuleCannon
 {
     int AttackStart(GameObject attackPrefab, AttackData data, Transform parent, float rotation);
     int ActivateAttack();
-    void AttackEnd(bool destroy);
-    float GetNextHit();
-    void SetNextHit(float next);
+    void AttackEnd();
 }
 
 

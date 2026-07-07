@@ -7157,55 +7157,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 466662813}
           m_TargetAssemblyTypeName: PlayerExperienceManager, Assembly-CSharp
-          m_MethodName: CheatAddExperience
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - action: {fileID: 7766325180936558854, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-    effect:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2110928061}
-          m_TargetAssemblyTypeName: PlayerModuleController, Assembly-CSharp
-          m_MethodName: ActivateDouble
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - action: {fileID: 3347426107082821696, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-    effect:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2110928061}
-          m_TargetAssemblyTypeName: PlayerModuleController, Assembly-CSharp
-          m_MethodName: ActivateHealer
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - action: {fileID: -5618213714011120146, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-    effect:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2110928061}
-          m_TargetAssemblyTypeName: PlayerModuleController, Assembly-CSharp
-          m_MethodName: ActivateStatsUp
+          m_MethodName: CheatAddLevel
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -8243,6 +8195,7 @@ MonoBehaviour:
   moduleController: {fileID: 2110928061}
   factoryEnteringTime: 2
   bulletParent: {fileID: 1619093619}
+  baseCannonInspector: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
   attackPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
   attackData:
     dmg: 1
@@ -8282,11 +8235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56920b6a73d39c54e97706ef90db52b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basicCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
-  basicAttack: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
-  doubleCannon: {fileID: 11400000, guid: ed0da3b9f0f8bd14dbb503b2f2c9a8d3, type: 2}
-  healer: {fileID: 11400000, guid: a33f1ad654655be4bb05f0ecc7ae5a0f, type: 2}
-  statsUp: {fileID: 11400000, guid: 8d7844465bea0604bba1efcb12dc1cdc, type: 2}
 --- !u!114 &2110928062
 MonoBehaviour:
   m_ObjectHideFlags: 0

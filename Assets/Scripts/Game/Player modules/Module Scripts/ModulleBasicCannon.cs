@@ -13,21 +13,6 @@ public class ModulleBasicCannon : PlayerModule, IModuleCannon
     #endregion
 
 
-    #region getters/setters
-
-    public float GetNextHit()
-    {
-        return nextShootTime;
-    }
-
-    public void SetNextHit(float next)
-    {
-        nextShootTime = next;
-    }
-
-    #endregion
-
-
     #region attack
     private GameObject lastAttackObject;
     private IAttack lastAttack;
@@ -52,9 +37,8 @@ public class ModulleBasicCannon : PlayerModule, IModuleCannon
         return shootCost;
     }
 
-    public void AttackEnd(bool destroy)
+    public void AttackEnd()
     {
-        if (destroy) Destroy(lastAttackObject);
         lastAttackObject = null;
         lastAttack = null;
     }

@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour, IPausable
 
     [Header("Atack")]
     [SerializeField] private Transform bulletParent;
+    [SerializeField] private PlayerModule baseCannonInspector;
     public GameObject attackPrefab;
     public AttackData attackData = new();
     public IModuleCannon baseCannon;
@@ -62,6 +63,15 @@ public class PlayerController : MonoBehaviour, IPausable
         inputActions = foragingManager.GetInputSystem();
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        if (baseCannonInspector is IModuleCannon)
+        {
+            baseCannon = (IModuleCannon)Instantiate(baseCannonInspector);
+            curCannon = baseCannon;
+        } 
+        else
+        {
+            Debug.LogError("Invalid Base Cannon Set in Player -> PlayerController!");
+        }
     }
 
     void Start()
@@ -235,7 +245,7 @@ public class PlayerController : MonoBehaviour, IPausable
             endAttack = true;
             return;
         }
-        curCannon.AttackEnd(attackData.activationTime > 0);
+        curCannon.AttackEnd();
     }
 
     public void getDMG(EnemyBase killer)
@@ -353,7 +363,7 @@ public class PlayerController : MonoBehaviour, IPausable
     public void SetPause(bool pause)
     {
         onPause = pause;
-        if (endAttack) curCannon.AttackEnd(attackData.activationTime > 0);
+        if (endAttack) curCannon.AttackEnd();
     }
 
     #endregion
