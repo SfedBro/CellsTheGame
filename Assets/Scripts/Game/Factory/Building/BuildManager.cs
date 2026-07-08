@@ -213,9 +213,9 @@ public class BuildManager : MonoBehaviour, IGameService
         
         if (TutorialManager.Instance != null) TutorialManager.Instance.NotifyAction("Select_" + data.buildingName);
 
-        if (StorageWindow.Instance != null)
+        if (PlayerInventoryWindow.Instance != null)
         {
-            StorageWindow.Instance.Close();
+            PlayerInventoryWindow.Instance.Close();
         }
 
         Debug.Log($"Selected building from menu: {data.buildingName}");

@@ -149,21 +149,18 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
     public void Interact(PlayerInteractor player)
     {
-        // Debug.Log("[MachineStorage] Interact called!");
-        if (StorageWindow.Instance == null)
+        if (PlayerInventoryWindow.Instance != null)
         {
-            // Debug.Log("[MachineStorage] StorageWindow.Instance is null, searching for it...");
-            StorageWindow.Instance = FindFirstObjectByType<StorageWindow>(FindObjectsInactive.Include);
-        }
-        
-        if (StorageWindow.Instance != null)
-        {
-            // Debug.Log($"[MachineStorage] Opening StorageWindow: {StorageWindow.Instance.name}");
-            StorageWindow.Instance.Open(this);
+            PlayerInventoryWindow.Instance.SelectMachine(this);
+            PlayerInventoryWindow.Instance.Open();
+            if (PlayerInventoryWindow.Instance.rightPanel != null)
+            {
+                PlayerInventoryWindow.Instance.rightPanel.SetTab(PanelTabType.Machine);
+            }
         }
         else
         {
-            // Debug.LogError("[MachineStorage] StorageWindow not found in scene!");
+            Debug.LogError("[MachineStorage] PlayerInventoryWindow not found in scene!");
         }
     }
 }

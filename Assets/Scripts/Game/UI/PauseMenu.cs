@@ -69,8 +69,7 @@ public class PauseMenu : MonoBehaviour
         }
         
         // Закрываем окна механизмов и хранилищ
-        if (StorageWindow.Instance != null) StorageWindow.Instance.Close();
-        if (CraftingWindow.Instance != null) CraftingWindow.Instance.Close();
+        if (PlayerInventoryWindow.Instance != null) PlayerInventoryWindow.Instance.Close();
         if (BuildMenuWindow.Instance != null) BuildMenuWindow.Instance.Close();
         
         Time.timeScale = 0f;

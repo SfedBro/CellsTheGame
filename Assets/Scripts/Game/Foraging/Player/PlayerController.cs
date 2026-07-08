@@ -114,7 +114,7 @@ public class PlayerController : MonoBehaviour
 
             sr.color = new Color(1, 1, 1, Mathf.Clamp01(1 - factoryEnteringTimer / factoryEnteringTime)); // Update player's transparency
 
-            if (factoryEnteringTimer > factoryEnteringTime) SceneManager.LoadScene("FactorySampleScene");
+            if (factoryEnteringTimer > factoryEnteringTime) SceneManager.LoadScene("Factory");
         }
 
         // INVINCIBILITY

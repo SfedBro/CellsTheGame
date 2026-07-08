@@ -18,16 +18,16 @@ public class ModuleSlotUI : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
     public bool IsEquippedSlot { get; private set; }
     public ModuleType SlotTypeConstraint { get; private set; } // Only used if IsEquippedSlot is true
 
-    private ModuleEquipmentWindow parentWindow;
+    private PlayerInventoryWindow parentWindow;
 
-    public void SetupInventorySlot(PlayerModule module, ModuleEquipmentWindow window)
+    public void SetupInventorySlot(PlayerModule module, PlayerInventoryWindow window)
     {
         parentWindow = window;
         IsEquippedSlot = false;
         SetModule(module);
     }
 
-    public void SetupEquipmentSlot(ModuleType slotType, ModuleEquipmentWindow window)
+    public void SetupEquipmentSlot(ModuleType slotType, PlayerInventoryWindow window)
     {
         parentWindow = window;
         IsEquippedSlot = true;

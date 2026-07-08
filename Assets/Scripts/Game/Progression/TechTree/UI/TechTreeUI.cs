@@ -88,9 +88,9 @@ public class TechTreeUI : MonoBehaviour
             // Optional: exit build mode, or just ignore
         }
 
-        if (StorageWindow.Instance != null)
+        if (PlayerInventoryWindow.Instance != null)
         {
-            StorageWindow.Instance.Close();
+            PlayerInventoryWindow.Instance.Close();
         }
 
         rootPanel.SetActive(true);

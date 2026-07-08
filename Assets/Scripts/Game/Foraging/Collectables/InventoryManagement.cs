@@ -14,21 +14,27 @@ public class InventoryManagement : MonoBehaviour
     private Vector3 up;
     private Vector3 down;
 
-
-    private ResourcesManager rm = ResourcesManager.instance;
+    private ResourcesManager rm;
 
     void OnEnable()
     {
-        ResourcesManager.instance.Subscrive(updateCounters);
+        if (PlayerInventory.Instance != null && PlayerInventory.Instance.ForagingInventory != null)
+        {
+            PlayerInventory.Instance.ForagingInventory.OnInventoryChanged += RefreshCounters;
+        }
     }
 
     void OnDisable()
     {
-        ResourcesManager.instance.Unsubscrive(updateCounters);
+        if (PlayerInventory.Instance != null && PlayerInventory.Instance.ForagingInventory != null)
+        {
+            PlayerInventory.Instance.ForagingInventory.OnInventoryChanged -= RefreshCounters;
+        }
     }
 
     void Start()
     {
+        rm = ResourcesManager.instance;
         up = new Vector3(0, yOffset, 0);
         down = new Vector3(0, -yOffset, 0);
 
@@ -37,13 +43,20 @@ public class InventoryManagement : MonoBehaviour
             ItemCounter counter = new ItemCounter(Instantiate(counterPrefab), item);
             counter.Disable();
             counter.transform.SetParent(countersParent, false);
-            counter.image.sprite = rm.getResourceSprite(item);
+            counter.image.sprite = rm != null ? rm.getResourceSprite(item) : null;
             counters.Add(counter);
         }
 
+        RefreshCounters();
+    }
+
+    private void RefreshCounters()
+    {
+        if (PlayerInventory.Instance == null || PlayerInventory.Instance.ForagingInventory == null) return;
+        
         foreach (ItemCounter counter in counters)
         {
-            updateCounters(counter.type, rm.getResourceAmount(counter.type));
+            updateCounters(counter.type, PlayerInventory.Instance.ForagingInventory.GetAmount(counter.type));
         }
     }
 

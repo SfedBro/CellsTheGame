@@ -6,6 +6,7 @@ public class LootItem : MonoBehaviour
     private CollectableData collectableData;
     private int amount;
     private Action<CollectableData> onCollected;
+    private bool isLooted = false;
 
     private SpriteRenderer spriteRenderer;
 
@@ -26,9 +27,19 @@ public class LootItem : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isLooted) return;
+
         if (collision.gameObject.CompareTag("CollectAura"))
         {
-            ResourcesManager.instance.addResourceAmount(collectableData.GetItemType(), amount);
+            isLooted = true;
+
+            if (PlayerInventory.Instance != null && collectableData != null)
+            {
+                for (int i = 0; i < amount; i++)
+                {
+                    PlayerInventory.Instance.ForagingInventory.AddItem(collectableData.GetItemType());
+                }
+            }
 
             if (onCollected != null) onCollected(collectableData);
 
