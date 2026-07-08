@@ -8195,8 +8195,7 @@ MonoBehaviour:
   moduleController: {fileID: 2110928061}
   factoryEnteringTime: 2
   bulletParent: {fileID: 1619093619}
-  baseCannonInspector: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
-  attackPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
+  baseCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
   attackData:
     dmg: 1
     timeToLive: 2

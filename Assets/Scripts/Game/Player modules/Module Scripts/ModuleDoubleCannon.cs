@@ -6,6 +6,7 @@ public class ModuleDoubleCannon : PlayerModule, IModuleCannon
     #region fields
 
     [Header("Shooting settings")]
+    [SerializeField] private GameObject attackPrefab;
     [SerializeField] private float shootCoolDownMultiplier = 1.5f;
     [SerializeField] private int shootCost = 2;
     private float nextShootTime = 0f;
@@ -20,7 +21,7 @@ public class ModuleDoubleCannon : PlayerModule, IModuleCannon
     private IAttack lastAttack1;
     private IAttack lastAttack2;
 
-    public int AttackStart(GameObject attackPrefab, AttackData data, Transform parent, float rotation)
+    public int AttackStart(AttackData data, Transform parent, float rotation)
     {
         if (Time.time < nextShootTime) return 0;
         
@@ -34,14 +35,6 @@ public class ModuleDoubleCannon : PlayerModule, IModuleCannon
         lastAttack2.Initialize(data, parent, rotation);
         
         SpendCharges(1);
-
-        return shootCost;
-    }
-
-    public int ActivateAttack()
-    {
-        if (lastAttackObject1 != null) lastAttack1.Activate();
-        if (lastAttackObject2 != null) lastAttack2.Activate();
 
         return shootCost;
     }

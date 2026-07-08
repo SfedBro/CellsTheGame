@@ -39,13 +39,4 @@ public class Bullet : MonoBehaviour, IAttack
     }
 
     #endregion
-
-    #region attack
-
-    public void Activate()
-    {
-        Debug.LogError("Trying activate regular bullet");
-    }
-
-    #endregion
 }

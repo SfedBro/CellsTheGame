@@ -27,13 +27,10 @@ public class PlayerController : MonoBehaviour, IPausable
 
     [Header("Atack")]
     [SerializeField] private Transform bulletParent;
-    [SerializeField] private PlayerModule baseCannonInspector;
-    public GameObject attackPrefab;
+    [SerializeField] private PlayerModule baseCannonModule;
     public AttackData attackData = new();
     public IModuleCannon baseCannon;
     public IModuleCannon curCannon;
-    private float attackActivateTime = -1;
-    private float attackActivateTimer = 0;
 
     [Header("Stats")]
     [SerializeField] private PlayerStats basicPlayerStats;
@@ -63,9 +60,9 @@ public class PlayerController : MonoBehaviour, IPausable
         inputActions = foragingManager.GetInputSystem();
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
-        if (baseCannonInspector is IModuleCannon)
+        if (baseCannonModule is IModuleCannon)
         {
-            baseCannon = (IModuleCannon)Instantiate(baseCannonInspector);
+            baseCannon = (IModuleCannon)Instantiate(baseCannonModule);
             curCannon = baseCannon;
         } 
         else
@@ -139,17 +136,6 @@ public class PlayerController : MonoBehaviour, IPausable
             {
                 isInvinsible = false;
                 sr.color = Color.white;
-            }
-        }
-
-        // ATTACK
-        if (attackActivateTime > 0) {
-            attackActivateTimer += Time.deltaTime;
-
-            if (attackActivateTimer <= attackActivateTime)
-            {
-                attackActivateTimer = 0;
-                curCannon.ActivateAttack();
             }
         }
     }
@@ -233,9 +219,7 @@ public class PlayerController : MonoBehaviour, IPausable
         attackData.attakCoolDown = curPlayerStats.attackCoolDown;
 
         // Attack
-        curCannon.AttackStart(attackPrefab, attackData, bulletParent, sr.flipX? rb.rotation - 180 : rb.rotation);
-
-        attackActivateTime = attackData.activationTime;
+        curCannon.AttackStart(attackData, bulletParent, sr.flipX? rb.rotation - 180 : rb.rotation);
     }
 
     private void OnAttackEnd(InputAction.CallbackContext context)

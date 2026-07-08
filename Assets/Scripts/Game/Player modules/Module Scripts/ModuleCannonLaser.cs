@@ -1,15 +1,13 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewBasicCannonModule", menuName = "Module/BasicCannon")]
-public class ModulleBasicCannon : PlayerModule, IModuleCannon
+
+[CreateAssetMenu(fileName = "NewModuleCannonLaser", menuName = "Module/CannonLaser")]
+public class ModuleCannonLaser : PlayerModule, IModuleCannon
 {
     #region fields
 
     [Header("Shooting settings")]
     [SerializeField] private GameObject attackPrefab;
-    [SerializeField] private float shootCoolDownMultiplier = 1;
-    [SerializeField] private int shootCost = 1;
-    private float nextShootTime = 0f;
 
     #endregion
 
@@ -20,19 +18,16 @@ public class ModulleBasicCannon : PlayerModule, IModuleCannon
 
     public int AttackStart(AttackData data, Transform parent, float rotation)
     {
-        if (Time.time < nextShootTime) return 0;
-        
-        nextShootTime = Time.time + data.attakCoolDown * shootCoolDownMultiplier;
-
         lastAttackObject = Instantiate(attackPrefab, parent.position, Quaternion.identity);
         lastAttack = lastAttackObject.GetComponent<IAttack>();
         lastAttack.Initialize(data, parent, rotation);
 
-        return shootCost;
+        return 1;
     }
 
     public void AttackEnd()
     {
+        Destroy(lastAttackObject);
         lastAttackObject = null;
         lastAttack = null;
     }

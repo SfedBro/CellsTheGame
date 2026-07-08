@@ -20,5 +20,6 @@ MonoBehaviour:
   isChargable: 1
   maxCharge: 50
   curCharge: 50
+  attackPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
   shootCoolDownMultiplier: 1.5
   shootCost: 2

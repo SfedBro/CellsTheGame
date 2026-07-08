@@ -4,7 +4,6 @@ using UnityEngine;
 interface IAttack
 {
     public void Initialize(AttackData data, Transform parent, float rotation);
-    public void Activate();
 }
 
 
