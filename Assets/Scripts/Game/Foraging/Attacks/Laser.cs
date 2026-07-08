@@ -8,7 +8,6 @@ public class Laser : MonoBehaviour, IAttack
     [Header("Attack settings")]
     [SerializeField] private float attackTime = 1;
     [SerializeField] private float dmg;
-    private Rigidbody2D rb;
     private List<EnemyBase> enemiesInRadius = new();
     private float attackTimer = 0f;
 
@@ -16,12 +15,7 @@ public class Laser : MonoBehaviour, IAttack
 
 
     #region initialization
-
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
-
+    
     public void Initialize(AttackData data, Transform parent, float rotation)
     {
         dmg = data.dmg;
