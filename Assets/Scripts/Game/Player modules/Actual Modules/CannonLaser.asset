@@ -9,17 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83223c85ea6374b40902cad42536a13b, type: 3}
-  m_Name: BasicCannon
+  m_Script: {fileID: 11500000, guid: 72e609220fd92f54696998d4f1abf5a3, type: 3}
+  m_Name: CannonLaser
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
-  title: Base Cannon (Not for equiping)
+  sprite: {fileID: 7482667652216324306, guid: 945fcde2c0da6ba4f8cafe216e66559f, type: 3}
+  title: Laser Cannon
   moduleType: 0
-  conflictGroup: 0
+  conflictGroup: 1
   controller: {fileID: 0}
   isChargable: 0
   maxCharge: 0
   curCharge: 0
-  attackPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
-  shootCoolDownMultiplier: 1
-  shootCost: 1
+  attackPrefab: {fileID: 2392985139000758553, guid: c15eb207f7706c442b57d305975593ad, type: 3}

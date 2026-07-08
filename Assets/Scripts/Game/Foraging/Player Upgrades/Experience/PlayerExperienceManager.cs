@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 public class PlayerExperienceManager : MonoBehaviour
 {
+    #region fields
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI upgradePointsUI;
     [SerializeField] private TextMeshProUGUI curLevelUI;
@@ -31,19 +32,10 @@ public class PlayerExperienceManager : MonoBehaviour
 
     private List<Action<ItemType, int>> observers = new();
 
-    public int GetUpgradePoints() => upgradePoints;
+    #endregion
 
-    public void RemoveUpgradePoints(int amount)
-    {
-        upgradePoints -= amount;
-        plm.curUpgradePoints = upgradePoints;
-        upgradePointsUI.text = upgradePoints.ToString();
 
-        foreach (Action<ItemType, int> action in observers)
-        {
-            action(ItemType.Default, upgradePoints);
-        }
-    }
+    #region  initialization
 
     void Start()
     {
@@ -68,6 +60,11 @@ public class PlayerExperienceManager : MonoBehaviour
             spawnExperience();
         }
     }
+
+    #endregion
+
+
+    #region experience spawn
 
     void Update()
     {
@@ -119,6 +116,45 @@ public class PlayerExperienceManager : MonoBehaviour
         return Math.Clamp(0.02f * x + 0.88f, 0.5f, 2f) * 0.5f;
     }
 
+    #endregion
+
+
+    #region observer pattern
+
+    public void Subscribe(Action<ItemType, int> action)
+    {
+        observers.Add(action);
+    }
+
+    #endregion
+
+
+    #region events
+
+    public void onPlayerDeath(EnemyBase killer)
+    {
+        killer.AddLoot(ItemType.Default, curExperience);
+
+        curExperience = 0;
+        plm.curExperience = 0;
+        curLevel = 0;
+        plm.curPlayerLevel = 0;
+        upgradePoints = 0;
+        plm.curUpgradePoints = 0;
+
+        curLevelRequirement = 7;
+
+        upgradePointsUI.text = upgradePoints.ToString();
+        curLevelUI.text = curLevel.ToString();
+        nextLevelUI.text = (curLevel + 1).ToString();
+        experienceIndicator.fillAmount = Mathf.Clamp01(curExperience / curLevelRequirement);
+
+        foreach (Action<ItemType, int> action in observers)
+        {
+            action(ItemType.Default, upgradePoints);
+        }
+    }
+
     private void onCollected(int amount)
     {
         experienceOnMap--;
@@ -150,38 +186,54 @@ public class PlayerExperienceManager : MonoBehaviour
         experienceIndicator.fillAmount = Mathf.Clamp01(((float) curExperience) / curLevelRequirement);
     }
 
-    public void CheatAddExperience()
+    #endregion
+
+
+    #region upgrade points
+
+    public int GetUpgradePoints() => upgradePoints;
+
+    public void RemoveUpgradePoints(int amount)
     {
-        experienceOnMap++;
-        onCollected(1);
-    }
-
-    public void Subscribe(Action<ItemType, int> action)
-    {
-        observers.Add(action);
-    }
-
-    public void onPlayerDeath(EnemyBase killer)
-    {
-        killer.AddLoot(ItemType.Default, curExperience);
-
-        curExperience = 0;
-        plm.curExperience = 0;
-        curLevel = 0;
-        plm.curPlayerLevel = 0;
-        upgradePoints = 0;
-        plm.curUpgradePoints = 0;
-
-        curLevelRequirement = 7;
-
+        upgradePoints -= amount;
+        plm.curUpgradePoints = upgradePoints;
         upgradePointsUI.text = upgradePoints.ToString();
-        curLevelUI.text = curLevel.ToString();
-        nextLevelUI.text = (curLevel + 1).ToString();
-        experienceIndicator.fillAmount = Mathf.Clamp01(curExperience / curLevelRequirement);
 
         foreach (Action<ItemType, int> action in observers)
         {
             action(ItemType.Default, upgradePoints);
         }
     }
+
+    #endregion
+
+
+    #region cheats
+
+    public void CheatAddLevel()
+    {
+        curExperience = 0;
+
+        curLevel++;
+        plm.curPlayerLevel = curLevel;
+
+        upgradePoints++;
+        plm.curUpgradePoints = upgradePoints;
+
+        curLevelRequirement = 2 * curLevel + 5;
+
+        upgradePointsUI.text = upgradePoints.ToString();
+        curLevelUI.text = curLevel.ToString();
+        nextLevelUI.text = (curLevel + 1).ToString();
+
+        foreach (Action<ItemType, int> action in observers)
+        {
+            action(ItemType.Default, upgradePoints);
+        }
+
+        plm.curExperience = curExperience;
+        experienceIndicator.fillAmount = Mathf.Clamp01(((float) curExperience) / curLevelRequirement);
+    }
+
+    #endregion
 }

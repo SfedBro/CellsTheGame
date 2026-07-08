@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class ForagingManager : MonoBehaviour
+public class ForagingManager : MonoBehaviour, IGameService
 {
     #region fields
 
@@ -32,13 +32,13 @@ public class ForagingManager : MonoBehaviour
 
     #region initialization
 
-    void Awake()
+    public void InitializeService()
     {
         inputActions = new InputSystem_Actions();
         tutorialController.Hide();
     }
 
-    void Start()
+    public void StartService()
     {
         upgradingManager.correctPlayerStats(player);
     }
@@ -90,6 +90,10 @@ public class ForagingManager : MonoBehaviour
     public void ExitScene()
     {
         pauseController.Resume();
+        if (AutoSaveManager.Instance != null)
+        {
+            AutoSaveManager.Instance.SaveAll();
+        }
         SceneManager.LoadScene("MainMenu");
     }
 

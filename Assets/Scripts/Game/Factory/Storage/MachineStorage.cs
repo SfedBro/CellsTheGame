@@ -57,14 +57,14 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     {
         if (inventory.CurrentTotalAmount <= 0) 
         {
-            // // Debug.Log("[Storage] Inventory is empty!"); 
+            // Debug.Log("[Storage] Inventory is empty!"); 
             return;
         }
 
         Port outPort = Ports.Find(p => p.IsOutput && p.ConnectedBlock != null);
         if (outPort == null) 
         {
-            // Debug.Log("[Storage] No connected output port found!");
+            Debug.Log($"[Storage] No connected output port found on {gameObject.name}! Ports count: {Ports.Count}");
             return;
         }
 
@@ -115,12 +115,12 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
             }
             item.View = itemView;
 
-            // Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
+            Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
             inventory.RemoveItem(typeToOutput);
         }
         else
         {
-            // Debug.Log($"[Storage] Failed to output {typeToOutput} to {outPort.ConnectedBlock.name} (Conveyor full?)");
+            Debug.Log($"[Storage] Failed to output {typeToOutput} to {outPort.ConnectedBlock.name} (Conveyor full?)");
         }
     }
 

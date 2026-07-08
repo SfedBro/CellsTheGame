@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d78e186ade7dcf84cb60c5303e1cc0ba, type: 3}
   m_Name: AllStatsUp
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: -3048499642358425110, guid: ea7ddc6e5666faa449fc91775b10ccc0, type: 3}
   title: All Stats Up
-  mass: 5
   moduleType: 1
   conflictGroup: 0
   controller: {fileID: 0}
@@ -25,13 +24,17 @@ MonoBehaviour:
     mass: 0
     engineForce: 0
     maxSpeed: 0
+    minSpeed: 0
     rotationSpeed: 0
     maxHP: 3
-    dmg: 3
+    dmg: 2
+    attackCoolDown: 0
   multIncrement:
-    mass: 1
-    engineForce: 2
-    maxSpeed: 2
-    rotationSpeed: 2
-    maxHP: 1
-    dmg: 1
+    mass: 0
+    engineForce: 1
+    maxSpeed: 1
+    minSpeed: 0
+    rotationSpeed: 1
+    maxHP: 0
+    dmg: 0
+    attackCoolDown: 0

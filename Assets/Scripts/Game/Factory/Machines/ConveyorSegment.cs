@@ -65,10 +65,12 @@ public class ConveyorSegment : FactoryBlock
 
     public override void LoadSaveState(string stateJson)
     {
+        Debug.Log($"[ConveyorSegment] LoadSaveState called on {gameObject.name} with JSON: {stateJson}");
         if (string.IsNullOrEmpty(stateJson)) return;
         var data = JsonUtility.FromJson<ConveyorSaveData>(stateJson);
         if (data != null && data.SlotItems != null)
         {
+            int loadedCount = 0;
             if (Slots == null) Slots = new ConveyorItem[slotsLength];
             for (int i = 0; i < Mathf.Min(slotsLength, data.SlotItems.Length); i++)
             {
@@ -76,7 +78,7 @@ public class ConveyorSegment : FactoryBlock
                 {
                     ItemType t = (ItemType)data.SlotItems[i];
                     ConveyorItem item = new ConveyorItem { Type = t };
-                    GameObject go = new GameObject("ConveyorItem");
+                    GameObject go = new GameObject($"ConveyorItem_{t}");
                     go.transform.SetParent(this.transform);
                     float scale = ResourcesManager.instance != null ? ResourcesManager.instance.getResourceScale(t) : 0.5f;
                     go.transform.localScale = new Vector3(scale, scale, 1f);
@@ -84,11 +86,16 @@ public class ConveyorSegment : FactoryBlock
                     var renderer = go.AddComponent<SpriteRenderer>();
                     if (ResourcesManager.instance != null)
                         renderer.sprite = ResourcesManager.instance.getResourceSprite(t);
+                    else
+                        Debug.LogWarning("[ConveyorSegment] ResourcesManager.instance is null!");
+                    
                     renderer.sortingOrder = 32767;
                     
                     Slots[i] = item;
+                    loadedCount++;
                 }
             }
+            Debug.Log($"[ConveyorSegment] Loaded {loadedCount} items onto conveyor.");
             GetVisualPositions();
             UpdateVisual();
         }
@@ -151,6 +158,11 @@ public class ConveyorSegment : FactoryBlock
 
         Slots[0] = item;
         item.movedThisTick = true;
+        
+        if (item.View != null)
+        {
+            item.View.transform.SetParent(this.transform);
+        }
 
         return true;
     }
