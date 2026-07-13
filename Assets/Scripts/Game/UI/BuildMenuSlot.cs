@@ -19,6 +19,7 @@ public class BuildMenuSlot : MonoBehaviour
             if (data.icon != null)
             {
                 iconImage.sprite = data.icon;
+                iconImage.preserveAspect = true;
             }
             else if (data.prefab != null)
             {
@@ -27,6 +28,7 @@ public class BuildMenuSlot : MonoBehaviour
                 if (sr != null && sr.sprite != null)
                 {
                     iconImage.sprite = sr.sprite;
+                    iconImage.preserveAspect = true;
                 }
             }
         }

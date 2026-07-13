@@ -12,6 +12,8 @@ public class PlayerModule : ScriptableObject
 
     [Header("Type")]
     public ModuleType moduleType;
+    public int inventorySize; // For Body modules
+    public int stackCapacity; // For Move modules
 
     [Header("Conflicts")]
     public ModuleConflict conflictGroup;

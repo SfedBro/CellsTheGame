@@ -41,7 +41,7 @@ public class ResourcesManager : MonoBehaviour, IGameService
         // Link to PlayerInventory if it exists
         if (PlayerInventory.Instance != null)
         {
-            inventory = PlayerInventory.Instance.Inventory;
+            inventory = PlayerInventory.Instance.FactoryInventory;
         }
         else
         {

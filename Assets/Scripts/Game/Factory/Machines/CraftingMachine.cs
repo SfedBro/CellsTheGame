@@ -22,14 +22,18 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
 
     public void Interact(PlayerInteractor player)
     {
-        if (CraftingWindow.Instance == null)
+        if (PlayerInventoryWindow.Instance != null)
         {
-            CraftingWindow.Instance = FindFirstObjectByType<CraftingWindow>(FindObjectsInactive.Include);
+            PlayerInventoryWindow.Instance.SelectMachine(this);
+            PlayerInventoryWindow.Instance.Open();
+            if (PlayerInventoryWindow.Instance.rightPanel != null)
+            {
+                PlayerInventoryWindow.Instance.rightPanel.SetTab(PanelTabType.Machine);
+            }
         }
-        
-        if (CraftingWindow.Instance != null)
+        else
         {
-            CraftingWindow.Instance.Open(this);
+            Debug.LogError("[CraftingMachine] PlayerInventoryWindow not found in scene!");
         }
     }
     

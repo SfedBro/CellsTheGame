@@ -1,14 +1,21 @@
 using UnityEngine;
+using System.Linq;
 
 public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
 {
     public static PlayerInventory Instance;
 
-    private Inventory inventory = new();
+    public Inventory ForagingInventory { get; private set; } = new();
+    public Inventory FactoryInventory { get; private set; } = new();
 
-    public Inventory Inventory => inventory;
+    // Default values if no modules are equipped
+    [SerializeField] private int baseForagingSlots = 12;
+    [SerializeField] private int baseForagingStack = 50;
+    
+    [SerializeField] private int factorySlotCount = 100;
 
-    [SerializeField] private int startingSlotCount = 36;
+    // Interface implementation (defaulting to Foraging for general interactions)
+    public Inventory Inventory => ForagingInventory;
 
     public void InitializeService()
     {
@@ -18,7 +25,14 @@ public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
             return;
         }
         Instance = this;
-        inventory.Initialize(startingSlotCount); // Initialize player inventory with slots
+        
+        ForagingInventory.Initialize(baseForagingSlots);
+        ForagingInventory.SetMaxStackSize(baseForagingStack);
+        
+        FactoryInventory.Initialize(factorySlotCount);
+        // Factory items can have huge stack sizes, e.g. 9999
+        FactoryInventory.SetMaxStackSize(9999);
+
         DontDestroyOnLoad(gameObject);
     }
 
@@ -26,17 +40,60 @@ public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
     {
         if (Instance != this) return;
         Load();
+
+        if (PlayerModuleManager.Instance != null)
+        {
+            PlayerModuleManager.Instance.OnModuleEquipStatusChanged += HandleModuleChanged;
+            UpdateForagingLimits();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (PlayerModuleManager.Instance != null)
+        {
+            PlayerModuleManager.Instance.OnModuleEquipStatusChanged -= HandleModuleChanged;
+        }
+    }
+
+    private void HandleModuleChanged(PlayerModule module, bool isEquipped)
+    {
+        if (module.moduleType == ModuleType.Body || module.moduleType == ModuleType.Move)
+        {
+            UpdateForagingLimits();
+        }
+    }
+
+    private void UpdateForagingLimits()
+    {
+        int newSize = baseForagingSlots;
+        int newStack = baseForagingStack;
+
+        foreach (var mod in PlayerModuleManager.Instance.EquipedModules)
+        {
+            if (mod.moduleType == ModuleType.Body && mod.inventorySize > 0)
+            {
+                newSize = mod.inventorySize;
+            }
+            if (mod.moduleType == ModuleType.Move && mod.stackCapacity > 0)
+            {
+                newStack = mod.stackCapacity;
+            }
+        }
+
+        ForagingInventory.Resize(newSize);
+        ForagingInventory.SetMaxStackSize(newStack);
     }
 
     private string saveKey = "PlayerInventorySave";
 
     private SaveData.PlayerInventoryData GetSaveSnapshot()
     {
-        var data = new SaveData.PlayerInventoryData()
+        return new SaveData.PlayerInventoryData()
         {
-            inventory = this.inventory
+            foragingInventory = this.ForagingInventory,
+            factoryInventory = this.FactoryInventory
         };
-        return data;
     }
 
     public void Save()
@@ -48,10 +105,18 @@ public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
     public void Load()
     {
         var data = SaveManager.Load<SaveData.PlayerInventoryData>(saveKey);
-        if (data != null && data.inventory != null && data.inventory.slots != null)
+        if (data != null)
         {
-            this.inventory = data.inventory;
+            if (data.foragingInventory != null && data.foragingInventory.slots != null)
+            {
+                this.ForagingInventory = data.foragingInventory;
+            }
+            if (data.factoryInventory != null && data.factoryInventory.slots != null)
+            {
+                this.FactoryInventory = data.factoryInventory;
+            }
         }
+        UpdateForagingLimits();
         Debug.Log("Loaded PlayerInventory");
     }
 }

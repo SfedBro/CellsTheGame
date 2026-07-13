@@ -25,6 +25,36 @@ public class Inventory : ISerializationCallbackReceiver
         }
     }
 
+    public void Resize(int newCount)
+    {
+        if (newCount == slotCount) return;
+        
+        ItemStack[] newSlots = new ItemStack[newCount];
+        for (int i = 0; i < newCount; i++)
+        {
+            if (i < slotCount && slots[i] != null)
+            {
+                newSlots[i] = slots[i];
+            }
+            else
+            {
+                newSlots[i] = new ItemStack(ItemType.Default, 0);
+            }
+        }
+        
+        // Items in removed slots (if newCount < slotCount) are currently discarded.
+        slots = newSlots;
+        slotCount = newCount;
+        OnInventoryChanged?.Invoke();
+    }
+
+    public void SetMaxStackSize(int newSize)
+    {
+        if (newSize <= 0) return;
+        defaultMaxStackSize = newSize;
+        OnInventoryChanged?.Invoke();
+    }
+
     public void OnBeforeSerialize()
     {
     }

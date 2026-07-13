@@ -72,7 +72,7 @@ public class TechTreeManager : MonoBehaviour, IGameService
 
         foreach (var c in node.cost)
         {
-            if (PlayerInventory.Instance.Inventory.GetAmount(c.type) < c.amount)
+            if (PlayerInventory.Instance.FactoryInventory.GetAmount(c.type) < c.amount)
             {
                 return false;
             }
@@ -89,7 +89,7 @@ public class TechTreeManager : MonoBehaviour, IGameService
         // Deduct cost
         foreach (var c in node.cost)
         {
-            PlayerInventory.Instance.Inventory.RemoveItem(c.type, c.amount);
+            PlayerInventory.Instance.FactoryInventory.RemoveItem(c.type, c.amount);
         }
 
         unlockedNodes.Add(node.nodeId);

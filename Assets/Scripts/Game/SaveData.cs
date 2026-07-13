@@ -7,7 +7,8 @@ namespace SaveData
     [System.Serializable]
     public class PlayerInventoryData
     {
-        public Inventory inventory;
+        public Inventory foragingInventory;
+        public Inventory factoryInventory;
     }
 
     [System.Serializable]

@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour, IPausable
 
             sr.color = new Color(1, 1, 1, Mathf.Clamp01(1 - factoryEnteringTimer / factoryEnteringTime)); // Update player's transparency
 
-            if (factoryEnteringTimer > factoryEnteringTime) SceneManager.LoadScene("FactorySampleScene");
+            if (factoryEnteringTimer > factoryEnteringTime) SceneManager.LoadScene("Factory");
         }
 
         // INVINCIBILITY
@@ -219,7 +219,8 @@ public class PlayerController : MonoBehaviour, IPausable
         attackData.attakCoolDown = curPlayerStats.attackCoolDown;
 
         // Attack
-        curCannon.AttackStart(attackData, bulletParent, sr.flipX? rb.rotation - 180 : rb.rotation);
+        float shootAngle = (movement.GunTransform != null) ? (movement.GunTransform.eulerAngles.z - movement.SpriteAngleOffset) : (sr.flipX ? rb.rotation - 180 : rb.rotation);
+        curCannon.AttackStart(attackData, bulletParent, shootAngle);
     }
 
     private void OnAttackEnd(InputAction.CallbackContext context)

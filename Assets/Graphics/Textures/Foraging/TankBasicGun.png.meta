@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fda84b6016aa188419dd471d4da8b058
+guid: a32c467a14e456b47ac0377a67b622e6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6803873404882588446
-    second: Conveyor_0
+      213: 3997204584972035190
+    second: TankBasicGun_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -110,19 +110,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: WindowsStoreApps
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -139,23 +126,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Conveyor_0
+      name: TankBasicGun_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 21
         y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 22
+        height: 61
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e1311c230d63c6e50800000000000000
-      internalID: 6803873404882588446
+      spriteID: 67422d5546ce87730800000000000000
+      internalID: 3997204584972035190
       vertices: []
       indices: 
       edges: []
@@ -164,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a5832297b742fbd46976eb57eca07cef
     internalID: 0
     vertices: []
     indices: 
@@ -174,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Conveyor_0: 6803873404882588446
+      TankBasicGun_0: 3997204584972035190
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
