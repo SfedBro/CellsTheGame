@@ -219,7 +219,8 @@ public class PlayerController : MonoBehaviour, IPausable
         attackData.attakCoolDown = curPlayerStats.attackCoolDown;
 
         // Attack
-        curCannon.AttackStart(attackData, bulletParent, sr.flipX? rb.rotation - 180 : rb.rotation);
+        float shootAngle = (movement.GunTransform != null) ? (movement.GunTransform.eulerAngles.z - movement.SpriteAngleOffset) : (sr.flipX ? rb.rotation - 180 : rb.rotation);
+        curCannon.AttackStart(attackData, bulletParent, shootAngle);
     }
 
     private void OnAttackEnd(InputAction.CallbackContext context)

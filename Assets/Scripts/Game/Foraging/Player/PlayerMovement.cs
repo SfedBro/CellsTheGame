@@ -20,6 +20,20 @@ public class PlayerMovement : MonoBehaviour, IPausable
     private float targetAngle;
     private float curAngle;
 
+    [Header("Tank Visuals (Optional)")]
+    [SerializeField] private Transform hullTransform;
+    [SerializeField] private Transform gunTransform;
+    [SerializeField] private Transform bodyTransform;
+    [SerializeField] private float hullRotationSpeed = 360f;
+    [SerializeField] private float gunRotationSpeed = 360f;
+    [Tooltip("Angle offset for sprites (e.g. -90 if the sprite is drawn facing UP, or 0 if facing RIGHT).")]
+    [SerializeField] private float spriteAngleOffset = -90f;
+    private float curHullAngle;
+    private float curGunAngle;
+
+    public Transform GunTransform => gunTransform;
+    public float SpriteAngleOffset => spriteAngleOffset;
+
     #endregion
 
 
@@ -34,6 +48,22 @@ public class PlayerMovement : MonoBehaviour, IPausable
     void Start()
     {
         curAngle = rb.rotation;
+
+        // Initialize visual/body angles to avoid snapping on first movement frame
+        if (hullTransform != null)
+        {
+            curHullAngle = hullTransform.eulerAngles.z;
+        }
+        else if (bodyTransform != null)
+        {
+            curHullAngle = bodyTransform.eulerAngles.z;
+        }
+
+        if (gunTransform != null)
+        {
+            curGunAngle = gunTransform.eulerAngles.z;
+        }
+
         pauseController.Subscribe(this);
     }
 
@@ -68,22 +98,67 @@ public class PlayerMovement : MonoBehaviour, IPausable
         if (math.abs(rb.linearVelocityY) < minAxisSpeed) rb.linearVelocityY = 0;
 
         // ROTATION
-        Vector2 direction = (playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position).normalized;
-        targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        curAngle = Mathf.MoveTowardsAngle(curAngle, targetAngle, curPlayerStats.rotationSpeed * Time.deltaTime);
-        bool flip = false;
-
-        if (curAngle > 90f || curAngle < -90f)
+        if (hullTransform != null || gunTransform != null || bodyTransform != null)
         {
-            rb.MoveRotation(curAngle - 180);
-            flip = true;
+            // If child visuals are active, we hide/disable the main SpriteRenderer component on the parent object
+            if (sr != null && sr.enabled)
+            {
+                sr.enabled = false;
+            }
+
+            // Keep main Rigidbody2D rotation at 0 (all colliders are circles, so rotation is not needed)
+            rb.SetRotation(0f);
+
+            // Rotate Gun towards Mouse position
+            if (gunTransform != null)
+            {
+                Vector2 mouseWorldPos = playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+                Vector2 aimDirection = (mouseWorldPos - (Vector2)gunTransform.position).normalized;
+                float targetGunAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg + spriteAngleOffset;
+                curGunAngle = Mathf.MoveTowardsAngle(curGunAngle, targetGunAngle, gunRotationSpeed * Time.deltaTime);
+                gunTransform.rotation = Quaternion.Euler(0f, 0f, curGunAngle);
+            }
+
+            // Rotate Hull and Body towards Movement direction (WASD)
+            if (moveInput.sqrMagnitude > 0.001f)
+            {
+                float targetHullAngle = Mathf.Atan2(moveInput.y, moveInput.x) * Mathf.Rad2Deg + spriteAngleOffset;
+                curHullAngle = Mathf.MoveTowardsAngle(curHullAngle, targetHullAngle, hullRotationSpeed * Time.deltaTime);
+
+                if (hullTransform != null)
+                {
+                    hullTransform.rotation = Quaternion.Euler(0f, 0f, curHullAngle);
+                }
+
+                if (bodyTransform != null)
+                {
+                    bodyTransform.rotation = Quaternion.Euler(0f, 0f, curHullAngle);
+                }
+            }
         }
         else
         {
-            rb.MoveRotation(curAngle);
-        }
+            // Fallback: rotate the entire parent GameObject (old behavior)
+            Vector2 direction = (playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position).normalized;
+            targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            curAngle = Mathf.MoveTowardsAngle(curAngle, targetAngle, curPlayerStats.rotationSpeed * Time.deltaTime);
+            bool flip = false;
 
-        sr.flipX = flip;
+            if (curAngle > 90f || curAngle < -90f)
+            {
+                rb.MoveRotation(curAngle - 180);
+                flip = true;
+            }
+            else
+            {
+                rb.MoveRotation(curAngle);
+            }
+
+            if (sr != null)
+            {
+                sr.flipX = flip;
+            }
+        }
     }
 
     #endregion

@@ -10,6 +10,7 @@ public enum PanelTabType
     Machine // The new Mechanism tab!
 }
 
+[ExecuteAlways]
 public class InventoryPanelUI : MonoBehaviour
 {
     [Header("Tab Buttons")]
@@ -292,4 +293,62 @@ public class InventoryPanelUI : MonoBehaviour
             }
         }
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!Application.isPlaying)
+        {
+            UnityEditor.EditorApplication.delayCall += EnsureEditorPreview;
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (!Application.isPlaying)
+        {
+            EnsureEditorPreview();
+        }
+    }
+
+    private void EnsureEditorPreview()
+    {
+        if (this == null) return;
+        if (UnityEditor.EditorUtility.IsPersistent(this)) return;
+        
+        EnsurePreviewForContainer(factorySlotsContainer, 24);
+        EnsurePreviewForContainer(foragingSlotsContainer, 12);
+    }
+
+    private void EnsurePreviewForContainer(Transform container, int count)
+    {
+        if (container == null || itemSlotPrefab == null) return;
+
+        if (container.childCount > 0) return;
+
+        for (int i = 0; i < count; i++)
+        {
+            GameObject newSlotObj = null;
+            try
+            {
+                newSlotObj = UnityEditor.PrefabUtility.InstantiatePrefab(itemSlotPrefab.gameObject, container) as GameObject;
+            }
+            catch (System.Exception)
+            {
+                newSlotObj = Instantiate(itemSlotPrefab.gameObject, container);
+            }
+
+            if (newSlotObj != null)
+            {
+                newSlotObj.hideFlags = HideFlags.DontSave;
+                
+                var text = newSlotObj.GetComponentInChildren<TMPro.TMP_Text>();
+                if (text != null)
+                {
+                    text.text = (i + 1).ToString();
+                }
+            }
+        }
+    }
+#endif
 }
