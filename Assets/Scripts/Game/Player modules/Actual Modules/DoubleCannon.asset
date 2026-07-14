@@ -36,7 +36,7 @@ MonoBehaviour:
     - rid: 3301968971148034124
       type: {class: WeaponEffect, ns: , asm: Assembly-CSharp}
       data:
-        attackPrefab: {fileID: 0}
+        attackPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
         shootCoolDownMultiplier: 1.5
         shootCost: 2
         parentModule: {fileID: 11400000}

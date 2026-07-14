@@ -57,9 +57,18 @@ public class UpgradingManager : MonoBehaviour
     public void correctPlayerStats(PlayerController player)
     {
         this.player = player;
-        foreach (var i in upgrades)
+        
+        if (upgrades == null && PlayerLevelManager.instance != null)
         {
-            player.UpgradeStat(i.GetStatType(), i.getCurLevelValue());
+            upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
+        }
+
+        if (upgrades != null)
+        {
+            foreach (var i in upgrades)
+            {
+                player.UpgradeStat(i.GetStatType(), i.getCurLevelValue());
+            }
         }
     }
 

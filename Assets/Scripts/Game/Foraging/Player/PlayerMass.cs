@@ -25,12 +25,12 @@ public class PlayerMass : MonoBehaviour
 
     void OnEnable()
     {
-        rm.Subscrive(addResource);
+        if (rm != null) rm.Subscrive(addResource);
     }
 
     void OnDisable()
     {
-        rm.Unsubscrive(addResource);
+        if (rm != null) rm.Unsubscrive(addResource);
     }
 
     #endregion
@@ -40,6 +40,8 @@ public class PlayerMass : MonoBehaviour
 
     private void resourceRecalculation()
     {
+        if (rm == null) return;
+
         totalResources = 0;
         foreach (ItemType t in Enum.GetValues(typeof(ItemType)))
         {
