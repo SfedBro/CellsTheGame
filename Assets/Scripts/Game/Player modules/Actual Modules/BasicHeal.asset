@@ -41,4 +41,4 @@ MonoBehaviour:
     - rid: 3301968971148034129
       type: {class: HealBehavior, ns: , asm: Assembly-CSharp}
       data:
-        healAmount: 2.5
+        healAmount: 5
