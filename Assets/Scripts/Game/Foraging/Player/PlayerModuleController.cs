@@ -6,10 +6,17 @@ public class PlayerModuleController : MonoBehaviour
 
     [Header("References")]
     private PlayerController player;
+    private PlayerGun gun;
     #endregion
 
 
     #region initialization
+
+    void Awake()
+    {
+        player = GetComponent<PlayerController>();
+        gun = GetComponentInChildren<PlayerGun>();
+    }
 
     public void InitializeModules()
     {
@@ -43,7 +50,7 @@ public class PlayerModuleController : MonoBehaviour
         switch (module)
         {
             case IModuleCannon cannon:
-                player.curCannon = cannon;
+                gun.SetCannon(cannon);
             break;
             case IModuleUseE usable:
                 player.activeAbilityE = usable.Use;
@@ -60,7 +67,7 @@ public class PlayerModuleController : MonoBehaviour
         switch (module)
         {
             case IModuleCannon cannon:
-                player.curCannon = player.baseCannon;
+                gun.SetCannon(null);
             break;
             case IModuleUseE usable:
                 player.activeAbilityE = null;

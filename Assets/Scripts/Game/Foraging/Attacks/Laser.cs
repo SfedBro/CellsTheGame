@@ -6,23 +6,21 @@ public class Laser : MonoBehaviour, IAttack
     #region fields
 
     [Header("Attack settings")]
-    [SerializeField] private float attackTime = 1;
     [SerializeField] private float dmg;
     private List<EnemyBase> enemiesInRadius = new();
-    private float attackTimer = 0f;
 
     #endregion
 
 
     #region initialization
     
-    public void Initialize(AttackData data, Transform parent, float rotation)
+    public void Initialize(AttackData data, Transform parent)
     {
         dmg = data.dmg;
 
         transform.SetParent(parent);
 
-        transform.Rotate(new Vector3(0, 0, rotation));
+        transform.rotation = Quaternion.AngleAxis(Mathf.Atan2(parent.up.y, parent.up.x) * Mathf.Rad2Deg, Vector3.forward);
     }
 
     #endregion
@@ -49,27 +47,20 @@ public class Laser : MonoBehaviour, IAttack
     #endregion
 
 
-    #region lifecycle
+    #region attack
 
-    void Update()
+    public void  ActivateAttack()
     {
-        attackTimer += Time.deltaTime;
-
-        if (attackTimer > attackTime)
+        int i = 0;
+        while (i < enemiesInRadius.Count)
         {
-            attackTimer = 0;
-
-            int i = 0;
-            while (i < enemiesInRadius.Count)
+            if (enemiesInRadius[i] == null)
             {
-                if (enemiesInRadius[i] == null)
-                {
-                    enemiesInRadius.RemoveAt(i);
-                }
-                else
-                {
-                    enemiesInRadius[i].GetDamage(dmg);
-                }
+                enemiesInRadius.RemoveAt(i);
+            }
+            else
+            {
+                enemiesInRadius[i].GetDamage(dmg);
             }
         }
     }

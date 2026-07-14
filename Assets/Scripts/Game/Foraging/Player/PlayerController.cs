@@ -27,13 +27,6 @@ public class PlayerController : MonoBehaviour, IPausable
     private float factoryEnteringTimer = 0f;
     private bool factoryIsEntering = false;
 
-    [Header("Atack")]
-    [SerializeField] private Transform bulletParent;
-    [SerializeField] private PlayerModule baseCannonModule;
-    public AttackData attackData = new();
-    public IModuleCannon baseCannon;
-    public IModuleCannon curCannon;
-
     [Header("Stats")]
     [SerializeField] private PlayerStats basicPlayerStats;
     [SerializeField] private PlayerStats curPlayerStats;
@@ -44,8 +37,8 @@ public class PlayerController : MonoBehaviour, IPausable
     [Header("Fight")]
     [SerializeField] private float invulnerabilityDuration = 1.5f;
     [SerializeField] private float blinkInterval = 0.1f;
-    [SerializeField] private Color invinsibleColor;
-    private bool isInvulnerable = true;
+    public AttackData attackData = new();
+    private bool isInvulnerable;
     private bool onPause = false;
     private bool endAttack = false;
 
@@ -62,15 +55,6 @@ public class PlayerController : MonoBehaviour, IPausable
         inputActions = foragingManager.GetInputSystem();
         rb = GetComponent<Rigidbody2D>();
         renderers = GetComponentsInChildren<SpriteRenderer>();
-        if (baseCannonModule is IModuleCannon)
-        {
-            baseCannon = (IModuleCannon)Instantiate(baseCannonModule);
-            curCannon = baseCannon;
-        } 
-        else
-        {
-            Debug.LogError("Invalid Base Cannon Set in Player -> PlayerController!");
-        }
     }
 
     void Start()
@@ -89,7 +73,11 @@ public class PlayerController : MonoBehaviour, IPausable
         // Equip modules
         moduleController.InitializeModules();
 
+        gun.SetAttackData(attackData);
+
         pauseController.Subscribe(this);
+
+        ActivateInvulnerability();
     }
 
     void OnEnable()
@@ -160,6 +148,9 @@ public class PlayerController : MonoBehaviour, IPausable
         hull.SetMoveInput(Vector2.zero);
         rb.linearVelocity = Vector2.zero;
 
+        // Stop attack
+        gun.AttackEnd();
+
         // Notify
         foragingManager.onPlayerDeath(killer);
         hintsController.OnPlayerDeath();
@@ -207,12 +198,9 @@ public class PlayerController : MonoBehaviour, IPausable
     private void OnAttackStart(InputAction.CallbackContext context)
     {
         if (onPause) return;
-        // Update attack data
-        attackData.attakCoolDown = curPlayerStats.attackCoolDown;
 
         // Attack
-        // float shootAngle = (movement.GunTransform != null) ? (movement.GunTransform.eulerAngles.z - movement.SpriteAngleOffset) : (sr.flipX ? rb.rotation - 180 : rb.rotation);
-        // curCannon.AttackStart(attackData, bulletParent, shootAngle);
+        gun.AttackStart();
     }
 
     private void OnAttackEnd(InputAction.CallbackContext context)
@@ -222,7 +210,8 @@ public class PlayerController : MonoBehaviour, IPausable
             endAttack = true;
             return;
         }
-        curCannon.AttackEnd();
+
+        gun.AttackEnd();
     }
 
     public void getDMG(EnemyBase killer)
@@ -247,7 +236,7 @@ public class PlayerController : MonoBehaviour, IPausable
     {
         attackData.dmg = curPlayerStats.dmg;
         attackData.speed = 10f;
-        attackData.timeToLive = 2f;
+        attackData.range = 50f;
     }
 
     private void SetAllRenderersColor(Color color)
@@ -275,6 +264,8 @@ public class PlayerController : MonoBehaviour, IPausable
 
             SetAllRenderersColor(Color.gray);
         }
+
+        SetAllRenderersColor(Color.white);
     }
 
     private IEnumerator DisableInvulnerabilityAfterDelay(float delay)
@@ -372,7 +363,11 @@ public class PlayerController : MonoBehaviour, IPausable
     public void SetPause(bool pause)
     {
         onPause = pause;
-        if (endAttack) curCannon.AttackEnd();
+        if (endAttack) 
+        { 
+            gun.AttackEnd();
+            endAttack = false;
+        }
     }
 
     #endregion

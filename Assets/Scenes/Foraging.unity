@@ -852,6 +852,7 @@ MonoBehaviour:
     maxHP: 0
     dmg: 0
     attackCoolDown: 0
+  baseCannonModule: {fileID: 11400000, guid: 7edef76ee46b78240802dfbffa59da0a, type: 2}
 --- !u!1 &330062718
 GameObject:
   m_ObjectHideFlags: 0
@@ -6735,37 +6736,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1600507647}
   m_CullTransparentMesh: 1
---- !u!1 &1619093618
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1619093619}
-  m_Layer: 0
-  m_Name: Player Bullets
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1619093619
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1619093618}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2110928059}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1628394195
 GameObject:
   m_ObjectHideFlags: 0
@@ -7705,7 +7675,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -15}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2110928059}
@@ -8346,13 +8316,12 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 748536453}
   - {fileID: 567709368}
   - {fileID: 324252602}
-  - {fileID: 1619093619}
   - {fileID: 1872877375}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8375,14 +8344,6 @@ MonoBehaviour:
   gun: {fileID: 324252604}
   moduleController: {fileID: 2110928061}
   factoryEnteringTime: 2
-  bulletParent: {fileID: 1619093619}
-  baseCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
-  attackData:
-    dmg: 1
-    timeToLive: 2
-    speed: 10
-    attakCoolDown: 1
-    activationTime: 0
   basicPlayerStats:
     mass: 1
     engineForce: 10
@@ -8401,8 +8362,12 @@ MonoBehaviour:
     maxHP: 0
     dmg: 0
     attackCoolDown: 0
-  invinsibilityTime: 1.5
-  invinsibleColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
+  invulnerabilityDuration: 1.5
+  blinkInterval: 0.1
+  attackData:
+    dmg: 1
+    speed: 10
+    range: 0
 --- !u!114 &2110928061
 MonoBehaviour:
   m_ObjectHideFlags: 0

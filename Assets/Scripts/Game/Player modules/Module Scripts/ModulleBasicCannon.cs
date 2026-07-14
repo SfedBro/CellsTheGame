@@ -7,9 +7,6 @@ public class ModulleBasicCannon : PlayerModule, IModuleCannon
 
     [Header("Shooting settings")]
     [SerializeField] private GameObject attackPrefab;
-    [SerializeField] private float shootCoolDownMultiplier = 1;
-    [SerializeField] private int shootCost = 1;
-    private float nextShootTime = 0f;
 
     #endregion
 
@@ -17,25 +14,25 @@ public class ModulleBasicCannon : PlayerModule, IModuleCannon
     #region attack
     private GameObject lastAttackObject;
     private IAttack lastAttack;
+    private AttackData attackData;
+    private Transform parent;
 
-    public int AttackStart(AttackData data, Transform parent, float rotation)
+    public void Initialize(AttackData attackData, Transform parent)
     {
-        if (Time.time < nextShootTime) return 0;
-        
-        nextShootTime = Time.time + data.attakCoolDown * shootCoolDownMultiplier;
+        this.attackData = attackData;
+        this.parent = parent;
+    }
 
+    public void AttackStart() {}
+
+    public void AttackActivate()
+    {
         lastAttackObject = Instantiate(attackPrefab, parent.position, Quaternion.identity);
         lastAttack = lastAttackObject.GetComponent<IAttack>();
-        lastAttack.Initialize(data, parent, rotation);
-
-        return shootCost;
+        lastAttack.Initialize(attackData, parent);
     }
 
-    public void AttackEnd()
-    {
-        lastAttackObject = null;
-        lastAttack = null;
-    }
+    public void AttackEnd() {}
 
     #endregion
 }

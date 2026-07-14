@@ -68,7 +68,9 @@ public enum ModuleConflict
 
 public interface IModuleCannon
 {
-    int AttackStart(AttackData data, Transform parent, float rotation);
+    void Initialize(AttackData attackData, Transform parent);
+    void AttackStart();
+    void AttackActivate();
     void AttackEnd();
 }
 

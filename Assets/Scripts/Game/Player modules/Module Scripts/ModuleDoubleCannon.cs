@@ -7,9 +7,6 @@ public class ModuleDoubleCannon : PlayerModule, IModuleCannon
 
     [Header("Shooting settings")]
     [SerializeField] private GameObject attackPrefab;
-    [SerializeField] private float shootCoolDownMultiplier = 1.5f;
-    [SerializeField] private int shootCost = 2;
-    private float nextShootTime = 0f;
 
     #endregion
 
@@ -20,34 +17,28 @@ public class ModuleDoubleCannon : PlayerModule, IModuleCannon
     private GameObject lastAttackObject2; 
     private IAttack lastAttack1;
     private IAttack lastAttack2;
+    private AttackData attackData;
+    private Transform parent;
 
-    public int AttackStart(AttackData data, Transform parent, float rotation)
+    public void Initialize(AttackData attackData, Transform parent)
     {
-        if (Time.time < nextShootTime) return 0;
-        
-        nextShootTime = Time.time + data.attakCoolDown * shootCoolDownMultiplier;
+        this.attackData = attackData;
+        this.parent = parent;
+    }
 
-        lastAttackObject1 = Instantiate(attackPrefab, parent.position + parent.up.normalized * 0.1f, Quaternion.identity);
-        lastAttackObject2 = Instantiate(attackPrefab, parent.position - parent.up.normalized * 0.1f, Quaternion.identity);
+    public void AttackStart() {}
+
+    public void AttackActivate()
+    {
+        lastAttackObject1 = Instantiate(attackPrefab, parent.position + parent.right.normalized * 0.1f, Quaternion.identity);
+        lastAttackObject2 = Instantiate(attackPrefab, parent.position - parent.right.normalized * 0.1f, Quaternion.identity);
         lastAttack1 = lastAttackObject1.GetComponent<IAttack>();
         lastAttack2 = lastAttackObject2.GetComponent<IAttack>();
-        lastAttack1.Initialize(data, parent, rotation);
-        lastAttack2.Initialize(data, parent, rotation);
-        
-        SpendCharges(1);
-
-        return shootCost;
+        lastAttack1.Initialize(attackData, parent);
+        lastAttack2.Initialize(attackData, parent);
     }
 
-    public void AttackEnd()
-    {
-        if (lastAttackObject1 != null) Destroy(lastAttackObject1);
-        if (lastAttackObject2 != null) Destroy(lastAttackObject2);
-        lastAttackObject1 = null;
-        lastAttackObject2 = null;
-        lastAttack1 = null;
-        lastAttack2 = null;
-    }
+        public void AttackEnd() {}
 
     #endregion
 }

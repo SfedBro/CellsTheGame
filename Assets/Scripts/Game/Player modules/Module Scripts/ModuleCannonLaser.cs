@@ -14,15 +14,26 @@ public class ModuleCannonLaser : PlayerModule, IModuleCannon
 
     #region attack
     private GameObject lastAttackObject;
-    private IAttack lastAttack;
+    private Laser lastAttack;
+    private AttackData attackData;
+    private Transform parent;
 
-    public int AttackStart(AttackData data, Transform parent, float rotation)
+    public void Initialize(AttackData attackData, Transform parent)
+    {
+        this.attackData = attackData;
+        this.parent = parent;
+    }
+
+    public void AttackStart()
     {
         lastAttackObject = Instantiate(attackPrefab, parent.position, Quaternion.identity);
-        lastAttack = lastAttackObject.GetComponent<IAttack>();
-        lastAttack.Initialize(data, parent, rotation);
+        lastAttack = lastAttackObject.GetComponent<Laser>();
+        lastAttack.Initialize(attackData, parent);
+    }
 
-        return 1;
+    public void AttackActivate()
+    {
+        lastAttack.ActivateAttack();
     }
 
     public void AttackEnd()
