@@ -9,32 +9,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d78e186ade7dcf84cb60c5303e1cc0ba, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a7a45761f439574ab7aabd75598836b, type: 3}
   m_Name: AllStatsUp
   m_EditorClassIdentifier: 
-  sprite: {fileID: -3048499642358425110, guid: ea7ddc6e5666faa449fc91775b10ccc0, type: 3}
-  title: All Stats Up
+  sprite: {fileID: 0}
+  title: AllStatsUp
   moduleType: 1
+  inventorySize: 0
+  stackCapacity: 0
   conflictGroup: 0
   controller: {fileID: 0}
+  overrideWeaponSprite: {fileID: 0}
+  overrideHullSprite: {fileID: 0}
+  muzzleOffsets: []
+  muzzleModifierSprite: {fileID: 0}
+  effects:
+  - rid: 3301968971148034125
+  - rid: 3301968971148034126
   isChargable: 0
   maxCharge: 0
   curCharge: 0
-  addIncrement:
-    mass: 0
-    engineForce: 0
-    maxSpeed: 0
-    minSpeed: 0
-    rotationSpeed: 0
-    maxHP: 3
-    dmg: 2
-    attackCoolDown: 0
-  multIncrement:
-    mass: 0
-    engineForce: 1
-    maxSpeed: 1
-    minSpeed: 0
-    rotationSpeed: 1
-    maxHP: 0
-    dmg: 0
-    attackCoolDown: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 3301968971148034125
+      type: {class: StatModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        statType: 4
+        modifierType: 0
+        amount: 20
+    - rid: 3301968971148034126
+      type: {class: StatModifierEffect, ns: , asm: Assembly-CSharp}
+      data:
+        statType: 2
+        modifierType: 1
+        amount: 0.15

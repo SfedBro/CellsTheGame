@@ -9,17 +9,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83223c85ea6374b40902cad42536a13b, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a7a45761f439574ab7aabd75598836b, type: 3}
   m_Name: BasicCannon
   m_EditorClassIdentifier: 
   sprite: {fileID: 0}
-  title: Base Cannon (Not for equiping)
+  title: BasicCannon
   moduleType: 0
-  conflictGroup: 0
+  inventorySize: 0
+  stackCapacity: 0
+  conflictGroup: 1
   controller: {fileID: 0}
+  overrideWeaponSprite: {fileID: 0}
+  overrideHullSprite: {fileID: 0}
+  muzzleOffsets:
+  - {x: 0.5, y: 0}
+  muzzleModifierSprite: {fileID: 0}
+  effects:
+  - rid: 3301968971148034123
   isChargable: 0
   maxCharge: 0
   curCharge: 0
-  attackPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
-  shootCoolDownMultiplier: 1
-  shootCost: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 3301968971148034123
+      type: {class: WeaponEffect, ns: , asm: Assembly-CSharp}
+      data:
+        attackPrefab: {fileID: 0}
+        shootCoolDownMultiplier: 1
+        shootCost: 1
+        parentModule: {fileID: 11400000}

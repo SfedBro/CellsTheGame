@@ -9,16 +9,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40537e44daf8f924095a3c9c9831faf2, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a7a45761f439574ab7aabd75598836b, type: 3}
   m_Name: BasicHeal
   m_EditorClassIdentifier: 
-  sprite: {fileID: -3048499642358425110, guid: ea7ddc6e5666faa449fc91775b10ccc0, type: 3}
-  title: Small Player Healler
+  sprite: {fileID: 0}
+  title: BasicHeal
   moduleType: 1
+  inventorySize: 0
+  stackCapacity: 0
   conflictGroup: 2
   controller: {fileID: 0}
-  isChargable: 1
-  maxCharge: 5
-  curCharge: 5
-  healAmount: 1
-  coolDown: 1
+  overrideWeaponSprite: {fileID: 0}
+  overrideHullSprite: {fileID: 0}
+  muzzleOffsets: []
+  muzzleModifierSprite: {fileID: 0}
+  effects:
+  - rid: 3301968971148034127
+  isChargable: 0
+  maxCharge: 0
+  curCharge: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 3301968971148034127
+      type: {class: ActiveAbilityEffect, ns: , asm: Assembly-CSharp}
+      data:
+        coolDown: 10
+        parentModule: {fileID: 11400000}
+        behaviors:
+        - rid: 3301968971148034129
+    - rid: 3301968971148034129
+      type: {class: HealBehavior, ns: , asm: Assembly-CSharp}
+      data:
+        healAmount: 2.5

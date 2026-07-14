@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewModule", menuName = "Module/Module")]
@@ -21,6 +22,16 @@ public class PlayerModule : ScriptableObject
     [Header("References")]
     public PlayerModuleController controller;
 
+    [Header("Visual Customization (Optional)")]
+    public Sprite overrideWeaponSprite;   // Overrides gun visual
+    public Sprite overrideHullSprite;     // Overrides hull visual
+    public Vector2[] muzzleOffsets;       // Local muzzle positions relative to gun pivot
+    public Sprite muzzleModifierSprite;   // Stacking modifier sprites for muzzles
+
+    [Header("Polymorphic Effects")]
+    [SerializeReference]
+    public List<IModuleEffect> effects = new List<IModuleEffect>();
+
     #endregion
 
 
@@ -37,7 +48,7 @@ public class PlayerModule : ScriptableObject
 
         curCharge -= amount;
 
-        if (curCharge < 0)
+        if (curCharge < 0 && controller != null)
         {
             controller.DisableModule(this);
         }
@@ -64,23 +75,4 @@ public enum ModuleConflict
     None,
     LBM,
     E
-}
-
-public interface IModuleCannon
-{
-    int AttackStart(AttackData data, Transform parent, float rotation);
-    void AttackEnd();
-}
-
-
-public interface IModuleUseE
-{
-    void Use(PlayerController player);
-}
-
-
-public interface IModuleStat
-{
-    PlayerStats GetAddChanges();
-    PlayerStats GetMultCganges();
 }

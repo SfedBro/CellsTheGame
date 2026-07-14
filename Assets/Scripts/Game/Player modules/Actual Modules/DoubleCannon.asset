@@ -9,17 +9,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0689c17e5862a54cbf63bbcabd18ec3, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a7a45761f439574ab7aabd75598836b, type: 3}
   m_Name: DoubleCannon
   m_EditorClassIdentifier: 
-  sprite: {fileID: 6312450010582321316, guid: 87a7e782e7275334984318334bf71b60, type: 3}
-  title: Double Cannon
+  sprite: {fileID: 0}
+  title: DoubleCannon
   moduleType: 0
+  inventorySize: 0
+  stackCapacity: 0
   conflictGroup: 1
   controller: {fileID: 0}
-  isChargable: 1
-  maxCharge: 50
-  curCharge: 50
-  attackPrefab: {fileID: 1725252820600755309, guid: 5b3398d23df4dac40b491b40309ddaa6, type: 3}
-  shootCoolDownMultiplier: 1.5
-  shootCost: 2
+  overrideWeaponSprite: {fileID: 0}
+  overrideHullSprite: {fileID: 0}
+  muzzleOffsets:
+  - {x: 0.5, y: -0.1}
+  - {x: 0.5, y: 0.1}
+  muzzleModifierSprite: {fileID: 0}
+  effects:
+  - rid: 3301968971148034124
+  isChargable: 0
+  maxCharge: 0
+  curCharge: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 3301968971148034124
+      type: {class: WeaponEffect, ns: , asm: Assembly-CSharp}
+      data:
+        attackPrefab: {fileID: 0}
+        shootCoolDownMultiplier: 1.5
+        shootCost: 2
+        parentModule: {fileID: 11400000}
