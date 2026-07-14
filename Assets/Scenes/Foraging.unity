@@ -852,7 +852,9 @@ MonoBehaviour:
     maxHP: 0
     dmg: 0
     attackCoolDown: 0
-  baseCannonModule: {fileID: 11400000, guid: 7edef76ee46b78240802dfbffa59da0a, type: 2}
+    attackRange: 0
+    bulletSpeed: 0
+  baseCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
 --- !u!1 &330062718
 GameObject:
   m_ObjectHideFlags: 0
@@ -1885,6 +1887,8 @@ MonoBehaviour:
     maxHP: 0
     dmg: 0
     attackCoolDown: 0
+    attackRange: 0
+    bulletSpeed: 0
   frictionCoefficient: 1
   minAxisSpeed: 0.01
 --- !u!212 &567709372
@@ -3421,7 +3425,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 200}
+  m_SizeDelta: {x: 600, y: 400}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &1083678646
 GameObject:
@@ -6521,7 +6525,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 350}
+  m_SizeDelta: {x: 600, y: 550}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1552780140
 MonoBehaviour:
@@ -8353,6 +8357,8 @@ MonoBehaviour:
     maxHP: 1
     dmg: 1
     attackCoolDown: 1
+    attackRange: 0
+    bulletSpeed: 0
   curPlayerStats:
     mass: 0
     engineForce: 0
@@ -8362,6 +8368,8 @@ MonoBehaviour:
     maxHP: 0
     dmg: 0
     attackCoolDown: 0
+    attackRange: 0
+    bulletSpeed: 0
   invulnerabilityDuration: 1.5
   blinkInterval: 0.1
   attackData:

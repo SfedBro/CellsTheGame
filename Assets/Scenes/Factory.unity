@@ -647,7 +647,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 67.75
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2006,6 +2006,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fcd7ca5c5a36d0b4395bce1825beb540, type: 2}
   - {fileID: 11400000, guid: a0591d4f18693994e8e2b999e458fdd7, type: 2}
   - {fileID: 11400000, guid: e35c868ef6cdf8245b78ccd3439ad5e2, type: 2}
+  - {fileID: 11400000, guid: 09829e02313a6ee4c8cb7f9ae627c303, type: 2}
+  - {fileID: 11400000, guid: e53b61e47baa20743858269bf57cb0d1, type: 2}
+  - {fileID: 11400000, guid: ab1694329f1c74743a1bf1a0ac3384ca, type: 2}
   curPlayerLevel: 0
   curExperience: 0
   curUpgradePoints: 0
@@ -2260,7 +2263,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 66.05
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5172,7 +5175,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 38, y: 30}
+  m_Size: {x: 40, y: 30}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

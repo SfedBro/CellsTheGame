@@ -235,8 +235,8 @@ public class PlayerController : MonoBehaviour, IPausable
     public void UpdateAttackData()
     {
         attackData.dmg = curPlayerStats.dmg;
-        attackData.speed = 10f;
-        attackData.range = 50f;
+        attackData.speed = curPlayerStats.bulletSpeed;
+        attackData.range = curPlayerStats.attackRange;
     }
 
     private void SetAllRenderersColor(Color color)
@@ -295,12 +295,20 @@ public class PlayerController : MonoBehaviour, IPausable
                 break;
             case StatType.Damage:
                 basicPlayerStats.dmg = newValue;
-                recalculateStats();
-                UpdateAttackData();
-                return;
+                break;
+            case StatType.ShootSpeed:
+                basicPlayerStats.attackCoolDown = newValue;
+                break;
+            case StatType.ShootRange:
+                basicPlayerStats.attackRange = newValue;
+                break;
+            case StatType.BulletSpeed:
+                basicPlayerStats.bulletSpeed = newValue;
+                break;
         }
         
         recalculateStats();
+        UpdateAttackData();
     }
 
     #endregion
@@ -388,6 +396,8 @@ public class PlayerStats
     public float maxHP;
     public float dmg;
     public float attackCoolDown;
+    public float attackRange;
+    public float bulletSpeed;
 
     public PlayerStats(int initial)
     {
@@ -399,6 +409,8 @@ public class PlayerStats
         minSpeed = initial;
         dmg = initial;
         attackCoolDown = initial;
+        attackRange = initial;
+        bulletSpeed = initial;
     }
 
     public void Add(PlayerStats other)
@@ -411,6 +423,8 @@ public class PlayerStats
         minSpeed += other.minSpeed;
         dmg += other.dmg;
         attackCoolDown += other.attackCoolDown;
+        attackRange += other.attackRange;
+        bulletSpeed += other.bulletSpeed;
     }
 
     public void Multiply(PlayerStats other)
@@ -423,6 +437,8 @@ public class PlayerStats
         minSpeed *= other.minSpeed;
         dmg *= other.dmg;
         attackCoolDown *= other.attackCoolDown;
+        attackRange *= other.attackRange;
+        bulletSpeed *= other.bulletSpeed;
     }
 
     public static PlayerStats operator *(PlayerStats s1, float multiplication)
@@ -438,6 +454,8 @@ public class PlayerStats
         result.minSpeed *= multiplication;
         result.dmg *= multiplication;
         result.attackCoolDown *= multiplication;
+        result.attackRange *= multiplication;
+        result.bulletSpeed *= multiplication;
 
         return result;
     }
@@ -452,5 +470,7 @@ public class PlayerStats
         minSpeed = other.minSpeed;
         dmg = other.dmg;
         attackCoolDown = other.attackCoolDown;
+        attackRange = other.attackRange;
+        bulletSpeed = other.bulletSpeed;
     }
 }
