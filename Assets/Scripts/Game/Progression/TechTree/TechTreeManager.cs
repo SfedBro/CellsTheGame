@@ -119,6 +119,18 @@ public class TechTreeManager : MonoBehaviour, IGameService
                 case TechEffectType.UnlockLocation:
                     Debug.Log($"[TechTree] Unlocked Location: {effect.stringParameter}");
                     break;
+                case TechEffectType.UnlockModule:
+                    Debug.Log($"[TechTree] Unlocked Module: {effect.stringParameter}");
+                    PlayerModule moduleToUnlock = Resources.Load<PlayerModule>($"Modules/{effect.stringParameter}");
+                    if (moduleToUnlock != null && PlayerModuleManager.Instance != null)
+                    {
+                        PlayerModuleManager.Instance.AddOwnedModule(moduleToUnlock);
+                    }
+                    else
+                    {
+                        Debug.LogError($"[TechTree] Failed to load module asset: Modules/{effect.stringParameter}");
+                    }
+                    break;
                 case TechEffectType.Custom:
                     Debug.Log($"[TechTree] Custom effect applied: {effect.stringParameter}");
                     break;
