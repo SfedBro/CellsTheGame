@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerAwareZone : MonoBehaviour
+public class PlayerZoneAware : MonoBehaviour
 {
     [SerializeField] private HintsController hintsController;
 

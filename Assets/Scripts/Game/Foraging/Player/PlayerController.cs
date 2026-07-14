@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -13,10 +14,11 @@ public class PlayerController : MonoBehaviour, IPausable
     [SerializeField] private PauseController pauseController;
     private InputSystem_Actions inputActions;
     private Rigidbody2D rb;
-    private SpriteRenderer sr;
+    private SpriteRenderer[] renderers;
 
     [Header("Player Parts")]
-    [SerializeField] private PlayerMovement movement;
+    [SerializeField] private PlayerHull hull;
+    [SerializeField] private PlayerGun gun;
     [SerializeField] private PlayerModuleController moduleController;
 
     [Header("Factory Entering")]
@@ -40,10 +42,10 @@ public class PlayerController : MonoBehaviour, IPausable
     private float curHP;
 
     [Header("Fight")]
-    [SerializeField] private float invinsibilityTime = 1.5f;
+    [SerializeField] private float invulnerabilityDuration = 1.5f;
+    [SerializeField] private float blinkInterval = 0.1f;
     [SerializeField] private Color invinsibleColor;
-    private float nextHit = 0f;
-    private bool isInvinsible = true;
+    private bool isInvulnerable = true;
     private bool onPause = false;
     private bool endAttack = false;
 
@@ -59,7 +61,7 @@ public class PlayerController : MonoBehaviour, IPausable
     {
         inputActions = foragingManager.GetInputSystem();
         rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
+        renderers = GetComponentsInChildren<SpriteRenderer>();
         if (baseCannonModule is IModuleCannon)
         {
             baseCannon = (IModuleCannon)Instantiate(baseCannonModule);
@@ -75,10 +77,10 @@ public class PlayerController : MonoBehaviour, IPausable
     {
         // Correct stats
         recalculateStats();
-        movement.curPlayerStats = curPlayerStats;
+        hull.curPlayerStats = curPlayerStats;
+        gun.curPlayerStats = curPlayerStats;
 
         curHP = curPlayerStats.maxHP;
-        nextHit = Time.time + invinsibilityTime;
 
         // Set hints
         hintsController.SetPlayerHP(curHP);
@@ -124,19 +126,9 @@ public class PlayerController : MonoBehaviour, IPausable
         {
             factoryEnteringTimer += Time.deltaTime; // Upfate timer
 
-            sr.color = new Color(1, 1, 1, Mathf.Clamp01(1 - factoryEnteringTimer / factoryEnteringTime)); // Update player's transparency
+            SetAllRenderersColor(new Color(1, 1, 1, Mathf.Clamp01(1 - factoryEnteringTimer / factoryEnteringTime))); // Update player's transparency
 
             if (factoryEnteringTimer > factoryEnteringTime) SceneManager.LoadScene("Factory");
-        }
-
-        // INVINCIBILITY
-        if (isInvinsible)
-        {
-            if (nextHit < Time.time)
-            {
-                isInvinsible = false;
-                sr.color = Color.white;
-            }
         }
     }
 
@@ -159,13 +151,13 @@ public class PlayerController : MonoBehaviour, IPausable
 
         // Respawn
         gameObject.SetActive(true);
-        isInvinsible = true;
+        ActivateInvulnerability();
     }
 
     private void Die(EnemyBase killer)
     {
         // Stop moving
-        movement.moveInput = Vector2.zero;
+        hull.SetMoveInput(Vector2.zero);
         rb.linearVelocity = Vector2.zero;
 
         // Notify
@@ -183,7 +175,7 @@ public class PlayerController : MonoBehaviour, IPausable
 
     private void onMove(InputAction.CallbackContext context)
     {
-        movement.moveInput = context.ReadValue<Vector2>().normalized;
+        hull.SetMoveInput(context.ReadValue<Vector2>().normalized);
     }
 
     #endregion
@@ -193,7 +185,7 @@ public class PlayerController : MonoBehaviour, IPausable
 
     private void onStartEnteringFactory(InputAction.CallbackContext context)
     {
-        if (playerAttackersCounter > 0 || isInvinsible) return; // Cannot enter hub while in fight
+        if (playerAttackersCounter > 0 || isInvulnerable) return; // Cannot enter hub while in fight
 
         if (factoryIsEntering) onCancelEnteringFactory(context); // Reenter - cancels first entering
         
@@ -205,7 +197,7 @@ public class PlayerController : MonoBehaviour, IPausable
     private void onCancelEnteringFactory(InputAction.CallbackContext context)
     {
         factoryIsEntering = false;
-        sr.color = new Color(1, 1, 1, 1);
+        SetAllRenderersColor(Color.white);
     }
 
     #endregion
@@ -219,8 +211,8 @@ public class PlayerController : MonoBehaviour, IPausable
         attackData.attakCoolDown = curPlayerStats.attackCoolDown;
 
         // Attack
-        float shootAngle = (movement.GunTransform != null) ? (movement.GunTransform.eulerAngles.z - movement.SpriteAngleOffset) : (sr.flipX ? rb.rotation - 180 : rb.rotation);
-        curCannon.AttackStart(attackData, bulletParent, shootAngle);
+        // float shootAngle = (movement.GunTransform != null) ? (movement.GunTransform.eulerAngles.z - movement.SpriteAngleOffset) : (sr.flipX ? rb.rotation - 180 : rb.rotation);
+        // curCannon.AttackStart(attackData, bulletParent, shootAngle);
     }
 
     private void OnAttackEnd(InputAction.CallbackContext context)
@@ -235,12 +227,10 @@ public class PlayerController : MonoBehaviour, IPausable
 
     public void getDMG(EnemyBase killer)
     {
-        if (Time.time < nextHit) return;
+        if (isInvulnerable) return;
 
         // Become invinsible
-        nextHit = Time.time + invinsibilityTime;
-        sr.color = invinsibleColor;
-        isInvinsible = true;
+        ActivateInvulnerability();
 
         // Correct hp
         curHP -= killer.GetAttack();
@@ -258,6 +248,40 @@ public class PlayerController : MonoBehaviour, IPausable
         attackData.dmg = curPlayerStats.dmg;
         attackData.speed = 10f;
         attackData.timeToLive = 2f;
+    }
+
+    private void SetAllRenderersColor(Color color)
+    {
+        foreach (var rend in renderers) rend.color = color;
+    }
+
+    private void ActivateInvulnerability()
+    {
+        isInvulnerable = true;
+        SetAllRenderersColor(Color.gray);
+        StartCoroutine(BlinkCoroutine());
+        StartCoroutine(DisableInvulnerabilityAfterDelay(invulnerabilityDuration));
+    }
+
+    private IEnumerator BlinkCoroutine()
+    {
+        while (isInvulnerable)
+        {
+            yield return new WaitForSeconds(blinkInterval);
+            
+            SetAllRenderersColor(Color.white);
+
+            yield return new WaitForSeconds(blinkInterval);
+
+            SetAllRenderersColor(Color.gray);
+        }
+    }
+
+    private IEnumerator DisableInvulnerabilityAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        isInvulnerable = false;
+        SetAllRenderersColor(Color.white);
     }
 
     #endregion
