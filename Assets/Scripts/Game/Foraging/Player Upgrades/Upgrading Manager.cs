@@ -12,43 +12,46 @@ public class UpgradingManager : MonoBehaviour
     [SerializeField] private PlayerExperienceManager pem;
 
     private PlayerController player;
-    private ResourcesManager rm = ResourcesManager.instance;
+    private ResourcesManager rm => ResourcesManager.instance;
     private List<IncrementInterface> increments = new();
 
     private List<UpgradeData> upgrades;
 
-    void Awake()
-    {
-        upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
-    }
-
     void OnEnable()
     {
-        rm.Subscrive(UpdateCounters);
-        pem.Subscribe(UpdateCounters);
+        if (rm != null) rm.Subscrive(UpdateCounters);
+        if (pem != null) pem.Subscribe(UpdateCounters);
     }
 
-     void Start()
+    void Start()
     {
-        Vector3 down = new Vector3(0, yOffset, 0);
-        int i = 0;
-        foreach (UpgradeData upgrade in upgrades)
+        if (PlayerLevelManager.instance != null)
         {
-            GameObject upg = Instantiate(UIPrefab);
-            upg.transform.SetParent(UIParent, false);
-            upg.transform.position += i * down;
-            i++;
-            IncrementInterface increment = upg.GetComponent<IncrementInterface>();
-            increment.upgradeData = upgrade;
-            increment.upgrade = tryUpgrade;
-            increments.Add(increment);
-            increment.UpdateUI();
+            upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
+        }
+
+        if (upgrades != null)
+        {
+            Vector3 down = new Vector3(0, yOffset, 0);
+            int i = 0;
+            foreach (UpgradeData upgrade in upgrades)
+            {
+                GameObject upg = Instantiate(UIPrefab);
+                upg.transform.SetParent(UIParent, false);
+                upg.transform.position += i * down;
+                i++;
+                IncrementInterface increment = upg.GetComponent<IncrementInterface>();
+                increment.upgradeData = upgrade;
+                increment.upgrade = tryUpgrade;
+                increments.Add(increment);
+                increment.UpdateUI();
+            }
         }
     }
 
     void OnDisable()
     {
-        rm.Unsubscrive(UpdateCounters);
+        if (rm != null) rm.Unsubscrive(UpdateCounters);
     }
 
     public void correctPlayerStats(PlayerController player)

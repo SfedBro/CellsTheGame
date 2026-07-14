@@ -28,7 +28,7 @@ public class PlayerExperienceManager : MonoBehaviour
     private int curExperience = 0;
     private float spawnTimer = 0f;
 
-    private PlayerLevelManager plm = PlayerLevelManager.instance;
+    private PlayerLevelManager plm => PlayerLevelManager.instance;
 
     private List<Action<ItemType, int>> observers = new();
 
@@ -44,9 +44,12 @@ public class PlayerExperienceManager : MonoBehaviour
         Vector3 bottomLeft = playerCamera.transform.position - new Vector3(width/2, height/2, 0);
         cameraView = new Rect(bottomLeft.x, bottomLeft.y, width, height);
 
-        curExperience = plm.curExperience;
-        curLevel = plm.curPlayerLevel;
-        upgradePoints = plm.curUpgradePoints;
+        if (plm != null)
+        {
+            curExperience = plm.curExperience;
+            curLevel = plm.curPlayerLevel;
+            upgradePoints = plm.curUpgradePoints;
+        }
 
         curLevelRequirement = 2 * curLevel + 5;
 

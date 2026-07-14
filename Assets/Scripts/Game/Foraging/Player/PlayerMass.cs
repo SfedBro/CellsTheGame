@@ -9,7 +9,7 @@ public class PlayerMass : MonoBehaviour
     [Header("Player Mass")]
     [SerializeField] private PlayerController player;
     [SerializeField] private int resourcesInMassUnit = 10;
-    private ResourcesManager rm = ResourcesManager.instance;
+    private ResourcesManager rm => ResourcesManager.instance;
     private Dictionary<ItemType, int> resources = new();
     private int totalResources = 0;
     private int massAddition;
@@ -18,7 +18,7 @@ public class PlayerMass : MonoBehaviour
 
 
     #region initialization
-    void Awake()
+    void Start()
     {
         resourceRecalculation();
     }

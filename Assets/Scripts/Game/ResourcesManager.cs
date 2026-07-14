@@ -5,7 +5,23 @@ using System.Linq;
 
 public class ResourcesManager : MonoBehaviour, IGameService
 {
-    public static ResourcesManager instance;
+    private static ResourcesManager _instance;
+    public static ResourcesManager instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<ResourcesManager>();
+                if (_instance != null)
+                {
+                    _instance.InitializeService();
+                }
+            }
+            return _instance;
+        }
+    }
+
     [SerializeField] private List<Sprite> ResourceSpritesForItemSprites;
     [SerializeField] private Sprite defaultSprite;
     [SerializeField] private float defaultScale = 1f;
@@ -25,12 +41,12 @@ public class ResourcesManager : MonoBehaviour, IGameService
     
     public void InitializeService()
     {
-        if (instance != null && instance != this)
+        if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        instance = this;
+        _instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
