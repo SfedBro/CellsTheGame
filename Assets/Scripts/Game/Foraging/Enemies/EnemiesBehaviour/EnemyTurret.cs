@@ -15,6 +15,7 @@ public class EnemyTurret : EnemyBase
     [Header("Attack")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private AttackData attackData;
+    [SerializeField] private float attackCoolDown = 2f;
     [SerializeField] private float basetriggerRadius = 5.0f;
     [SerializeField] private float seekTriggerRadius = 10.0f;
     [SerializeField] private CircleCollider2D trigger;
@@ -74,10 +75,10 @@ public class EnemyTurret : EnemyBase
     {
         if (Time.time >= nextShootTime)
         {
-            nextShootTime = Time.time + attackData.attakCoolDown;
+            nextShootTime = Time.time + attackCoolDown;
 
             Bullet bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity).GetComponent<Bullet>();
-            bullet.Initialize(attackData, transform, rb.rotation);
+            bullet.Initialize(attackData, transform);
             bullet.enemy = this;
         }
     }

@@ -9,7 +9,7 @@ public class WeaponEffect : IModuleEffect, IWeapon
     [SerializeField] private int shootCost = 1;
     [SerializeField] private PlayerModule parentModule; // Link to spend charges if needed
 
-    private float nextShootTime = 0f;
+    public float CoolDownMultiplier => shootCoolDownMultiplier;
 
     public void Apply(PlayerController player)
     {
@@ -26,33 +26,50 @@ public class WeaponEffect : IModuleEffect, IWeapon
 
     public void StartAttack(PlayerController player, float angle)
     {
-        if (Time.time < nextShootTime) return;
-        nextShootTime = Time.time + player.curPlayerStats.attackCoolDown * shootCoolDownMultiplier;
+        Fire(player);
+    }
+
+    public void AttackTick(PlayerController player)
+    {
+        Fire(player);
+    }
+
+    public void EndAttack(PlayerController player)
+    {
+    }
+
+    private void Fire(PlayerController player)
+    {
+        Transform gunTransform = player.GetComponentInChildren<PlayerGun>()?.transform;
+        Transform parentTransform = gunTransform != null ? gunTransform : player.transform;
+        Quaternion rotation = parentTransform.rotation;
 
         PlayerWeaponVisuals visuals = player.GetComponentInChildren<PlayerWeaponVisuals>();
         if (visuals != null && visuals.MuzzleOffsets.Count > 0)
         {
             foreach (Vector3 muzzlePos in visuals.GetMuzzleWorldPositions())
             {
-                GameObject bullet = UnityEngine.Object.Instantiate(attackPrefab, muzzlePos, Quaternion.identity);
+                GameObject bullet = UnityEngine.Object.Instantiate(attackPrefab, muzzlePos, rotation);
                 IAttack attack = bullet.GetComponent<IAttack>();
-                attack.Initialize(player.attackData, player.transform, angle);
+                if (attack != null)
+                {
+                    attack.Initialize(player.attackData, parentTransform);
+                }
             }
         }
         else
         {
-            GameObject bullet = UnityEngine.Object.Instantiate(attackPrefab, player.transform.position, Quaternion.identity);
+            GameObject bullet = UnityEngine.Object.Instantiate(attackPrefab, player.transform.position, rotation);
             IAttack attack = bullet.GetComponent<IAttack>();
-            attack.Initialize(player.attackData, player.transform, angle);
+            if (attack != null)
+            {
+                attack.Initialize(player.attackData, parentTransform);
+            }
         }
 
         if (parentModule != null)
         {
             parentModule.SpendCharges(shootCost);
         }
-    }
-
-    public void EndAttack(PlayerController player)
-    {
     }
 }

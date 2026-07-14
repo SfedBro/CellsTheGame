@@ -6,10 +6,17 @@ public class PlayerModuleController : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerController player;
+    private PlayerGun gun;
     #endregion
 
 
     #region initialization
+
+    void Awake()
+    {
+        player = GetComponent<PlayerController>();
+        gun = GetComponentInChildren<PlayerGun>();
+    }
 
     public void InitializeModules()
     {

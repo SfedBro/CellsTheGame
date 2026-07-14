@@ -20,10 +20,10 @@ public class DashBehavior : IAbilityBehavior
     public void Execute(PlayerController player)
     {
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-        PlayerMovement movement = player.GetComponent<PlayerMovement>();
-        if (rb != null && movement != null)
+        PlayerHull hull = player.GetComponentInChildren<PlayerHull>();
+        if (rb != null && hull != null)
         {
-            rb.AddForce(movement.moveInput * dashForce, ForceMode2D.Impulse);
+            rb.AddForce(hull.MoveInput * dashForce, ForceMode2D.Impulse);
         }
     }
 }

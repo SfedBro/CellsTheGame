@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerBody : MonoBehaviour
+public class PlayerZoneBody : MonoBehaviour
 {
     [SerializeField] private PlayerController player;
 
