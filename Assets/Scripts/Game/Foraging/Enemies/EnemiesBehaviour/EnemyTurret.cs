@@ -42,6 +42,8 @@ public class EnemyTurret : EnemyBase
         rb.linearVelocity = Vector2.zero;
 
         attackData.dmg = dmg;
+        attackData.speed = curHP;
+        attackData.range = moveSpeed;
     }
 
     void Update()
