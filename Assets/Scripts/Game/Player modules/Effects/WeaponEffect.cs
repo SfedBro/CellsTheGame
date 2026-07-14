@@ -26,7 +26,6 @@ public class WeaponEffect : IModuleEffect, IWeapon
 
     public void StartAttack(PlayerController player, float angle)
     {
-        Fire(player);
     }
 
     public void AttackTick(PlayerController player)

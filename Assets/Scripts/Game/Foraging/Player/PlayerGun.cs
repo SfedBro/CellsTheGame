@@ -117,7 +117,6 @@ public class PlayerGun : MonoBehaviour
     public void AttackEnd()
     {
         isAttacking = false;
-        attackCoolDownTimer = 0f;
 
         if (playerController != null && playerController.CurrentWeapon != null)
         {
