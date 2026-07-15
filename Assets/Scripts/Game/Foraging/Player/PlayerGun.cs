@@ -9,6 +9,7 @@ public class PlayerGun : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerController playerController;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private Transform muzzleEnd;
     public PlayerStats curPlayerStats = new(0);
 
     [Header("Fight")]
@@ -35,14 +36,14 @@ public class PlayerGun : MonoBehaviour
         } else
         {
             curCannon = cannon;
-            curCannon.Initialize(attackData, transform);
+            curCannon.Initialize(attackData, muzzleEnd);
         }
     }
 
     public void SetAttackData(AttackData data)
     {
         attackData = data;
-        baseCannon.Initialize(data, transform);
+        baseCannon.Initialize(data, muzzleEnd);
     }
 
     #endregion
