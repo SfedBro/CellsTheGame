@@ -95,6 +95,41 @@ public class InventoryPanelUI : MonoBehaviour
             if (drag == null) drag = machineTabButton.gameObject.AddComponent<TabDragHandler>();
             drag.Initialize(parent, this, PanelTabType.Machine);
         }
+
+        // Dynamically build recipe buttons container if not assigned by prefab
+        if (machineRecipeButtonsContainer == null && machineInputSlotsContainer != null)
+        {
+            GameObject recipeBlockGo = new GameObject("RecipeBlock", typeof(RectTransform));
+            recipeBlockGo.transform.SetParent(machineInputSlotsContainer.parent, false);
+            recipeBlockGo.transform.SetSiblingIndex(machineInputSlotsContainer.GetSiblingIndex());
+
+            VerticalLayoutGroup recipeBlockLayout = recipeBlockGo.AddComponent<VerticalLayoutGroup>();
+            recipeBlockLayout.childControlWidth = true;
+            recipeBlockLayout.childControlHeight = true;
+            recipeBlockLayout.childForceExpandWidth = true;
+            recipeBlockLayout.childForceExpandHeight = false;
+
+            GameObject recipeLabelGo = new GameObject("RecipeLabel", typeof(RectTransform));
+            recipeLabelGo.transform.SetParent(recipeBlockGo.transform, false);
+            var recipeLabelText = recipeLabelGo.AddComponent<TMPro.TextMeshProUGUI>();
+            recipeLabelText.text = "Выберите рецепт:";
+            recipeLabelText.fontSize = 14;
+            recipeLabelText.color = Color.white;
+
+            GameObject recipeButtonsGo = new GameObject("RecipeButtonsContainer", typeof(RectTransform));
+            recipeButtonsGo.transform.SetParent(recipeBlockGo.transform, false);
+            HorizontalLayoutGroup recipeButtonsLayout = recipeButtonsGo.AddComponent<HorizontalLayoutGroup>();
+            recipeButtonsLayout.childControlWidth = true;
+            recipeButtonsLayout.childControlHeight = true;
+            recipeButtonsLayout.childForceExpandWidth = false;
+            recipeButtonsLayout.childForceExpandHeight = true;
+            recipeButtonsLayout.spacing = 8;
+            
+            LayoutElement recipeButtonsLayoutElement = recipeButtonsGo.AddComponent<LayoutElement>();
+            recipeButtonsLayoutElement.preferredHeight = 40;
+
+            machineRecipeButtonsContainer = recipeButtonsGo.transform;
+        }
     }
 
     public void SetTab(PanelTabType tabType)

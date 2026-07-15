@@ -571,7 +571,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "OpenModules",
+                    "name": "OpenInventory",
                     "type": "Button",
                     "id": "dd92e227-1032-40ea-a714-2596c41c6340",
                     "expectedControlType": "",
@@ -1040,11 +1040,11 @@
                 {
                     "name": "",
                     "id": "774b2a61-ba79-4dc6-96c1-947fa75f0f64",
-                    "path": "<Keyboard>/m",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "OpenModules",
+                    "action": "OpenInventory",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

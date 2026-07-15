@@ -657,7 +657,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""OpenModules"",
+                    ""name"": ""OpenInventory"",
                     ""type"": ""Button"",
                     ""id"": ""dd92e227-1032-40ea-a714-2596c41c6340"",
                     ""expectedControlType"": """",
@@ -1126,11 +1126,11 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""774b2a61-ba79-4dc6-96c1-947fa75f0f64"",
-                    ""path"": ""<Keyboard>/m"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""OpenModules"",
+                    ""action"": ""OpenInventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1791,7 +1791,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
-        m_UI_OpenModules = m_UI.FindAction("OpenModules", throwIfNotFound: true);
+        m_UI_OpenInventory = m_UI.FindAction("OpenInventory", throwIfNotFound: true);
         m_UI_OpenTechTree = m_UI.FindAction("OpenTechTree", throwIfNotFound: true);
         m_UI_Pause = m_UI.FindAction("Pause", throwIfNotFound: true);
         m_UI_OpenHideMap = m_UI.FindAction("OpenHideMap", throwIfNotFound: true);
@@ -2097,7 +2097,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_ScrollWheel;
     private readonly InputAction m_UI_TrackedDevicePosition;
     private readonly InputAction m_UI_TrackedDeviceOrientation;
-    private readonly InputAction m_UI_OpenModules;
+    private readonly InputAction m_UI_OpenInventory;
     private readonly InputAction m_UI_OpenTechTree;
     private readonly InputAction m_UI_Pause;
     private readonly InputAction m_UI_OpenHideMap;
@@ -2153,9 +2153,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @TrackedDeviceOrientation => m_Wrapper.m_UI_TrackedDeviceOrientation;
         /// <summary>
-        /// Provides access to the underlying input action "UI/OpenModules".
+        /// Provides access to the underlying input action "UI/OpenInventory".
         /// </summary>
-        public InputAction @OpenModules => m_Wrapper.m_UI_OpenModules;
+        public InputAction @OpenInventory => m_Wrapper.m_UI_OpenInventory;
         /// <summary>
         /// Provides access to the underlying input action "UI/OpenTechTree".
         /// </summary>
@@ -2224,9 +2224,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @TrackedDeviceOrientation.started += instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.performed += instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.canceled += instance.OnTrackedDeviceOrientation;
-            @OpenModules.started += instance.OnOpenModules;
-            @OpenModules.performed += instance.OnOpenModules;
-            @OpenModules.canceled += instance.OnOpenModules;
+            @OpenInventory.started += instance.OnOpenInventory;
+            @OpenInventory.performed += instance.OnOpenInventory;
+            @OpenInventory.canceled += instance.OnOpenInventory;
             @OpenTechTree.started += instance.OnOpenTechTree;
             @OpenTechTree.performed += instance.OnOpenTechTree;
             @OpenTechTree.canceled += instance.OnOpenTechTree;
@@ -2277,9 +2277,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @TrackedDeviceOrientation.started -= instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.performed -= instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.canceled -= instance.OnTrackedDeviceOrientation;
-            @OpenModules.started -= instance.OnOpenModules;
-            @OpenModules.performed -= instance.OnOpenModules;
-            @OpenModules.canceled -= instance.OnOpenModules;
+            @OpenInventory.started -= instance.OnOpenInventory;
+            @OpenInventory.performed -= instance.OnOpenInventory;
+            @OpenInventory.canceled -= instance.OnOpenInventory;
             @OpenTechTree.started -= instance.OnOpenTechTree;
             @OpenTechTree.performed -= instance.OnOpenTechTree;
             @OpenTechTree.canceled -= instance.OnOpenTechTree;
@@ -2937,12 +2937,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "OpenModules" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "OpenInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnOpenModules(InputAction.CallbackContext context);
+        void OnOpenInventory(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "OpenTechTree" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -51,7 +51,7 @@ public class PlayerInventoryWindow : MonoBehaviour
         Instance = this;
 
         inputActions = new InputSystem_Actions();
-        inputActions.UI.OpenModules.performed += _ => 
+        inputActions.UI.OpenInventory.performed += _ => 
         {
             BuildManager buildManager = FindFirstObjectByType<BuildManager>();
             bool isBuilding = buildManager != null && (buildManager.IsBuildMode || buildManager.IsEditMode);

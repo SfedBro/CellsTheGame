@@ -81,6 +81,12 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
             return;
         }
 
+        // If the connected block is another storage in the same multiblock, do not transfer items to it
+        if (outPort.ConnectedBlock is MachineStorage targetStorage && targetStorage.Multiblock == this.Multiblock && this.Multiblock != null)
+        {
+            return;
+        }
+
         // Find any item to output
         ItemType typeToOutput = ItemType.OreIron;
         bool hasItem = false;

@@ -245,9 +245,10 @@ MonoBehaviour:
     ConnectedBlock: {fileID: 0}
   availableRecipes:
   - {fileID: 11400000, guid: 6df0e09a98b5a364c9f7e4480d94430a, type: 2}
-  - {fileID: 11400000, guid: 266707fc31d7f534c87ad55683b9115f, type: 2}
   - {fileID: 11400000, guid: 369fa6e678f44ca4bb5b25a822620f4e, type: 2}
   - {fileID: 11400000, guid: 2eb50d171af712848b77318a380e4ce7, type: 2}
+  - {fileID: 11400000, guid: 266707fc31d7f534c87ad55683b9115f, type: 2}
+  selectedRecipe: {fileID: 0}
   inputInventory:
     slotCount: 4
     defaultMaxStackSize: 100
