@@ -51,7 +51,15 @@ public class PlayerInventoryWindow : MonoBehaviour
         Instance = this;
 
         inputActions = new InputSystem_Actions();
-        inputActions.UI.OpenModules.performed += _ => ToggleWindow();
+        inputActions.UI.OpenModules.performed += _ => 
+        {
+            BuildManager buildManager = FindFirstObjectByType<BuildManager>();
+            bool isBuilding = buildManager != null && (buildManager.IsBuildMode || buildManager.IsEditMode);
+            if (!isBuilding)
+            {
+                ToggleWindow();
+            }
+        };
 
         // Automatically build and configure the entire UI at runtime!
         BuildRuntimeUI();
@@ -78,19 +86,6 @@ public class PlayerInventoryWindow : MonoBehaviour
         if (rightPanel != null) rightPanel.Initialize(this, PanelTabType.Foraging);
 
         SetLayoutMode(InventoryLayoutMode.Split);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            BuildManager buildManager = FindFirstObjectByType<BuildManager>();
-            bool isBuilding = buildManager != null && (buildManager.IsBuildMode || buildManager.IsEditMode);
-            if (!isBuilding)
-            {
-                ToggleWindow();
-            }
-        }
     }
 
     private void OnDestroy()
