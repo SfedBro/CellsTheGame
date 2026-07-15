@@ -1,4 +1,5 @@
 using System;
+using System.Resources;
 using UnityEngine;
 
 public class LootItem : MonoBehaviour

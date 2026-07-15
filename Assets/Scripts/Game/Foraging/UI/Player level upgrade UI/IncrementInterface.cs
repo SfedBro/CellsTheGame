@@ -77,7 +77,7 @@ public class IncrementInterface : MonoBehaviour
             requirements.Add(req);
             texts.Add(text);
 
-            if (ResourcesManager.instance.getResourceAmount(cost.resource) < cost.amount)
+            if (PlayerInventory.Instance.ForagingInventory.GetAmount(cost.resource) < cost.amount)
             {
                 text.color = Color.red;
             }
