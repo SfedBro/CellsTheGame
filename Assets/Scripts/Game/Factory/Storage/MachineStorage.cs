@@ -16,6 +16,8 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     [SerializeField]
     private ConveyorItemView conveyorItemPrefab;
 
+    private int lastOutputPortIndex = -1;
+
     protected override void Start()
     {
         base.Start();
@@ -86,8 +88,14 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
             return;
         }
 
-        foreach (var outPort in outPorts)
+        int numPorts = outPorts.Count;
+        int startIndex = (lastOutputPortIndex + 1) % numPorts;
+
+        for (int k = 0; k < numPorts; k++)
         {
+            int index = (startIndex + k) % numPorts;
+            Port outPort = outPorts[index];
+
             // If the connected block is another storage in the same multiblock, do not transfer items to it
             if (outPort.ConnectedBlock is MachineStorage targetStorage && this.Multiblock != null && targetStorage.Multiblock == this.Multiblock)
             {
@@ -110,7 +118,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
                 }
             }
 
-            if (!hasItem) return;
+            if (!hasItem) break; // Stop if no items are left to output
 
             ConveyorItem item = new ConveyorItem();
             item.Type = typeToOutput;
@@ -143,7 +151,9 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
                 Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
                 Inventory.RemoveItem(typeToOutput);
-                return; // Successfully output 1 item, stop checking other ports for this tick
+                
+                // Track this port as the last successfully used port
+                lastOutputPortIndex = index;
             }
         }
     }
