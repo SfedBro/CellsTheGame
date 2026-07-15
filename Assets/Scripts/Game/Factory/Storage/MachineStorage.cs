@@ -6,7 +6,12 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     public ResourcesManager resourcesManager;
     [SerializeField]
     private Inventory inventory = new Inventory();
-    public Inventory Inventory => inventory;
+    
+    public Inventory LocalInventory => inventory;
+    public Inventory Inventory => Multiblock != null ? Multiblock.sharedInventory : inventory;
+
+    public MachineStorageMultiblock Multiblock { get; private set; }
+    public void SetMultiblock(MachineStorageMultiblock mb) => Multiblock = mb;
 
     [SerializeField]
     private ConveyorItemView conveyorItemPrefab;
@@ -16,12 +21,20 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
         base.Start();
         resourcesManager = FindAnyObjectByType<ResourcesManager>();
         if (resourcesManager != null) resourcesManager.RegisterStorage(this);
+        StorageMultiblockManager.RecalculateMultiblocks();
+    }
+
+    public override void OnPlaced()
+    {
+        base.OnPlaced();
+        StorageMultiblockManager.RecalculateMultiblocks();
     }
 
     public override void OnRemoved()
     {
         base.OnRemoved();
         if (resourcesManager != null) resourcesManager.UnregisterStorage(this);
+        StorageMultiblockManager.RecalculateMultiblocks();
     }
 
     [SerializeField]
@@ -55,7 +68,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
     private void TryOutput()
     {
-        if (inventory.CurrentTotalAmount <= 0) 
+        if (Inventory.CurrentTotalAmount <= 0) 
         {
             // Debug.Log("[Storage] Inventory is empty!"); 
             return;
@@ -71,9 +84,9 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
         // Find any item to output
         ItemType typeToOutput = ItemType.OreIron;
         bool hasItem = false;
-        if (inventory.slots != null)
+        if (Inventory.slots != null)
         {
-            foreach (var slot in inventory.slots)
+            foreach (var slot in Inventory.slots)
             {
                 if (!slot.IsEmpty)
                 {
@@ -116,7 +129,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
             item.View = itemView;
 
             Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
-            inventory.RemoveItem(typeToOutput);
+            Inventory.RemoveItem(typeToOutput);
         }
         else
         {
@@ -128,7 +141,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     {
         if (receivingPort == null || !receivingPort.IsInput) return false;
 
-        if (inventory.AddItem(item.Type))
+        if (Inventory.AddItem(item.Type))
         {
             if (item.View != null)
                 Destroy(item.View.gameObject);

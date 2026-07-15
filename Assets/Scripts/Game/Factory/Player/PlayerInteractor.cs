@@ -48,6 +48,12 @@ public class PlayerInteractor : MonoBehaviour
 
     private void TryInteract()
     {
+        if (UnityEngine.EventSystems.EventSystem.current != null && 
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         BuildManager buildManager = FindFirstObjectByType<BuildManager>();
         if (buildManager != null && (buildManager.IsBuildMode || buildManager.IsEditMode))
         {

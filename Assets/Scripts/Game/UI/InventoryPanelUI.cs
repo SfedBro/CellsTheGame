@@ -38,6 +38,7 @@ public class InventoryPanelUI : MonoBehaviour
     public Transform machineSingleSlotsContainer; // For standard single-inventory storage
     public Transform machineInputSlotsContainer;  // For crafting machine inputs
     public Transform machineOutputSlotsContainer; // For crafting machine outputs
+    public Transform machineRecipeButtonsContainer; // For recipe selection buttons
 
     [Header("Prefabs")]
     public ItemSlotUI itemSlotPrefab;
@@ -245,6 +246,7 @@ public class InventoryPanelUI : MonoBehaviour
             if (machineSingleSlotsContainer != null) machineSingleSlotsContainer.gameObject.SetActive(true);
             if (machineInputSlotsContainer != null) machineInputSlotsContainer.gameObject.SetActive(false);
             if (machineOutputSlotsContainer != null) machineOutputSlotsContainer.gameObject.SetActive(false);
+            if (machineRecipeButtonsContainer != null) machineRecipeButtonsContainer.gameObject.SetActive(false);
 
             var inv = selectedProvider.Inventory;
             if (inv != null)
@@ -265,6 +267,61 @@ public class InventoryPanelUI : MonoBehaviour
             if (machineSingleSlotsContainer != null) machineSingleSlotsContainer.gameObject.SetActive(false);
             if (machineInputSlotsContainer != null) machineInputSlotsContainer.gameObject.SetActive(true);
             if (machineOutputSlotsContainer != null) machineOutputSlotsContainer.gameObject.SetActive(true);
+
+            // Populate recipe buttons
+            if (machineRecipeButtonsContainer != null)
+            {
+                machineRecipeButtonsContainer.gameObject.SetActive(true);
+                
+                // Clear old buttons
+                foreach (Transform child in machineRecipeButtonsContainer)
+                {
+                    Destroy(child.gameObject);
+                }
+
+                // Spawn a button for each available recipe
+                var recipes = selectedCrafting.AvailableRecipes;
+                if (recipes != null)
+                {
+                    foreach (var recipe in recipes)
+                    {
+                        if (recipe == null) continue;
+
+                        GameObject btnGo = new GameObject("RecipeButton", typeof(RectTransform));
+                        btnGo.transform.SetParent(machineRecipeButtonsContainer, false);
+
+                        Image img = btnGo.AddComponent<Image>();
+                        bool isSelected = (selectedCrafting.SelectedRecipe == recipe);
+                        img.color = isSelected ? new Color(0.2f, 0.6f, 0.3f, 1f) : new Color(0.25f, 0.25f, 0.28f, 1f);
+
+                        Button btn = btnGo.AddComponent<Button>();
+                        btn.targetGraphic = img;
+                        btn.onClick.AddListener(() =>
+                        {
+                            selectedCrafting.SelectRecipe(recipe);
+                            RefreshView();
+                        });
+
+                        LayoutElement le = btnGo.AddComponent<LayoutElement>();
+                        le.preferredWidth = 120;
+                        le.preferredHeight = 35;
+
+                        GameObject txtGo = new GameObject("Label", typeof(RectTransform));
+                        txtGo.transform.SetParent(btnGo.transform, false);
+                        RectTransform txtRect = txtGo.GetComponent<RectTransform>();
+                        txtRect.anchorMin = Vector2.zero;
+                        txtRect.anchorMax = Vector2.one;
+                        txtRect.offsetMin = Vector2.zero;
+                        txtRect.offsetMax = Vector2.zero;
+
+                        var tmp = txtGo.AddComponent<TMPro.TextMeshProUGUI>();
+                        tmp.text = recipe.RecipeName;
+                        tmp.fontSize = 11;
+                        tmp.alignment = TMPro.TextAlignmentOptions.Center;
+                        tmp.color = Color.white;
+                    }
+                }
+            }
 
             var inputInv = selectedCrafting.InputInventory;
             if (inputInv != null)
