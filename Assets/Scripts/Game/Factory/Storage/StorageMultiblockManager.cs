@@ -61,10 +61,32 @@ public static class StorageMultiblockManager
     {
         var neighbors = new List<MachineStorage>();
         
-        // Find adjacent storages connected via input/output ports
-        foreach (var port in storage.Ports)
+        foreach (var neighborStorage in candidates)
         {
-            if (port.ConnectedBlock is MachineStorage neighborStorage && candidates.Contains(neighborStorage))
+            // Verify 'storage' has a connection to 'neighborStorage'
+            bool storageToNeighbor = false;
+            foreach (var port in storage.Ports)
+            {
+                if (port.ConnectedBlock == neighborStorage)
+                {
+                    storageToNeighbor = true;
+                    break;
+                }
+            }
+
+            // Verify 'neighborStorage' has a connection to 'storage'
+            bool neighborToStorage = false;
+            foreach (var port in neighborStorage.Ports)
+            {
+                if (port.ConnectedBlock == storage)
+                {
+                    neighborToStorage = true;
+                    break;
+                }
+            }
+
+            // Both must be true for mutual connection merging
+            if (storageToNeighbor && neighborToStorage)
             {
                 neighbors.Add(neighborStorage);
             }

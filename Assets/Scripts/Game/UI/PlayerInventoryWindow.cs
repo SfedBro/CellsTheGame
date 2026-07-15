@@ -20,6 +20,10 @@ public class PlayerInventoryWindow : MonoBehaviour
     public InventoryPanelUI leftPanel;
     public InventoryPanelUI rightPanel;
 
+    [Header("Default UI Panels")]
+    public GameObject defaultPanelPrefab;
+    private GameObject instantiatedRightPanelPrefabSource;
+
     [Header("Layout Docking Preview")]
     public RectTransform previewOverlay; // Translucent indicator panel for docking preview
 
@@ -238,15 +242,18 @@ public class PlayerInventoryWindow : MonoBehaviour
         rootLayout.padding = new RectOffset(15, 15, 15, 15);
 
         // 4. Load prefabs from Resources
-        GameObject panelPrefab = Resources.Load<GameObject>("UI/Inventory Panel");
+        if (defaultPanelPrefab == null)
+        {
+            defaultPanelPrefab = Resources.Load<GameObject>("UI/Inventory Panel");
+        }
         ItemSlotUI itemSlotPrefab = Resources.Load<GameObject>("UI/Inventory Slot")?.GetComponent<ItemSlotUI>();
         ModuleSlotUI moduleSlotPrefab = Resources.Load<GameObject>("UI/Module Slot")?.GetComponent<ModuleSlotUI>();
 
         // 5. Create Panels
         GameObject leftPanelGo;
-        if (panelPrefab != null)
+        if (defaultPanelPrefab != null)
         {
-            leftPanelGo = Instantiate(panelPrefab, rootPanelGo.transform);
+            leftPanelGo = Instantiate(defaultPanelPrefab, rootPanelGo.transform);
             leftPanelGo.name = "LeftPanel";
         }
         else
@@ -256,9 +263,9 @@ public class PlayerInventoryWindow : MonoBehaviour
         leftPanel = leftPanelGo.GetComponent<InventoryPanelUI>();
 
         GameObject rightPanelGo;
-        if (panelPrefab != null)
+        if (defaultPanelPrefab != null)
         {
-            rightPanelGo = Instantiate(panelPrefab, rootPanelGo.transform);
+            rightPanelGo = Instantiate(defaultPanelPrefab, rootPanelGo.transform);
             rightPanelGo.name = "RightPanel";
         }
         else
@@ -266,6 +273,7 @@ public class PlayerInventoryWindow : MonoBehaviour
             rightPanelGo = CreatePanel("RightPanel", rootPanelGo.transform, itemSlotPrefab, moduleSlotPrefab);
         }
         rightPanel = rightPanelGo.GetComponent<InventoryPanelUI>();
+        instantiatedRightPanelPrefabSource = defaultPanelPrefab;
 
         // 6. Create DockPreviewOverlay
         GameObject previewOverlayGo = new GameObject("DockPreviewOverlay", typeof(RectTransform));
@@ -625,6 +633,48 @@ public class PlayerInventoryWindow : MonoBehaviour
         {
             selectedInventoryProvider = null;
             selectedCraftingProvider = null;
+        }
+
+        // Swap panel UI if the machine block has a custom UI prefab
+        GameObject targetPrefab = defaultPanelPrefab;
+        if (machineBlock != null)
+        {
+            FactoryBlock block = machineBlock.GetComponent<FactoryBlock>();
+            if (block != null && block.customInventoryPanelPrefab != null)
+            {
+                targetPrefab = block.customInventoryPanelPrefab;
+            }
+        }
+
+        if (targetPrefab != instantiatedRightPanelPrefabSource)
+        {
+            if (rightPanel != null)
+            {
+                Destroy(rightPanel.gameObject);
+            }
+
+            GameObject rightPanelGo = null;
+            if (targetPrefab != null)
+            {
+                rightPanelGo = Instantiate(targetPrefab, rootPanel.transform);
+            }
+            else
+            {
+                ItemSlotUI itemSlotPrefab = Resources.Load<GameObject>("UI/Inventory Slot")?.GetComponent<ItemSlotUI>();
+                ModuleSlotUI moduleSlotPrefab = Resources.Load<GameObject>("UI/Module Slot")?.GetComponent<ModuleSlotUI>();
+                rightPanelGo = CreatePanel("RightPanel", rootPanel.transform, itemSlotPrefab, moduleSlotPrefab);
+            }
+
+            rightPanelGo.name = "RightPanel";
+            rightPanelGo.transform.SetSiblingIndex(1);
+            rightPanel = rightPanelGo.GetComponent<InventoryPanelUI>();
+            instantiatedRightPanelPrefabSource = targetPrefab;
+
+            if (rightPanel != null)
+            {
+                rightPanel.Initialize(this, PanelTabType.Machine);
+                rightPanel.gameObject.SetActive(true);
+            }
         }
 
         // Subscribe to new events

@@ -37,6 +37,12 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
         StorageMultiblockManager.RecalculateMultiblocks();
     }
 
+    public override void RebuildConnections()
+    {
+        base.RebuildConnections();
+        StorageMultiblockManager.RecalculateMultiblocks();
+    }
+
     [SerializeField]
     private int startingSlotCount = 24;
 
@@ -82,7 +88,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
         }
 
         // If the connected block is another storage in the same multiblock, do not transfer items to it
-        if (outPort.ConnectedBlock is MachineStorage targetStorage && targetStorage.Multiblock == this.Multiblock && this.Multiblock != null)
+        if (outPort.ConnectedBlock is MachineStorage targetStorage && this.Multiblock != null && targetStorage.Multiblock == this.Multiblock)
         {
             return;
         }
