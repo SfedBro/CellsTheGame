@@ -887,6 +887,8 @@ MonoBehaviour:
     attackCoolDown: 0
     attackRange: 0
     bulletSpeed: 0
+    regenerationCoolDown: 0
+    regenerationAmount: 0
   baseCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
 --- !u!1 &330062718
 GameObject:
@@ -1922,6 +1924,8 @@ MonoBehaviour:
     attackCoolDown: 0
     attackRange: 0
     bulletSpeed: 0
+    regenerationCoolDown: 0
+    regenerationAmount: 0
   frictionCoefficient: 1
   minAxisSpeed: 0.01
 --- !u!212 &567709372
@@ -8390,8 +8394,10 @@ MonoBehaviour:
     maxHP: 1
     dmg: 1
     attackCoolDown: 1
-    attackRange: 0
-    bulletSpeed: 0
+    attackRange: 2.5
+    bulletSpeed: 2.5
+    regenerationCoolDown: 1
+    regenerationAmount: 0.1
   curPlayerStats:
     mass: 0
     engineForce: 0
@@ -8403,6 +8409,8 @@ MonoBehaviour:
     attackCoolDown: 0
     attackRange: 0
     bulletSpeed: 0
+    regenerationCoolDown: 0
+    regenerationAmount: 0
   invulnerabilityDuration: 1.5
   blinkInterval: 0.1
   attackData:

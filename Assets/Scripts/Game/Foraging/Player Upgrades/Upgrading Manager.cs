@@ -13,7 +13,7 @@ public class UpgradingManager : MonoBehaviour
     [SerializeField] private PlayerExperienceManager pem;
 
     private PlayerController player;
-    private Inventory inventory = PlayerInventory.Instance.ForagingInventory;
+    private Inventory inventory = new();
     private List<IncrementInterface> increments = new();
 
     private List<UpgradeData> upgrades;
@@ -31,6 +31,8 @@ public class UpgradingManager : MonoBehaviour
 
      void Start()
     {
+        inventory = PlayerInventory.Instance?.ForagingInventory;
+
         Vector3 down = new Vector3(0, yOffset, 0);
         int i = 0;
         foreach (UpgradeData upgrade in upgrades)
