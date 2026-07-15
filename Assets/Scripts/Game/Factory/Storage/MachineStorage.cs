@@ -76,76 +76,75 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     {
         if (Inventory.CurrentTotalAmount <= 0) 
         {
-            // Debug.Log("[Storage] Inventory is empty!"); 
             return;
         }
 
-        Port outPort = Ports.Find(p => p.IsOutput && p.ConnectedBlock != null);
-        if (outPort == null) 
-        {
-            Debug.Log($"[Storage] No connected output port found on {gameObject.name}! Ports count: {Ports.Count}");
-            return;
-        }
-
-        // If the connected block is another storage in the same multiblock, do not transfer items to it
-        if (outPort.ConnectedBlock is MachineStorage targetStorage && this.Multiblock != null && targetStorage.Multiblock == this.Multiblock)
+        // Find all output ports that are connected to other blocks
+        List<Port> outPorts = Ports.FindAll(p => p.IsOutput && p.ConnectedBlock != null);
+        if (outPorts == null || outPorts.Count == 0) 
         {
             return;
         }
 
-        // Find any item to output
-        ItemType typeToOutput = ItemType.OreIron;
-        bool hasItem = false;
-        if (Inventory.slots != null)
+        foreach (var outPort in outPorts)
         {
-            foreach (var slot in Inventory.slots)
+            // If the connected block is another storage in the same multiblock, do not transfer items to it
+            if (outPort.ConnectedBlock is MachineStorage targetStorage && this.Multiblock != null && targetStorage.Multiblock == this.Multiblock)
             {
-                if (!slot.IsEmpty)
+                continue;
+            }
+
+            // Find any item to output
+            ItemType typeToOutput = ItemType.OreIron;
+            bool hasItem = false;
+            if (Inventory.slots != null)
+            {
+                foreach (var slot in Inventory.slots)
                 {
-                    typeToOutput = slot.type;
-                    hasItem = true;
-                    break;
+                    if (!slot.IsEmpty)
+                    {
+                        typeToOutput = slot.type;
+                        hasItem = true;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (!hasItem) return;
+            if (!hasItem) return;
 
-        ConveyorItem item = new ConveyorItem();
-        item.Type = typeToOutput;
+            ConveyorItem item = new ConveyorItem();
+            item.Type = typeToOutput;
 
-        if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
-        {
-            ConveyorItemView itemView = null;
-            if (conveyorItemPrefab != null)
+            if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
             {
-                itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
-            }
-            else
-            {
-                GameObject go = new GameObject("ConveyorItem");
-                go.transform.position = transform.position;
-                float scale = ResourcesManager.instance.getResourceScale(typeToOutput);
-                go.transform.localScale = new Vector3(scale, scale, 1f);
-                itemView = go.AddComponent<ConveyorItemView>();
-                var renderer = go.AddComponent<SpriteRenderer>();
-                renderer.sortingOrder = 32767;
-            }
+                ConveyorItemView itemView = null;
+                if (conveyorItemPrefab != null)
+                {
+                    itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
+                }
+                else
+                {
+                    GameObject go = new GameObject("ConveyorItem");
+                    go.transform.position = transform.position;
+                    float scale = ResourcesManager.instance.getResourceScale(typeToOutput);
+                    go.transform.localScale = new Vector3(scale, scale, 1f);
+                    itemView = go.AddComponent<ConveyorItemView>();
+                    var renderer = go.AddComponent<SpriteRenderer>();
+                    renderer.sortingOrder = 32767;
+                }
 
-            var sr = itemView.GetComponentInChildren<SpriteRenderer>();
-            if (sr != null) 
-            {
-                sr.sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
-                sr.sortingOrder = 5;
-            }
-            item.View = itemView;
+                var sr = itemView.GetComponentInChildren<SpriteRenderer>();
+                if (sr != null) 
+                {
+                    sr.sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
+                    sr.sortingOrder = 5;
+                }
+                item.View = itemView;
 
-            Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
-            Inventory.RemoveItem(typeToOutput);
-        }
-        else
-        {
-            Debug.Log($"[Storage] Failed to output {typeToOutput} to {outPort.ConnectedBlock.name} (Conveyor full?)");
+                Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
+                Inventory.RemoveItem(typeToOutput);
+                return; // Successfully output 1 item, stop checking other ports for this tick
+            }
         }
     }
 
