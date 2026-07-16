@@ -65,22 +65,7 @@ public class PlayerInventoryWindow : MonoBehaviour
             }
         };
 
-        // Automatically build and configure the entire UI at runtime ONLY if panels are not already assigned in inspector!
-        if (leftPanel == null || rightPanel == null)
-        {
-            BuildRuntimeUI();
-        }
-        else
-        {
-            if (canvas == null)
-            {
-                canvas = GetComponentInParent<Canvas>();
-                if (canvas == null)
-                {
-                    canvas = Object.FindFirstObjectByType<Canvas>();
-                }
-            }
-        }
+        ValidateReferences();
     }
 
     private void OnEnable()
@@ -625,7 +610,50 @@ public class PlayerInventoryWindow : MonoBehaviour
         rect.offsetMax = Vector2.zero;
     }
 
-    #endregion
+    private void ValidateReferences()
+    {
+        List<string> missingFields = new List<string>();
+
+        if (rootPanel == null) missingFields.Add("PlayerInventoryWindow.rootPanel");
+        if (leftPanel == null) missingFields.Add("PlayerInventoryWindow.leftPanel");
+        if (rightPanel == null) missingFields.Add("PlayerInventoryWindow.rightPanel");
+
+        if (leftPanel != null) ValidatePanelReferences(leftPanel, "LeftPanel", missingFields);
+        if (rightPanel != null) ValidatePanelReferences(rightPanel, "RightPanel", missingFields);
+
+        if (missingFields.Count > 0)
+        {
+            string errorMessage = "<b>[Inventory UI Error]</b> Missing critical references in Inspector:\n" + 
+                                  string.Join("\n", missingFields.ConvertAll(field => "  - <color=red>" + field + "</color>"));
+            Debug.LogError(errorMessage, this);
+        }
+        else
+        {
+            if (canvas == null)
+            {
+                canvas = GetComponentInParent<Canvas>();
+                if (canvas == null)
+                {
+                    canvas = Object.FindFirstObjectByType<Canvas>();
+                }
+            }
+        }
+    }
+
+    private void ValidatePanelReferences(InventoryPanelUI panel, string panelName, List<string> missingFields)
+    {
+        if (panel.itemSlotPrefab == null) missingFields.Add($"{panelName}.itemSlotPrefab");
+        if (panel.moduleSlotPrefab == null) missingFields.Add($"{panelName}.moduleSlotPrefab");
+
+        if (panel.factorySlotsContainer == null) missingFields.Add($"{panelName}.factorySlotsContainer");
+        if (panel.foragingSlotsContainer == null) missingFields.Add($"{panelName}.foragingSlotsContainer");
+        if (panel.modulesSlotsContainer == null) missingFields.Add($"{panelName}.modulesSlotsContainer");
+
+        if (panel.factoryView == null) missingFields.Add($"{panelName}.factoryView");
+        if (panel.foragingView == null) missingFields.Add($"{panelName}.foragingView");
+        if (panel.modulesView == null) missingFields.Add($"{panelName}.modulesView");
+        if (panel.machineView == null) missingFields.Add($"{panelName}.machineView");
+    }
 
     #region Selected Machine Management
 
@@ -674,20 +702,21 @@ public class PlayerInventoryWindow : MonoBehaviour
             }
             else
             {
-                ItemSlotUI itemSlotPrefab = Resources.Load<GameObject>("UI/Inventory Slot")?.GetComponent<ItemSlotUI>();
-                ModuleSlotUI moduleSlotPrefab = Resources.Load<GameObject>("UI/Module Slot")?.GetComponent<ModuleSlotUI>();
-                rightPanelGo = CreatePanel("RightPanel", rootPanel.transform, itemSlotPrefab, moduleSlotPrefab);
+                Debug.LogWarning("[PlayerInventoryWindow] No targetPrefab or defaultPanelPrefab set for right panel swap!");
             }
 
-            rightPanelGo.name = "RightPanel";
-            rightPanelGo.transform.SetSiblingIndex(1);
-            rightPanel = rightPanelGo.GetComponent<InventoryPanelUI>();
-            instantiatedRightPanelPrefabSource = targetPrefab;
-
-            if (rightPanel != null)
+            if (rightPanelGo != null)
             {
-                rightPanel.Initialize(this, PanelTabType.Machine);
-                rightPanel.gameObject.SetActive(true);
+                rightPanelGo.name = "RightPanel";
+                rightPanelGo.transform.SetSiblingIndex(1);
+                rightPanel = rightPanelGo.GetComponent<InventoryPanelUI>();
+                instantiatedRightPanelPrefabSource = targetPrefab;
+
+                if (rightPanel != null)
+                {
+                    rightPanel.Initialize(this, PanelTabType.Machine);
+                    rightPanel.gameObject.SetActive(true);
+                }
             }
         }
 
