@@ -14,6 +14,9 @@ public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
     
     [SerializeField] private int factorySlotCount = 100;
 
+    public int BaseForagingSlots => baseForagingSlots;
+    public int FactorySlotCount => factorySlotCount;
+
     // Interface implementation (defaulting to Foraging for general interactions)
     public Inventory Inventory => ForagingInventory;
 

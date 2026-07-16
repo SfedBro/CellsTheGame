@@ -408,8 +408,18 @@ public class InventoryPanelUI : MonoBehaviour
         if (this == null) return;
         if (UnityEditor.EditorUtility.IsPersistent(this)) return;
         
-        EnsurePreviewForContainer(factorySlotsContainer, 24);
-        EnsurePreviewForContainer(foragingSlotsContainer, 12);
+        int factoryCount = 100;
+        int foragingCount = 12;
+
+        PlayerInventory playerInv = Object.FindFirstObjectByType<PlayerInventory>();
+        if (playerInv != null)
+        {
+            factoryCount = playerInv.FactorySlotCount;
+            foragingCount = playerInv.BaseForagingSlots;
+        }
+
+        EnsurePreviewForContainer(factorySlotsContainer, factoryCount);
+        EnsurePreviewForContainer(foragingSlotsContainer, foragingCount);
     }
 
     private void EnsurePreviewForContainer(Transform container, int count)
