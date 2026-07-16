@@ -654,6 +654,7 @@ public class PlayerInventoryWindow : MonoBehaviour
         if (panel.modulesView == null) missingFields.Add($"{panelName}.modulesView");
         if (panel.machineView == null) missingFields.Add($"{panelName}.machineView");
     }
+    #endregion
 
     #region Selected Machine Management
 

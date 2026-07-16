@@ -10,7 +10,7 @@ public class PlayerLevelManager : MonoBehaviour, IGameService
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<PlayerLevelManager>();
+                _instance = FindFirstObjectByType<PlayerLevelManager>();
                 if (_instance != null)
                 {
                     _instance.InitializeService();

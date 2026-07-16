@@ -12,7 +12,7 @@ public class ResourcesManager : MonoBehaviour, IGameService
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<ResourcesManager>();
+                _instance = FindFirstObjectByType<ResourcesManager>();
                 if (_instance != null)
                 {
                     _instance.InitializeService();

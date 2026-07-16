@@ -5,7 +5,7 @@ public static class StorageMultiblockManager
 {
     public static void RecalculateMultiblocks()
     {
-        var storages = Object.FindObjectsOfType<MachineStorage>();
+        var storages = Object.FindObjectsByType<MachineStorage>(FindObjectsSortMode.None);
         var unvisited = new HashSet<MachineStorage>(storages);
 
         // Clear active multiblocks on all storages first
