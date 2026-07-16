@@ -65,8 +65,22 @@ public class PlayerInventoryWindow : MonoBehaviour
             }
         };
 
-        // Automatically build and configure the entire UI at runtime!
-        BuildRuntimeUI();
+        // Automatically build and configure the entire UI at runtime ONLY if panels are not already assigned in inspector!
+        if (leftPanel == null || rightPanel == null)
+        {
+            BuildRuntimeUI();
+        }
+        else
+        {
+            if (canvas == null)
+            {
+                canvas = GetComponentInParent<Canvas>();
+                if (canvas == null)
+                {
+                    canvas = Object.FindFirstObjectByType<Canvas>();
+                }
+            }
+        }
     }
 
     private void OnEnable()
