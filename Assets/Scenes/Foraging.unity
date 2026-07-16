@@ -889,7 +889,7 @@ MonoBehaviour:
     bulletSpeed: 0
     regenerationCoolDown: 0
     regenerationAmount: 0
-  baseCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
+  baseCannonModule: {fileID: 11400000, guid: 7edef76ee46b78240802dfbffa59da0a, type: 2}
 --- !u!1 &330062718
 GameObject:
   m_ObjectHideFlags: 0

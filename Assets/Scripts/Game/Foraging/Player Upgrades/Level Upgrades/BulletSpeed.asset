@@ -36,10 +36,10 @@ MonoBehaviour:
       amount: 3
   valuePerLevel:
   - 2.5
+  - 2.5
   - 3.75
   - 5
   - 7.5
   - 10
-  - 12.5
   maxLevel: 6
   curLevel: 1
