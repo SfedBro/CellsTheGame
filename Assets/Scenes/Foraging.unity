@@ -889,7 +889,7 @@ MonoBehaviour:
     bulletSpeed: 0
     regenerationCoolDown: 0
     regenerationAmount: 0
-  baseCannonModule: {fileID: 11400000, guid: 7edef76ee46b78240802dfbffa59da0a, type: 2}
+  baseCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
 --- !u!1 &330062718
 GameObject:
   m_ObjectHideFlags: 0
@@ -5160,7 +5160,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 24
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 23c04f72857375b4a9ba42f55bf72489, type: 2}
   m_TargetDisplay: 0
@@ -5302,7 +5302,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 24
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 60a1be8e7382a3e4c9903882a1776d87, type: 2}
   m_TargetDisplay: 0
@@ -5460,7 +5460,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -7093,7 +7093,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1650386803}
   - component: {fileID: 1650386804}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MapFogOfWar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7699,7 +7699,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1872877375}
   - component: {fileID: 1872877376}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WorldMapSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}

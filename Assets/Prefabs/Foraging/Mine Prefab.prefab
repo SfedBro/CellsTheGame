@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2038793308932829247}
   - component: {fileID: 8099160589926111131}
   - component: {fileID: 2293862151255787937}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: Mine Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}

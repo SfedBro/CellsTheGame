@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8068511347402980504}
   - component: {fileID: 1442313420484113550}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: FogTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
