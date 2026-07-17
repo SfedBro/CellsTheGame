@@ -40,11 +40,13 @@ public class IncrementInterface : MonoBehaviour
         label.text = upgradeData.GetStatType().ToString();
         level.text = upgradeData.curLevel.ToString();
         btn.gameObject.SetActive(true);
-
+        levelRequirement.gameObject.SetActive(true);
+        
         if (upgradeData.curLevel == upgradeData.maxLevel)
         {
             level.text = "MAX";
             btn.gameObject.SetActive(false);
+            levelRequirement.gameObject.SetActive(false);
             return;
         }
 
