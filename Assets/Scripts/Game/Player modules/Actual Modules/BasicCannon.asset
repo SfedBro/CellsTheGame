@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a7a45761f439574ab7aabd75598836b, type: 3}
   m_Name: BasicCannon
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: -1435670618729262156, guid: 7e5a09a6235c13044afb29c6b15ec00d, type: 3}
   title: BasicCannon
   moduleType: 0
   inventorySize: 0
@@ -22,7 +22,7 @@ MonoBehaviour:
   overrideWeaponSprite: {fileID: 0}
   overrideHullSprite: {fileID: 0}
   muzzleOffsets:
-  - {x: 1, y: 0}
+  - {x: 10, y: 0}
   muzzleModifierSprite: {fileID: 0}
   effects:
   - rid: 3301968971148034123

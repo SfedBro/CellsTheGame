@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a7a45761f439574ab7aabd75598836b, type: 3}
   m_Name: BasicHeal
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: -5593108013676766002, guid: 832b9530333ee7c4d8ce2171dcca2ef9, type: 3}
   title: BasicHeal
   moduleType: 1
   inventorySize: 0
