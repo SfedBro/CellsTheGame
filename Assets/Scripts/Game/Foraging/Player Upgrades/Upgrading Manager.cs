@@ -25,14 +25,13 @@ public class UpgradingManager : MonoBehaviour
 
     void OnEnable()
     {
+        inventory = PlayerInventory.Instance?.ForagingInventory;
         inventory.OnInventoryChanged += refreshCounters;
         pem.Subscribe(updateCounters);
     }
 
      void Start()
     {
-        inventory = PlayerInventory.Instance?.ForagingInventory;
-
         Vector3 down = new Vector3(0, yOffset, 0);
         int i = 0;
         foreach (UpgradeData upgrade in upgrades)

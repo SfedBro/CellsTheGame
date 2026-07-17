@@ -41,6 +41,5 @@ MonoBehaviour:
   - 10
   - 12.5
   - 15
-  - 17.5
   maxLevel: 6
   curLevel: 1
