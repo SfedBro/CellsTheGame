@@ -40,6 +40,10 @@ public class InventoryPanelUI : MonoBehaviour
     public Transform machineOutputSlotsContainer; // For crafting machine outputs
     public Transform machineRecipeButtonsContainer; // For recipe selection buttons
 
+    [Header("Machine Recipe Popup Trigger")]
+    public Button selectRecipeButton;
+    public TMPro.TMP_Text selectRecipeButtonLabel;
+
     [Header("Prefabs")]
     public ItemSlotUI itemSlotPrefab;
     public ModuleSlotUI moduleSlotPrefab;
@@ -282,6 +286,7 @@ public class InventoryPanelUI : MonoBehaviour
             if (machineInputSlotsContainer != null) machineInputSlotsContainer.gameObject.SetActive(false);
             if (machineOutputSlotsContainer != null) machineOutputSlotsContainer.gameObject.SetActive(false);
             if (machineRecipeButtonsContainer != null) machineRecipeButtonsContainer.gameObject.SetActive(false);
+            if (selectRecipeButton != null) selectRecipeButton.gameObject.SetActive(false);
 
             var inv = selectedProvider.Inventory;
             if (inv != null)
@@ -304,7 +309,35 @@ public class InventoryPanelUI : MonoBehaviour
             if (machineOutputSlotsContainer != null) machineOutputSlotsContainer.gameObject.SetActive(true);
 
             // Populate recipe buttons
-            if (machineRecipeButtonsContainer != null)
+            if (selectRecipeButton != null)
+            {
+                selectRecipeButton.gameObject.SetActive(true);
+                if (machineRecipeButtonsContainer != null) machineRecipeButtonsContainer.gameObject.SetActive(false);
+
+                selectRecipeButton.onClick.RemoveAllListeners();
+                selectRecipeButton.onClick.AddListener(() =>
+                {
+                    if (RecipeSelectionPopup.Instance != null)
+                    {
+                        RecipeSelectionPopup.Instance.OpenPopup(
+                            selectedCrafting as MonoBehaviour,
+                            selectedCrafting.AvailableRecipes,
+                            selectedCrafting.SelectedRecipe,
+                            (recipe) =>
+                            {
+                                selectedCrafting.SelectRecipe(recipe);
+                                RefreshView();
+                            }
+                        );
+                    }
+                });
+
+                if (selectRecipeButtonLabel != null)
+                {
+                    selectRecipeButtonLabel.text = selectedCrafting.SelectedRecipe != null ? selectedCrafting.SelectedRecipe.RecipeName : "Выбрать рецепт";
+                }
+            }
+            else if (machineRecipeButtonsContainer != null)
             {
                 machineRecipeButtonsContainer.gameObject.SetActive(true);
                 
@@ -314,48 +347,49 @@ public class InventoryPanelUI : MonoBehaviour
                     Destroy(child.gameObject);
                 }
 
-                // Spawn a button for each available recipe
-                var recipes = selectedCrafting.AvailableRecipes;
-                if (recipes != null)
+                // Spawn a single button to open the popup
+                GameObject btnGo = new GameObject("ChooseRecipeButton", typeof(RectTransform));
+                btnGo.transform.SetParent(machineRecipeButtonsContainer, false);
+                
+                Image img = btnGo.AddComponent<Image>();
+                img.color = new Color(0.24f, 0.24f, 0.28f, 1f);
+                
+                Button btn = btnGo.AddComponent<Button>();
+                btn.targetGraphic = img;
+                btn.onClick.AddListener(() =>
                 {
-                    foreach (var recipe in recipes)
+                    if (RecipeSelectionPopup.Instance != null)
                     {
-                        if (recipe == null) continue;
-
-                        GameObject btnGo = new GameObject("RecipeButton", typeof(RectTransform));
-                        btnGo.transform.SetParent(machineRecipeButtonsContainer, false);
-
-                        Image img = btnGo.AddComponent<Image>();
-                        bool isSelected = (selectedCrafting.SelectedRecipe == recipe);
-                        img.color = isSelected ? new Color(0.2f, 0.6f, 0.3f, 1f) : new Color(0.25f, 0.25f, 0.28f, 1f);
-
-                        Button btn = btnGo.AddComponent<Button>();
-                        btn.targetGraphic = img;
-                        btn.onClick.AddListener(() =>
-                        {
-                            selectedCrafting.SelectRecipe(recipe);
-                            RefreshView();
-                        });
-
-                        LayoutElement le = btnGo.AddComponent<LayoutElement>();
-                        le.preferredWidth = 120;
-                        le.preferredHeight = 35;
-
-                        GameObject txtGo = new GameObject("Label", typeof(RectTransform));
-                        txtGo.transform.SetParent(btnGo.transform, false);
-                        RectTransform txtRect = txtGo.GetComponent<RectTransform>();
-                        txtRect.anchorMin = Vector2.zero;
-                        txtRect.anchorMax = Vector2.one;
-                        txtRect.offsetMin = Vector2.zero;
-                        txtRect.offsetMax = Vector2.zero;
-
-                        var tmp = txtGo.AddComponent<TMPro.TextMeshProUGUI>();
-                        tmp.text = recipe.RecipeName;
-                        tmp.fontSize = 11;
-                        tmp.alignment = TMPro.TextAlignmentOptions.Center;
-                        tmp.color = Color.white;
+                        RecipeSelectionPopup.Instance.OpenPopup(
+                            selectedCrafting as MonoBehaviour,
+                            selectedCrafting.AvailableRecipes,
+                            selectedCrafting.SelectedRecipe,
+                            (recipe) =>
+                            {
+                                selectedCrafting.SelectRecipe(recipe);
+                                RefreshView();
+                            }
+                        );
                     }
-                }
+                });
+
+                LayoutElement le = btnGo.AddComponent<LayoutElement>();
+                le.preferredWidth = 140;
+                le.preferredHeight = 35;
+
+                GameObject txtGo = new GameObject("Label", typeof(RectTransform));
+                txtGo.transform.SetParent(btnGo.transform, false);
+                RectTransform txtRect = txtGo.GetComponent<RectTransform>();
+                txtRect.anchorMin = Vector2.zero;
+                txtRect.anchorMax = Vector2.one;
+                txtRect.offsetMin = Vector2.zero;
+                txtRect.offsetMax = Vector2.zero;
+
+                var tmp = txtGo.AddComponent<TMPro.TextMeshProUGUI>();
+                tmp.text = selectedCrafting.SelectedRecipe != null ? selectedCrafting.SelectedRecipe.RecipeName : "Выбрать рецепт";
+                tmp.fontSize = 11;
+                tmp.alignment = TMPro.TextAlignmentOptions.Center;
+                tmp.color = Color.white;
             }
 
             var inputInv = selectedCrafting.InputInventory;

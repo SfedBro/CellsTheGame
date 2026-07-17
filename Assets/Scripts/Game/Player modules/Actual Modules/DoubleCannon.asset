@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a7a45761f439574ab7aabd75598836b, type: 3}
   m_Name: DoubleCannon
   m_EditorClassIdentifier: 
-  sprite: {fileID: -211902454850941632, guid: 5111ff33c9b988549bc8ac321cc236a2, type: 3}
+  sprite: {fileID: -211902454850941632, guid: 93a5fe40ff4e53b4abfb55fd35005093, type: 3}
   title: DoubleCannon
   moduleType: 0
   inventorySize: 0

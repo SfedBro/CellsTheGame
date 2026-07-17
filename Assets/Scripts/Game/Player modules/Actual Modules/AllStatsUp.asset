@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a7a45761f439574ab7aabd75598836b, type: 3}
   m_Name: AllStatsUp
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 8133180057632426689, guid: a06fbe80ddf90114aa329d5745894c16, type: 3}
   title: AllStatsUp
   moduleType: 1
   inventorySize: 0
