@@ -2393,7 +2393,7 @@ MonoBehaviour:
   machineInputSlotsContainer: {fileID: 7976603497366285171}
   machineOutputSlotsContainer: {fileID: 1442659915887484469}
   machineRecipeButtonsContainer: {fileID: 0}
-  itemSlotPrefab: {fileID: 2841198326174129387, guid: 7fb5f88947f3ba04aa89150ba821ff23, type: 3}
+  itemSlotPrefab: {fileID: 6354596174186017941, guid: 0ee13e8dff7163f4aa75a1b33283a6cb, type: 3}
   moduleSlotPrefab: {fileID: 6084394408895264216, guid: c1b770cc665656649adb44a6fbd51a2f, type: 3}
   cannonSlot: {fileID: 2056857507064498478}
   bodySlot: {fileID: 4215322259603982531}

@@ -66,11 +66,12 @@ public class PlayerWeaponVisuals : MonoBehaviour
             if (module.overrideWeaponSprite != null && gunRenderer != null)
             {
                 gunRenderer.sprite = module.overrideWeaponSprite;
-                if (module.muzzleOffsets != null && module.muzzleOffsets.Length > 0)
-                {
-                    currentMuzzleOffsets.Clear();
-                    currentMuzzleOffsets.AddRange(module.muzzleOffsets);
-                }
+            }
+
+            if (module.muzzleOffsets != null && module.muzzleOffsets.Length > 0)
+            {
+                currentMuzzleOffsets.Clear();
+                currentMuzzleOffsets.AddRange(module.muzzleOffsets);
             }
 
             if (module.overrideHullSprite != null && hullRenderer != null)

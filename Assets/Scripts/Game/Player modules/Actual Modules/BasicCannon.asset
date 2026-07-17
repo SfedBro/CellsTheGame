@@ -22,7 +22,7 @@ MonoBehaviour:
   overrideWeaponSprite: {fileID: 0}
   overrideHullSprite: {fileID: 0}
   muzzleOffsets:
-  - {x: 0.5, y: 0}
+  - {x: 1, y: 0}
   muzzleModifierSprite: {fileID: 0}
   effects:
   - rid: 3301968971148034123
