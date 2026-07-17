@@ -40,6 +40,11 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
 
     private void Start()
     {
+        if (detailsPanel == null)
+        {
+            Debug.LogWarning($"[TechTreeNodeUI] detailsPanel is not assigned on '{gameObject.name}'! Right-click description won't show.", this);
+        }
+
         if (nodeData != null)
         {
             if (icon != null) icon.sprite = nodeData.icon;
@@ -110,7 +115,22 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        // Handled by click if not dragged
+        if (nodeData == null) return;
+
+        // Check if we dragged the pointer
+        if (Vector2.Distance(eventData.position, pointerDownPos) > dragThreshold)
+        {
+            isDragging = true;
+        }
+
+        if (isDragging) return;
+
+        // Use OnPointerUp for Right Click to bypass Unity EventSystem limitation where click events
+        // are often ignored/filtered for right mouse button.
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            ToggleExpandedState();
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -122,11 +142,8 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
 
         if (isDragging || nodeData == null) return;
 
-        if (eventData.button == PointerEventData.InputButton.Right)
-        {
-            ToggleExpandedState();
-        }
-        else if (eventData.button == PointerEventData.InputButton.Left)
+        // Left Click purchase is kept here
+        if (eventData.button == PointerEventData.InputButton.Left)
         {
             TryPurchase();
         }
