@@ -21,6 +21,7 @@ public class TechTreeUI : MonoBehaviour
     private System.Collections.Generic.List<TechTreeLineUI> generatedLines = new System.Collections.Generic.List<TechTreeLineUI>();
 
     private InputSystem_Actions inputActions;
+    private TechTreeNodeData selectedNode;
 
     private void Awake()
     {
@@ -140,6 +141,14 @@ public class TechTreeUI : MonoBehaviour
 
         if (globalDetailsPanel != null)
         {
+            if (globalDetailsPanel.activeSelf && selectedNode == nodeData)
+            {
+                globalDetailsPanel.SetActive(false);
+                selectedNode = null;
+                return;
+            }
+
+            selectedNode = nodeData;
             globalDetailsPanel.SetActive(true);
             if (globalTitleText != null) globalTitleText.text = nodeData.displayName;
             if (globalDescriptionText != null) globalDescriptionText.text = nodeData.description;
