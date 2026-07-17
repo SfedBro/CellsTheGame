@@ -32,7 +32,6 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
     public Color unlockedColor = new Color(1f, 0.8f, 0f, 1f);
 
     private bool isExpanded = false;
-    private bool isHovered = false;
     
     // Drag detection
     private Vector2 pointerDownPos;
