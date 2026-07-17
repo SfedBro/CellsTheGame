@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour, IPausable
     [Header("Attack")]
     [SerializeField] private Transform bulletParent;
     [SerializeField] private PlayerModule baseCannonModule;
+    public PlayerModule BaseCannonModule => baseCannonModule;
     public IWeapon DefaultWeapon { get; set; }
     public IWeapon CurrentWeapon { get; set; }
     [Header("Stats")]

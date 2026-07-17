@@ -45,8 +45,16 @@ public class PlayerWeaponVisuals : MonoBehaviour
         if (gunRenderer != null) gunRenderer.sprite = defaultGunSprite;
 
         currentMuzzleOffsets.Clear();
-        // Default muzzle: offset slightly forward along X axis (since 0 degrees is right/forward)
-        currentMuzzleOffsets.Add(new Vector2(0.5f, 0f));
+        PlayerController player = GetComponentInParent<PlayerController>();
+        if (player != null && player.BaseCannonModule != null && player.BaseCannonModule.muzzleOffsets != null && player.BaseCannonModule.muzzleOffsets.Length > 0)
+        {
+            currentMuzzleOffsets.AddRange(player.BaseCannonModule.muzzleOffsets);
+        }
+        else
+        {
+            // Default muzzle: offset slightly forward along X axis (since 0 degrees is right/forward)
+            currentMuzzleOffsets.Add(new Vector2(0.5f, 0f));
+        }
 
         foreach (var obj in activeMuzzleVisuals)
         {
