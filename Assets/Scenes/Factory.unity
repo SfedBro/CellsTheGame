@@ -1251,7 +1251,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &363909094
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5208,9 +5208,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingOwnedModules:
   - {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
-  - {fileID: 11400000, guid: ed0da3b9f0f8bd14dbb503b2f2c9a8d3, type: 2}
-  - {fileID: 11400000, guid: a33f1ad654655be4bb05f0ecc7ae5a0f, type: 2}
   - {fileID: 11400000, guid: 8d7844465bea0604bba1efcb12dc1cdc, type: 2}
+  - {fileID: 11400000, guid: ed0da3b9f0f8bd14dbb503b2f2c9a8d3, type: 2}
 --- !u!4 &1705756575
 Transform:
   m_ObjectHideFlags: 0
