@@ -188,6 +188,23 @@ public class PlayerInventoryWindow : MonoBehaviour
 
     private void ValidateReferences()
     {
+        // Fallback: search children if leftPanel or rightPanel is not assigned in the Inspector
+        if (leftPanel == null || rightPanel == null)
+        {
+            InventoryPanelUI[] panels = GetComponentsInChildren<InventoryPanelUI>(true);
+            foreach (var panel in panels)
+            {
+                if (leftPanel == null && (panel.gameObject.name.Contains("Left") || panel.gameObject.name.Contains("left")))
+                {
+                    leftPanel = panel;
+                }
+                else if (rightPanel == null && (panel.gameObject.name.Contains("Right") || panel.gameObject.name.Contains("right")))
+                {
+                    rightPanel = panel;
+                }
+            }
+        }
+
         List<string> missingFields = new List<string>();
 
         if (rootPanel == null) missingFields.Add("PlayerInventoryWindow.rootPanel");

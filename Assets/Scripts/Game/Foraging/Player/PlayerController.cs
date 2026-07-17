@@ -64,9 +64,21 @@ public class PlayerController : MonoBehaviour, IPausable
 
         if (baseCannonModule != null)
         {
+            Debug.Log($"[PlayerController] baseCannonModule '{baseCannonModule.name}' has {baseCannonModule.effects.Count} effects.");
+            foreach (var fx in baseCannonModule.effects)
+            {
+                Debug.Log($"[PlayerController] - Asset effect type: {(fx != null ? fx.GetType().Name : "null")}, is IWeapon: {fx is IWeapon}");
+            }
+
             PlayerModule runtimeBaseModule = Instantiate(baseCannonModule);
+            if (runtimeBaseModule.effects == null || runtimeBaseModule.effects.Count == 0)
+            {
+                runtimeBaseModule.effects = new List<IModuleEffect>(baseCannonModule.effects);
+            }
+            Debug.Log($"[PlayerController] runtimeBaseModule '{runtimeBaseModule.name}' has {runtimeBaseModule.effects.Count} effects.");
             foreach (var effect in runtimeBaseModule.effects)
             {
+                Debug.Log($"[PlayerController] - Runtime effect type: {(effect != null ? effect.GetType().Name : "null")}, is IWeapon: {effect is IWeapon}");
                 if (effect is IWeapon weapon)
                 {
                     DefaultWeapon = weapon;
@@ -78,7 +90,7 @@ public class PlayerController : MonoBehaviour, IPausable
 
         if (DefaultWeapon == null)
         {
-            Debug.LogError("No IWeapon effect found in Base Cannon Module on Player -> PlayerController!");
+            Debug.LogError($"No IWeapon effect found in Base Cannon Module on Player -> PlayerController! baseCannonModule assigned: {baseCannonModule != null}");
         }
     }
 

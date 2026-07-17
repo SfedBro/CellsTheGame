@@ -112,6 +112,10 @@ public class PlayerModuleManager : MonoBehaviour, IGameService
         if (!moduleTemplate.name.Contains("(Clone)"))
         {
             newModule = Instantiate(moduleTemplate);
+            if (newModule.effects == null || newModule.effects.Count == 0)
+            {
+                newModule.effects = new List<IModuleEffect>(moduleTemplate.effects);
+            }
         }
         ownedModules.Add(newModule);
     }
