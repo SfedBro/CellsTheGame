@@ -53,7 +53,7 @@ public class EnemyTurret : EnemyBase
         if (playerFound)
         {
             Vector2 direction = (player.position - transform.position).normalized;
-            targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 360f;
+            targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
         }
         else
         {
