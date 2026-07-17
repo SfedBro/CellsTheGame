@@ -40,11 +40,13 @@ public class IncrementInterface : MonoBehaviour
         label.text = upgradeData.GetStatType().ToString();
         level.text = upgradeData.curLevel.ToString();
         btn.gameObject.SetActive(true);
-
+        levelRequirement.gameObject.SetActive(true);
+        
         if (upgradeData.curLevel == upgradeData.maxLevel)
         {
             level.text = "MAX";
             btn.gameObject.SetActive(false);
+            levelRequirement.gameObject.SetActive(false);
             return;
         }
 
@@ -77,7 +79,7 @@ public class IncrementInterface : MonoBehaviour
             requirements.Add(req);
             texts.Add(text);
 
-            if (ResourcesManager.instance.getResourceAmount(cost.resource) < cost.amount)
+            if (PlayerInventory.Instance.ForagingInventory.GetAmount(cost.resource) < cost.amount)
             {
                 text.color = Color.red;
             }

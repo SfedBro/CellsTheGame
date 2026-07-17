@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour, IPausable
     public PlayerStats curPlayerStats;
     private System.Collections.Generic.List<StatModifier> statModifiers = new System.Collections.Generic.List<StatModifier>();
     private float curHP;
+    private float regenerationTimer = 0f;
 
     [Header("Fight")]
     [SerializeField] private float invulnerabilityDuration = 1.5f;
@@ -141,6 +142,19 @@ public class PlayerController : MonoBehaviour, IPausable
             SetAllRenderersColor(new Color(1, 1, 1, Mathf.Clamp01(1 - factoryEnteringTimer / factoryEnteringTime))); // Update player's transparency
 
             if (factoryEnteringTimer > factoryEnteringTime) SceneManager.LoadScene("Factory");
+        }
+
+        // REGENERATION
+        if (curPlayerStats.regenerationAmount > 0 && curHP <= curPlayerStats.maxHP)
+        {
+            regenerationTimer += Time.deltaTime;
+
+            if (regenerationTimer > curPlayerStats.regenerationCoolDown)
+            {
+                regenerationTimer = 0;
+                curHP = Math.Clamp(MathF.Round(curHP + curPlayerStats.regenerationAmount, 2), 0, curPlayerStats.maxHP);
+                hintsController.SetPlayerHP(curHP);
+            }
         }
     }
 
@@ -480,6 +494,10 @@ public class PlayerStats
     public float attackRange;
     public float bulletSpeed;
 
+    [Header("Regeneration")]
+    public float regenerationCoolDown;
+    public float regenerationAmount;
+
     public PlayerStats(int initial)
     {
         mass = initial;
@@ -492,6 +510,8 @@ public class PlayerStats
         attackCoolDown = initial;
         attackRange = initial;
         bulletSpeed = initial;
+        regenerationCoolDown = initial;
+        regenerationAmount = initial;
     }
 
     public void Add(PlayerStats other)
@@ -506,6 +526,8 @@ public class PlayerStats
         attackCoolDown += other.attackCoolDown;
         attackRange += other.attackRange;
         bulletSpeed += other.bulletSpeed;
+        regenerationCoolDown += other.regenerationCoolDown;
+        regenerationAmount += other.regenerationAmount;
     }
 
     public void Multiply(PlayerStats other)
@@ -520,6 +542,8 @@ public class PlayerStats
         attackCoolDown *= other.attackCoolDown;
         attackRange *= other.attackRange;
         bulletSpeed *= other.bulletSpeed;
+        regenerationCoolDown *= other.regenerationCoolDown;
+        regenerationAmount *= other.regenerationAmount;
     }
 
     public static PlayerStats operator *(PlayerStats s1, float multiplication)
@@ -537,6 +561,8 @@ public class PlayerStats
         result.attackCoolDown *= multiplication;
         result.attackRange *= multiplication;
         result.bulletSpeed *= multiplication;
+        result.regenerationCoolDown *= multiplication;
+        result.regenerationAmount *= multiplication;
 
         return result;
     }
@@ -553,5 +579,7 @@ public class PlayerStats
         attackCoolDown = other.attackCoolDown;
         attackRange = other.attackRange;
         bulletSpeed = other.bulletSpeed;
+        regenerationCoolDown = other.regenerationCoolDown;
+        regenerationAmount = other.regenerationAmount;
     }
 }

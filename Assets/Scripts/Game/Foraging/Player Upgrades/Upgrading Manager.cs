@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,15 +13,22 @@ public class UpgradingManager : MonoBehaviour
     [SerializeField] private PlayerExperienceManager pem;
 
     private PlayerController player;
-    private ResourcesManager rm => ResourcesManager.instance;
+    private Inventory inventory;
     private List<IncrementInterface> increments = new();
 
     private List<UpgradeData> upgrades;
 
     void OnEnable()
     {
-        if (rm != null) rm.Subscrive(UpdateCounters);
-        if (pem != null) pem.Subscribe(UpdateCounters);
+        inventory = PlayerInventory.Instance?.ForagingInventory;
+        if (inventory != null)
+        {
+            inventory.OnInventoryChanged += refreshCounters;
+        }
+        if (pem != null)
+        {
+            pem.Subscribe(updateCounters);
+        }
     }
 
     void Start()
@@ -47,11 +55,16 @@ public class UpgradingManager : MonoBehaviour
                 increment.UpdateUI();
             }
         }
+
+        refreshCounters();
     }
 
     void OnDisable()
     {
-        if (rm != null) rm.Unsubscrive(UpdateCounters);
+        if (inventory != null)
+        {
+            inventory.OnInventoryChanged -= refreshCounters;
+        }
     }
 
     public void correctPlayerStats(PlayerController player)
@@ -82,7 +95,7 @@ public class UpgradingManager : MonoBehaviour
                 continue;
             }
 
-            if (rm.getResourceAmount(cost.resource) < cost.amount) return false;
+            if (inventory.GetAmount(cost.resource) < cost.amount) return false;
         }
 
         foreach (ResourceCost cost in upgrade.getCurCost())
@@ -93,7 +106,7 @@ public class UpgradingManager : MonoBehaviour
                 continue;
             }
 
-            rm.addResourceAmount(cost.resource, -cost.amount);
+            inventory.AddItem(cost.resource, -cost.amount);
         }
     
         upgrade.curLevel++;
@@ -101,7 +114,17 @@ public class UpgradingManager : MonoBehaviour
         return true;
     }
 
-    private void UpdateCounters(ItemType type, int amount)
+    private void refreshCounters()
+    {
+        foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
+        {
+            int amount = PlayerInventory.Instance.ForagingInventory.GetAmount(type);
+
+            updateCounters(type, amount);
+        }
+    }
+
+    private void updateCounters(ItemType type, int amount)
     {
         foreach (IncrementInterface inc in increments)
         {

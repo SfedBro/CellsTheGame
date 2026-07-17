@@ -665,6 +665,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &274927651
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 274927652}
+  m_Layer: 0
+  m_Name: Muzzle End
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &274927652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 274927651}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.45, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 324252602}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &319078219
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,7 +802,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 274927652}
   m_Father: {fileID: 2110928059}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &324252603
@@ -843,6 +875,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 2110928060}
   playerCamera: {fileID: 1313044231}
+  muzzleEnd: {fileID: 274927652}
   curPlayerStats:
     mass: 0
     engineForce: 0
@@ -854,6 +887,9 @@ MonoBehaviour:
     attackCoolDown: 0
     attackRange: 0
     bulletSpeed: 0
+    regenerationCoolDown: 0
+    regenerationAmount: 0
+  baseCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
 --- !u!1 &330062718
 GameObject:
   m_ObjectHideFlags: 0
@@ -1888,6 +1924,8 @@ MonoBehaviour:
     attackCoolDown: 0
     attackRange: 0
     bulletSpeed: 0
+    regenerationCoolDown: 0
+    regenerationAmount: 0
   frictionCoefficient: 1
   minAxisSpeed: 0.01
 --- !u!212 &567709372
@@ -5122,7 +5160,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 24
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 23c04f72857375b4a9ba42f55bf72489, type: 2}
   m_TargetDisplay: 0
@@ -5264,7 +5302,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 24
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 60a1be8e7382a3e4c9903882a1776d87, type: 2}
   m_TargetDisplay: 0
@@ -5422,7 +5460,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -7055,7 +7093,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1650386803}
   - component: {fileID: 1650386804}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MapFogOfWar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7661,7 +7699,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1872877375}
   - component: {fileID: 1872877376}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WorldMapSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8347,8 +8385,6 @@ MonoBehaviour:
   gun: {fileID: 324252604}
   moduleController: {fileID: 2110928061}
   factoryEnteringTime: 2
-  bulletParent: {fileID: 0}
-  baseCannonModule: {fileID: 11400000, guid: 2a49d6ce130af5640a8ec26761ca8d00, type: 2}
   basicPlayerStats:
     mass: 1
     engineForce: 10
@@ -8358,8 +8394,10 @@ MonoBehaviour:
     maxHP: 1
     dmg: 1
     attackCoolDown: 1
-    attackRange: 0
-    bulletSpeed: 0
+    attackRange: 2.5
+    bulletSpeed: 2.5
+    regenerationCoolDown: 1
+    regenerationAmount: 0.1
   curPlayerStats:
     mass: 0
     engineForce: 0
@@ -8371,6 +8409,8 @@ MonoBehaviour:
     attackCoolDown: 0
     attackRange: 0
     bulletSpeed: 0
+    regenerationCoolDown: 0
+    regenerationAmount: 0
   invulnerabilityDuration: 1.5
   blinkInterval: 0.1
   attackData:
@@ -8389,7 +8429,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56920b6a73d39c54e97706ef90db52b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2110928060}
 --- !u!114 &2110928063
 MonoBehaviour:
   m_ObjectHideFlags: 0

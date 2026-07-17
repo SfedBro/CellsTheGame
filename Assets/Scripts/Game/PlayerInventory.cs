@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Linq;
 
 public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
 {
@@ -94,8 +93,8 @@ public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
     {
         return new SaveData.PlayerInventoryData()
         {
-            foragingInventory = this.ForagingInventory,
-            factoryInventory = this.FactoryInventory
+            foragingInventory = ForagingInventory,
+            factoryInventory = FactoryInventory
         };
     }
 
@@ -112,11 +111,11 @@ public class PlayerInventory : MonoBehaviour, IInventoryProvider, IGameService
         {
             if (data.foragingInventory != null && data.foragingInventory.slots != null)
             {
-                this.ForagingInventory = data.foragingInventory;
+                ForagingInventory = data.foragingInventory;
             }
             if (data.factoryInventory != null && data.factoryInventory.slots != null)
             {
-                this.FactoryInventory = data.factoryInventory;
+                FactoryInventory = data.factoryInventory;
             }
         }
         UpdateForagingLimits();

@@ -27,7 +27,7 @@ public class ResourcesManager : MonoBehaviour, IGameService
     [SerializeField] private float defaultScale = 1f;
     protected Inventory inventory;
 
-    [System.Serializable]
+    [Serializable]
     public struct ResourceVisualData
     {
         public ItemType type;
@@ -165,6 +165,7 @@ public class ResourcesManager : MonoBehaviour, IGameService
 
     public void onPlayerDeath(EnemyBase killer)
     {
+        Inventory inventory = PlayerInventory.Instance.ForagingInventory;
         if (inventory.slots == null) return;
         var distinctTypes = inventory.slots.Where(s => !s.IsEmpty).Select(s => s.type).Distinct().ToList();
         
@@ -175,15 +176,7 @@ public class ResourcesManager : MonoBehaviour, IGameService
                 killer.AddLoot(slot.type, slot.amount);
             }
 
-            slot.Clear();
-        }
-
-        foreach (var itemType in distinctTypes)
-        {
-            foreach (var action in observers)
-            {
-                action(itemType, 0);
-            }
+            inventory.RemoveItem(slot.type, slot.amount);
         }
     }
 }
