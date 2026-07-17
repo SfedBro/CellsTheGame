@@ -1079,7 +1079,7 @@ MonoBehaviour:
   nodeData: {fileID: 11400000, guid: 6d400e18ecb404c43b79339c35e5130f, type: 2}
   background: {fileID: 1302775140}
   icon: {fileID: 209695848}
-  titleText: {fileID: 0}
+  titleText: {fileID: 540173585}
   costPanel: {fileID: 1529076950}
   costText: {fileID: 2117524019}
   detailsPanel: {fileID: 1164900225}
@@ -3350,10 +3350,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 34.5
   m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
