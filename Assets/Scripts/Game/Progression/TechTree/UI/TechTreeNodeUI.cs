@@ -43,12 +43,17 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
     {
         if (nodeData != null)
         {
+            Debug.Log($"[TechTreeNode] {gameObject.name} initialized with data: {nodeData.name}. Icon: {(nodeData.icon != null ? nodeData.icon.name : "NULL")}, Display Name: {nodeData.displayName}");
             if (icon != null) icon.sprite = nodeData.icon;
             if (titleText != null) titleText.text = nodeData.displayName;
             
             if (descriptionText != null) descriptionText.text = nodeData.description;
             if (detailsImage != null) detailsImage.sprite = nodeData.icon; // Use the same icon, or you could add a new field in TechTreeNodeData
             if (costText != null) costText.text = GetCostString();
+        }
+        else
+        {
+            Debug.LogWarning($"[TechTreeNode] {gameObject.name} has NO NodeData assigned!");
         }
 
         if (costPanel != null) costPanel.SetActive(false);
