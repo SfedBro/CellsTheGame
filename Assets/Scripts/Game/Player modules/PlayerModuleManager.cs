@@ -112,6 +112,10 @@ public class PlayerModuleManager : MonoBehaviour, IGameService
         if (!moduleTemplate.name.Contains("(Clone)"))
         {
             newModule = Instantiate(moduleTemplate);
+            if (newModule.effects == null || newModule.effects.Count == 0)
+            {
+                newModule.effects = new List<IModuleEffect>(moduleTemplate.effects);
+            }
         }
         ownedModules.Add(newModule);
     }
@@ -119,5 +123,82 @@ public class PlayerModuleManager : MonoBehaviour, IGameService
     public void RemoveOwnedModule(PlayerModule module)
     {
         ownedModules.Remove(module);
+    }
+
+    public void EnsureWeaponEquipped()
+    {
+        // 1. Check if any weapon is already equipped
+        foreach (var mod in equipedModules)
+        {
+            if (mod != null && mod.moduleType == ModuleType.Cannon)
+            {
+                return; // Already has a weapon equipped!
+            }
+        }
+
+        // 2. Not equipped. Search owned modules for "BasicCannon"
+        PlayerModule weaponToEquip = null;
+        foreach (var mod in ownedModules)
+        {
+            if (mod != null && mod.moduleType == ModuleType.Cannon)
+            {
+                if (mod.name.Contains("Basic") || mod.title.Contains("Basic") || mod.name.Contains("Cannon") || mod.title.Contains("Cannon"))
+                {
+                    weaponToEquip = mod;
+                    break;
+                }
+            }
+        }
+
+        // 3. If not found, just take any owned cannon module
+        if (weaponToEquip == null)
+        {
+            foreach (var mod in ownedModules)
+            {
+                if (mod != null && mod.moduleType == ModuleType.Cannon)
+                {
+                    weaponToEquip = mod;
+                    break;
+                }
+            }
+        }
+
+        // 4. If still not found, fallback to startingOwnedModules to find the template, clone it, and equip it!
+        if (weaponToEquip == null)
+        {
+            PlayerModule template = null;
+            foreach (var mod in startingOwnedModules)
+            {
+                if (mod != null && mod.moduleType == ModuleType.Cannon)
+                {
+                    template = mod;
+                    break;
+                }
+            }
+            if (template != null)
+            {
+                weaponToEquip = Instantiate(template);
+                if (weaponToEquip.effects == null || weaponToEquip.effects.Count == 0)
+                {
+                    weaponToEquip.effects = new List<IModuleEffect>(template.effects);
+                }
+                Debug.Log($"[PlayerModuleManager] Created a new runtime instance of starting weapon template: {template.title}");
+            }
+        }
+
+        // 5. Equip it!
+        if (weaponToEquip != null)
+        {
+            if (ownedModules.Contains(weaponToEquip))
+            {
+                ownedModules.Remove(weaponToEquip);
+            }
+            EquipModule(weaponToEquip);
+            Debug.Log($"[PlayerModuleManager] Automatically equipped {weaponToEquip.title} because no weapon was equipped before entering Foraging.");
+        }
+        else
+        {
+            Debug.LogWarning("[PlayerModuleManager] No owned or starting weapon module found to automatically equip!");
+        }
     }
 }

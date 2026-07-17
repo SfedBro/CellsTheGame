@@ -20,6 +20,10 @@ public class PlayerInventoryWindow : MonoBehaviour
     public InventoryPanelUI leftPanel;
     public InventoryPanelUI rightPanel;
 
+    [Header("Default UI Panels")]
+    public GameObject defaultPanelPrefab;
+    private GameObject instantiatedRightPanelPrefabSource;
+
     [Header("Layout Docking Preview")]
     public RectTransform previewOverlay; // Translucent indicator panel for docking preview
 
@@ -51,10 +55,17 @@ public class PlayerInventoryWindow : MonoBehaviour
         Instance = this;
 
         inputActions = new InputSystem_Actions();
-        inputActions.UI.OpenModules.performed += _ => ToggleWindow();
+        inputActions.UI.OpenInventory.performed += _ => 
+        {
+            BuildManager buildManager = FindFirstObjectByType<BuildManager>();
+            bool isBuilding = buildManager != null && (buildManager.IsBuildMode || buildManager.IsEditMode);
+            if (!isBuilding)
+            {
+                ToggleWindow();
+            }
+        };
 
-        // Automatically build and configure the entire UI at runtime!
-        BuildRuntimeUI();
+        ValidateReferences();
     }
 
     private void OnEnable()
@@ -173,399 +184,69 @@ public class PlayerInventoryWindow : MonoBehaviour
         if (rightPanel != null && rightPanel.gameObject.activeSelf) rightPanel.RefreshView();
     }
 
-    #region Procedural Runtime UI Builder
 
-    private void BuildRuntimeUI()
+
+    private void ValidateReferences()
     {
-        // 1. Destroy any existing editor UI child elements inside the prefab instance
-        List<GameObject> childrenToDestroy = new List<GameObject>();
-        foreach (Transform child in transform)
+        // Fallback: search children if leftPanel or rightPanel is not assigned in the Inspector
+        if (leftPanel == null || rightPanel == null)
         {
-            childrenToDestroy.Add(child.gameObject);
-        }
-        foreach (var go in childrenToDestroy)
-        {
-            DestroyImmediate(go);
-        }
-
-        // 2. Locate active canvas
-        if (canvas == null)
-        {
-            canvas = GetComponentInParent<Canvas>();
-            if (canvas == null)
+            InventoryPanelUI[] panels = GetComponentsInChildren<InventoryPanelUI>(true);
+            foreach (var panel in panels)
             {
-                canvas = Object.FindFirstObjectByType<Canvas>();
+                if (leftPanel == null && (panel.gameObject.name.Contains("Left") || panel.gameObject.name.Contains("left")))
+                {
+                    leftPanel = panel;
+                }
+                else if (rightPanel == null && (panel.gameObject.name.Contains("Right") || panel.gameObject.name.Contains("right")))
+                {
+                    rightPanel = panel;
+                }
             }
         }
 
-        // Setup root rect transform to stretch full screen
-        RectTransform myRect = GetComponent<RectTransform>();
-        if (myRect != null)
+        List<string> missingFields = new List<string>();
+
+        if (rootPanel == null) missingFields.Add("PlayerInventoryWindow.rootPanel");
+        if (leftPanel == null) missingFields.Add("PlayerInventoryWindow.leftPanel");
+        if (rightPanel == null) missingFields.Add("PlayerInventoryWindow.rightPanel");
+
+        if (leftPanel != null) ValidatePanelReferences(leftPanel, "LeftPanel", missingFields);
+        if (rightPanel != null) ValidatePanelReferences(rightPanel, "RightPanel", missingFields);
+
+        if (missingFields.Count > 0)
         {
-            myRect.anchorMin = Vector2.zero;
-            myRect.anchorMax = Vector2.one;
-            myRect.offsetMin = Vector2.zero;
-            myRect.offsetMax = Vector2.zero;
-        }
-
-        // 3. Create RootPanel
-        GameObject rootPanelGo = new GameObject("RootPanel", typeof(RectTransform));
-        rootPanelGo.transform.SetParent(transform, false);
-        rootPanel = rootPanelGo;
-        
-        RectTransform rootPanelRect = rootPanelGo.GetComponent<RectTransform>();
-        rootPanelRect.anchorMin = new Vector2(0.5f, 0.5f);
-        rootPanelRect.anchorMax = new Vector2(0.5f, 0.5f);
-        rootPanelRect.sizeDelta = new Vector2(950, 600); // Widescreen size
-
-        Image rootBg = rootPanelGo.AddComponent<Image>();
-        rootBg.color = new Color(0.1f, 0.1f, 0.12f, 0.95f); // Beautiful dark theme base
-
-        HorizontalLayoutGroup rootLayout = rootPanelGo.AddComponent<HorizontalLayoutGroup>();
-        rootLayout.childControlWidth = true;
-        rootLayout.childControlHeight = true;
-        rootLayout.childForceExpandWidth = true;
-        rootLayout.childForceExpandHeight = true;
-        rootLayout.spacing = 15;
-        rootLayout.padding = new RectOffset(15, 15, 15, 15);
-
-        // 4. Load prefabs from Resources
-        GameObject panelPrefab = Resources.Load<GameObject>("UI/Inventory Panel");
-        ItemSlotUI itemSlotPrefab = Resources.Load<GameObject>("UI/Inventory Slot")?.GetComponent<ItemSlotUI>();
-        ModuleSlotUI moduleSlotPrefab = Resources.Load<GameObject>("UI/Module Slot")?.GetComponent<ModuleSlotUI>();
-
-        // 5. Create Panels
-        GameObject leftPanelGo;
-        if (panelPrefab != null)
-        {
-            leftPanelGo = Instantiate(panelPrefab, rootPanelGo.transform);
-            leftPanelGo.name = "LeftPanel";
+            string errorMessage = "<b>[Inventory UI Error]</b> Missing critical references in Inspector:\n" + 
+                                  string.Join("\n", missingFields.ConvertAll(field => "  - <color=red>" + field + "</color>"));
+            Debug.LogError(errorMessage, this);
         }
         else
         {
-            leftPanelGo = CreatePanel("LeftPanel", rootPanelGo.transform, itemSlotPrefab, moduleSlotPrefab);
+            if (canvas == null)
+            {
+                canvas = GetComponentInParent<Canvas>();
+                if (canvas == null)
+                {
+                    canvas = Object.FindFirstObjectByType<Canvas>();
+                }
+            }
         }
-        leftPanel = leftPanelGo.GetComponent<InventoryPanelUI>();
-
-        GameObject rightPanelGo;
-        if (panelPrefab != null)
-        {
-            rightPanelGo = Instantiate(panelPrefab, rootPanelGo.transform);
-            rightPanelGo.name = "RightPanel";
-        }
-        else
-        {
-            rightPanelGo = CreatePanel("RightPanel", rootPanelGo.transform, itemSlotPrefab, moduleSlotPrefab);
-        }
-        rightPanel = rightPanelGo.GetComponent<InventoryPanelUI>();
-
-        // 6. Create DockPreviewOverlay
-        GameObject previewOverlayGo = new GameObject("DockPreviewOverlay", typeof(RectTransform));
-        previewOverlayGo.transform.SetParent(rootPanelGo.transform, false);
-        previewOverlayGo.transform.SetAsLastSibling();
-        
-        RectTransform previewOverlayRect = previewOverlayGo.GetComponent<RectTransform>();
-        previewOverlayRect.anchorMin = Vector2.zero;
-        previewOverlayRect.anchorMax = Vector2.one;
-        previewOverlayRect.offsetMin = Vector2.zero;
-        previewOverlayRect.offsetMax = Vector2.zero;
-
-        Image previewImg = previewOverlayGo.AddComponent<Image>();
-        previewImg.color = new Color(0f, 0.5f, 1f, 0.25f);
-        previewImg.raycastTarget = false;
-        previewOverlay = previewOverlayRect;
-        previewOverlayGo.SetActive(false);
-
-        // 7. Create DragIcon for module drag visuals
-        GameObject dragIconGo = new GameObject("DragIcon", typeof(RectTransform));
-        dragIconGo.transform.SetParent(transform, false);
-        
-        RectTransform dragIconRect = dragIconGo.GetComponent<RectTransform>();
-        dragIconRect.sizeDelta = new Vector2(50, 50);
-
-        dragIconImage = dragIconGo.AddComponent<Image>();
-        dragIconImage.raycastTarget = false;
-        dragIconTransform = dragIconRect;
-        dragIconGo.SetActive(false);
     }
 
-    private GameObject CreatePanel(string panelName, Transform parent, ItemSlotUI itemSlotPref, ModuleSlotUI moduleSlotPref)
+    private void ValidatePanelReferences(InventoryPanelUI panel, string panelName, List<string> missingFields)
     {
-        GameObject panelGo = new GameObject(panelName, typeof(RectTransform));
-        panelGo.transform.SetParent(parent, false);
+        if (panel.itemSlotPrefab == null) missingFields.Add($"{panelName}.itemSlotPrefab");
+        if (panel.moduleSlotPrefab == null) missingFields.Add($"{panelName}.moduleSlotPrefab");
 
-        Image img = panelGo.AddComponent<Image>();
-        img.color = new Color(0.15f, 0.15f, 0.17f, 1f); // Dark panel bg
+        if (panel.factorySlotsContainer == null) missingFields.Add($"{panelName}.factorySlotsContainer");
+        if (panel.foragingSlotsContainer == null) missingFields.Add($"{panelName}.foragingSlotsContainer");
+        if (panel.modulesSlotsContainer == null) missingFields.Add($"{panelName}.modulesSlotsContainer");
 
-        LayoutElement layoutElement = panelGo.AddComponent<LayoutElement>();
-        layoutElement.flexibleWidth = 1f;
-
-        InventoryPanelUI panelUI = panelGo.AddComponent<InventoryPanelUI>();
-        panelUI.itemSlotPrefab = itemSlotPref;
-        panelUI.moduleSlotPrefab = moduleSlotPref;
-
-        VerticalLayoutGroup layout = panelGo.AddComponent<VerticalLayoutGroup>();
-        layout.childControlWidth = true;
-        layout.childControlHeight = true;
-        layout.childForceExpandWidth = true;
-        layout.childForceExpandHeight = false;
-        layout.spacing = 10;
-        layout.padding = new RectOffset(10, 10, 10, 10);
-
-        // Tab Header
-        GameObject tabHeaderGo = new GameObject("TabHeader", typeof(RectTransform));
-        tabHeaderGo.transform.SetParent(panelGo.transform, false);
-        LayoutElement headerLayout = tabHeaderGo.AddComponent<LayoutElement>();
-        headerLayout.preferredHeight = 35;
-
-        HorizontalLayoutGroup headerGroup = tabHeaderGo.AddComponent<HorizontalLayoutGroup>();
-        headerGroup.childControlWidth = true;
-        headerGroup.childControlHeight = true;
-        headerGroup.childForceExpandWidth = true;
-        headerGroup.childForceExpandHeight = true;
-        headerGroup.spacing = 5;
-
-        // Buttons
-        Button factoryBtn = CreateTabButton("FactoryTabButton", tabHeaderGo.transform, "Завод");
-        Button foragingBtn = CreateTabButton("ForagingTabButton", tabHeaderGo.transform, "Вылазка");
-        Button modulesBtn = CreateTabButton("ModulesTabButton", tabHeaderGo.transform, "Модули");
-        Button machineBtn = CreateTabButton("MachineTabButton", tabHeaderGo.transform, "Механизм");
-
-        panelUI.factoryTabButton = factoryBtn;
-        panelUI.foragingTabButton = foragingBtn;
-        panelUI.modulesTabButton = modulesBtn;
-        panelUI.machineTabButton = machineBtn;
-
-        // Views Container
-        GameObject viewsContainerGo = new GameObject("ContentViews", typeof(RectTransform));
-        viewsContainerGo.transform.SetParent(panelGo.transform, false);
-        LayoutElement viewsLayout = viewsContainerGo.AddComponent<LayoutElement>();
-        viewsLayout.flexibleHeight = 1f;
-
-        // Factory View
-        GameObject factoryViewGo = CreateGridView("FactoryView", viewsContainerGo.transform);
-        panelUI.factoryView = factoryViewGo;
-        panelUI.factorySlotsContainer = factoryViewGo.transform;
-
-        // Foraging View
-        GameObject foragingViewGo = CreateGridView("ForagingView", viewsContainerGo.transform);
-        panelUI.foragingView = foragingViewGo;
-        panelUI.foragingSlotsContainer = foragingViewGo.transform;
-
-        // Modules View
-        GameObject modulesViewGo = new GameObject("ModulesView", typeof(RectTransform));
-        modulesViewGo.transform.SetParent(viewsContainerGo.transform, false);
-        StretchRect(modulesViewGo.GetComponent<RectTransform>());
-        panelUI.modulesView = modulesViewGo;
-
-        VerticalLayoutGroup modulesLayout = modulesViewGo.AddComponent<VerticalLayoutGroup>();
-        modulesLayout.childControlWidth = true;
-        modulesLayout.childControlHeight = true;
-        modulesLayout.childForceExpandWidth = true;
-        modulesLayout.childForceExpandHeight = false;
-        modulesLayout.spacing = 10;
-
-        // Equipment Container
-        GameObject equipContainerGo = new GameObject("EquipmentSlots", typeof(RectTransform));
-        equipContainerGo.transform.SetParent(modulesViewGo.transform, false);
-        LayoutElement equipLayout = equipContainerGo.AddComponent<LayoutElement>();
-        equipLayout.preferredHeight = 70;
-
-        HorizontalLayoutGroup equipGroup = equipContainerGo.AddComponent<HorizontalLayoutGroup>();
-        equipGroup.childControlWidth = true;
-        equipGroup.childControlHeight = true;
-        equipGroup.childForceExpandWidth = true;
-        equipGroup.childForceExpandHeight = true;
-        equipGroup.spacing = 10;
-
-        panelUI.cannonSlot = CreateModuleSlot("CannonSlot", equipContainerGo.transform, ModuleType.Cannon, moduleSlotPref);
-        panelUI.bodySlot = CreateModuleSlot("BodySlot", equipContainerGo.transform, ModuleType.Body, moduleSlotPref);
-        panelUI.moveSlot = CreateModuleSlot("MoveSlot", equipContainerGo.transform, ModuleType.Move, moduleSlotPref);
-
-        // Modules Grid
-        GameObject modulesGridGo = CreateGridView("ModulesGrid", modulesViewGo.transform);
-        LayoutElement modulesGridLayout = modulesGridGo.AddComponent<LayoutElement>();
-        modulesGridLayout.flexibleHeight = 1f;
-        panelUI.modulesSlotsContainer = modulesGridGo.transform;
-
-        // Machine View
-        GameObject machineViewGo = new GameObject("MachineView", typeof(RectTransform));
-        machineViewGo.transform.SetParent(viewsContainerGo.transform, false);
-        StretchRect(machineViewGo.GetComponent<RectTransform>());
-        panelUI.machineView = machineViewGo;
-
-        // Machine Placeholder
-        GameObject placeholderGo = new GameObject("NoSelectionPlaceholder", typeof(RectTransform));
-        placeholderGo.transform.SetParent(machineViewGo.transform, false);
-        StretchRect(placeholderGo.GetComponent<RectTransform>());
-        
-        var placeholderText = placeholderGo.AddComponent<TextMeshProUGUI>();
-        placeholderText.text = "Выберите механизм в мире, чтобы открыть его инвентарь";
-        placeholderText.alignment = TextAlignmentOptions.Center;
-        placeholderText.fontSize = 16;
-        placeholderText.color = new Color(0.7f, 0.7f, 0.7f, 1f);
-        panelUI.machineNoSelectionPlaceholder = placeholderGo;
-
-        // Machine Active Content
-        GameObject machineContentGo = new GameObject("InventoryContent", typeof(RectTransform));
-        machineContentGo.transform.SetParent(machineViewGo.transform, false);
-        StretchRect(machineContentGo.GetComponent<RectTransform>());
-        panelUI.machineInventoryContent = machineContentGo;
-
-        VerticalLayoutGroup machineContentLayout = machineContentGo.AddComponent<VerticalLayoutGroup>();
-        machineContentLayout.childControlWidth = true;
-        machineContentLayout.childControlHeight = true;
-        machineContentLayout.childForceExpandWidth = true;
-        machineContentLayout.childForceExpandHeight = false;
-        machineContentLayout.spacing = 10;
-
-        // Single Slots Grid
-        GameObject singleGridGo = CreateGridView("SingleSlotsContainer", machineContentGo.transform);
-        LayoutElement singleLayout = singleGridGo.AddComponent<LayoutElement>();
-        singleLayout.flexibleHeight = 1f;
-        panelUI.machineSingleSlotsContainer = singleGridGo.transform;
-
-        // Input Grid
-        GameObject inputBlockGo = new GameObject("InputBlock", typeof(RectTransform));
-        inputBlockGo.transform.SetParent(machineContentGo.transform, false);
-        VerticalLayoutGroup inputBlockLayout = inputBlockGo.AddComponent<VerticalLayoutGroup>();
-        inputBlockLayout.childControlWidth = true;
-        inputBlockLayout.childControlHeight = true;
-        inputBlockLayout.childForceExpandWidth = true;
-        inputBlockLayout.childForceExpandHeight = false;
-
-        GameObject inputLabelGo = new GameObject("InputLabel", typeof(RectTransform));
-        inputLabelGo.transform.SetParent(inputBlockGo.transform, false);
-        var inputLabelText = inputLabelGo.AddComponent<TextMeshProUGUI>();
-        inputLabelText.text = "Входные ресурсы:";
-        inputLabelText.fontSize = 14;
-        inputLabelText.color = Color.white;
-
-        GameObject inputGridGo = CreateGridView("InputSlotsContainer", inputBlockGo.transform);
-        panelUI.machineInputSlotsContainer = inputGridGo.transform;
-
-        // Output Grid
-        GameObject outputBlockGo = new GameObject("OutputBlock", typeof(RectTransform));
-        outputBlockGo.transform.SetParent(machineContentGo.transform, false);
-        VerticalLayoutGroup outputBlockLayout = outputBlockGo.AddComponent<VerticalLayoutGroup>();
-        outputBlockLayout.childControlWidth = true;
-        outputBlockLayout.childControlHeight = true;
-        outputBlockLayout.childForceExpandWidth = true;
-        outputBlockLayout.childForceExpandHeight = false;
-
-        GameObject outputLabelGo = new GameObject("OutputLabel", typeof(RectTransform));
-        outputLabelGo.transform.SetParent(outputBlockGo.transform, false);
-        var outputLabelText = outputLabelGo.AddComponent<TextMeshProUGUI>();
-        outputLabelText.text = "Выходные ресурсы:";
-        outputLabelText.fontSize = 14;
-        outputLabelText.color = Color.white;
-
-        GameObject outputGridGo = CreateGridView("OutputSlotsContainer", outputBlockGo.transform);
-        panelUI.machineOutputSlotsContainer = outputGridGo.transform;
-
-        // Hide all views by default
-        factoryViewGo.SetActive(false);
-        foragingViewGo.SetActive(false);
-        modulesViewGo.SetActive(false);
-        machineViewGo.SetActive(false);
-
-        return panelGo;
+        if (panel.factoryView == null) missingFields.Add($"{panelName}.factoryView");
+        if (panel.foragingView == null) missingFields.Add($"{panelName}.foragingView");
+        if (panel.modulesView == null) missingFields.Add($"{panelName}.modulesView");
+        if (panel.machineView == null) missingFields.Add($"{panelName}.machineView");
     }
-
-    private Button CreateTabButton(string buttonName, Transform parent, string label)
-    {
-        GameObject btnGo = new GameObject(buttonName, typeof(RectTransform));
-        btnGo.transform.SetParent(parent, false);
-
-        Image img = btnGo.AddComponent<Image>();
-        img.color = new Color(0.24f, 0.24f, 0.28f, 1f);
-
-        Button btn = btnGo.AddComponent<Button>();
-        btn.targetGraphic = img;
-
-        GameObject txtGo = new GameObject("Label", typeof(RectTransform));
-        txtGo.transform.SetParent(btnGo.transform, false);
-        StretchRect(txtGo.GetComponent<RectTransform>());
-
-        var tmp = txtGo.AddComponent<TextMeshProUGUI>();
-        tmp.text = label;
-        tmp.fontSize = 13;
-        tmp.alignment = TextAlignmentOptions.Center;
-        tmp.color = Color.white;
-
-        return btn;
-    }
-
-    private GameObject CreateGridView(string gridName, Transform parent)
-    {
-        GameObject gridGo = new GameObject(gridName, typeof(RectTransform));
-        gridGo.transform.SetParent(parent, false);
-        StretchRect(gridGo.GetComponent<RectTransform>());
-
-        GridLayoutGroup grid = gridGo.AddComponent<GridLayoutGroup>();
-        grid.cellSize = new Vector2(48, 48);
-        grid.spacing = new Vector2(6, 6);
-        grid.padding = new RectOffset(5, 5, 5, 5);
-        grid.childAlignment = TextAnchor.UpperCenter;
-
-        return gridGo;
-    }
-
-    private ModuleSlotUI CreateModuleSlot(string slotName, Transform parent, ModuleType type, ModuleSlotUI prefab)
-    {
-        if (prefab != null)
-        {
-            ModuleSlotUI slot = Instantiate(prefab, parent);
-            slot.name = slotName;
-            slot.SetupEquipmentSlot(type, this);
-            return slot;
-        }
-
-        try
-        {
-            GameObject slotGo = new GameObject(slotName, typeof(RectTransform));
-            slotGo.transform.SetParent(parent, false);
-
-            Image bgImg = slotGo.AddComponent<Image>();
-            bgImg.color = new Color(0.2f, 0.2f, 0.2f, 1f);
-
-            ModuleSlotUI slot = slotGo.AddComponent<ModuleSlotUI>();
-
-            // Create a child object for the icon to avoid multiple Image components on the same GameObject
-            GameObject iconGo = new GameObject("Icon", typeof(RectTransform));
-            iconGo.transform.SetParent(slotGo.transform, false);
-            StretchRect(iconGo.GetComponent<RectTransform>());
-            slot.iconImage = iconGo.AddComponent<Image>();
-            slot.iconImage.enabled = false;
-
-            GameObject labelGo = new GameObject("Label", typeof(RectTransform));
-            labelGo.transform.SetParent(slotGo.transform, false);
-            StretchRect(labelGo.GetComponent<RectTransform>());
-            
-            slot.titleText = labelGo.AddComponent<TextMeshProUGUI>();
-            slot.titleText.text = $"[ {type} ]";
-            slot.titleText.fontSize = 11;
-            slot.titleText.alignment = TextAlignmentOptions.Center;
-            slot.titleText.color = Color.gray;
-
-            return slot;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Exception in CreateModuleSlot: {ex}");
-            throw;
-        }
-    }
-
-    private void StretchRect(RectTransform rect)
-    {
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-    }
-
-    #endregion
 
     #region Selected Machine Management
 
@@ -587,6 +268,49 @@ public class PlayerInventoryWindow : MonoBehaviour
         {
             selectedInventoryProvider = null;
             selectedCraftingProvider = null;
+        }
+
+        // Swap panel UI if the machine block has a custom UI prefab
+        GameObject targetPrefab = defaultPanelPrefab;
+        if (machineBlock != null)
+        {
+            FactoryBlock block = machineBlock.GetComponent<FactoryBlock>();
+            if (block != null && block.customInventoryPanelPrefab != null)
+            {
+                targetPrefab = block.customInventoryPanelPrefab;
+            }
+        }
+
+        if (targetPrefab != instantiatedRightPanelPrefabSource)
+        {
+            if (rightPanel != null)
+            {
+                Destroy(rightPanel.gameObject);
+            }
+
+            GameObject rightPanelGo = null;
+            if (targetPrefab != null)
+            {
+                rightPanelGo = Instantiate(targetPrefab, rootPanel.transform);
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerInventoryWindow] No targetPrefab or defaultPanelPrefab set for right panel swap!");
+            }
+
+            if (rightPanelGo != null)
+            {
+                rightPanelGo.name = "RightPanel";
+                rightPanelGo.transform.SetSiblingIndex(1);
+                rightPanel = rightPanelGo.GetComponent<InventoryPanelUI>();
+                instantiatedRightPanelPrefabSource = targetPrefab;
+
+                if (rightPanel != null)
+                {
+                    rightPanel.Initialize(this, PanelTabType.Machine);
+                    rightPanel.gameObject.SetActive(true);
+                }
+            }
         }
 
         // Subscribe to new events

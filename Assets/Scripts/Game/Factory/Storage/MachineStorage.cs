@@ -6,22 +6,43 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     public ResourcesManager resourcesManager;
     [SerializeField]
     private Inventory inventory = new Inventory();
-    public Inventory Inventory => inventory;
+    
+    public Inventory LocalInventory => inventory;
+    public Inventory Inventory => Multiblock != null ? Multiblock.sharedInventory : inventory;
+
+    public MachineStorageMultiblock Multiblock { get; private set; }
+    public void SetMultiblock(MachineStorageMultiblock mb) => Multiblock = mb;
 
     [SerializeField]
     private ConveyorItemView conveyorItemPrefab;
+
+    private int lastOutputPortIndex = -1;
 
     protected override void Start()
     {
         base.Start();
         resourcesManager = FindAnyObjectByType<ResourcesManager>();
         if (resourcesManager != null) resourcesManager.RegisterStorage(this);
+        StorageMultiblockManager.RecalculateMultiblocks();
+    }
+
+    public override void OnPlaced()
+    {
+        base.OnPlaced();
+        StorageMultiblockManager.RecalculateMultiblocks();
     }
 
     public override void OnRemoved()
     {
         base.OnRemoved();
         if (resourcesManager != null) resourcesManager.UnregisterStorage(this);
+        StorageMultiblockManager.RecalculateMultiblocks();
+    }
+
+    public override void RebuildConnections()
+    {
+        base.RebuildConnections();
+        StorageMultiblockManager.RecalculateMultiblocks();
     }
 
     [SerializeField]
@@ -55,72 +76,85 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
 
     private void TryOutput()
     {
-        if (inventory.CurrentTotalAmount <= 0) 
+        if (Inventory.CurrentTotalAmount <= 0) 
         {
-            // Debug.Log("[Storage] Inventory is empty!"); 
             return;
         }
 
-        Port outPort = Ports.Find(p => p.IsOutput && p.ConnectedBlock != null);
-        if (outPort == null) 
+        // Find all output ports that are connected to other blocks
+        List<Port> outPorts = Ports.FindAll(p => p.IsOutput && p.ConnectedBlock != null);
+        if (outPorts == null || outPorts.Count == 0) 
         {
-            Debug.Log($"[Storage] No connected output port found on {gameObject.name}! Ports count: {Ports.Count}");
             return;
         }
 
-        // Find any item to output
-        ItemType typeToOutput = ItemType.OreIron;
-        bool hasItem = false;
-        if (inventory.slots != null)
+        int numPorts = outPorts.Count;
+        int startIndex = (lastOutputPortIndex + 1) % numPorts;
+
+        for (int k = 0; k < numPorts; k++)
         {
-            foreach (var slot in inventory.slots)
+            int index = (startIndex + k) % numPorts;
+            Port outPort = outPorts[index];
+
+            // If the connected block is another storage in the same multiblock, do not transfer items to it
+            if (outPort.ConnectedBlock is MachineStorage targetStorage && this.Multiblock != null && targetStorage.Multiblock == this.Multiblock)
             {
-                if (!slot.IsEmpty)
+                continue;
+            }
+
+            // Find any item to output
+            ItemType typeToOutput = ItemType.OreIron;
+            bool hasItem = false;
+            if (Inventory.slots != null)
+            {
+                foreach (var slot in Inventory.slots)
                 {
-                    typeToOutput = slot.type;
-                    hasItem = true;
-                    break;
+                    if (!slot.IsEmpty)
+                    {
+                        typeToOutput = slot.type;
+                        hasItem = true;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (!hasItem) return;
+            if (!hasItem) break; // Stop if no items are left to output
 
-        ConveyorItem item = new ConveyorItem();
-        item.Type = typeToOutput;
+            ConveyorItem item = new ConveyorItem();
+            item.Type = typeToOutput;
 
-        if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
-        {
-            ConveyorItemView itemView = null;
-            if (conveyorItemPrefab != null)
+            if (outPort.ConnectedBlock.TryReceiveItem(item, outPort.ConnectedPort))
             {
-                itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
-            }
-            else
-            {
-                GameObject go = new GameObject("ConveyorItem");
-                go.transform.position = transform.position;
-                float scale = ResourcesManager.instance.getResourceScale(typeToOutput);
-                go.transform.localScale = new Vector3(scale, scale, 1f);
-                itemView = go.AddComponent<ConveyorItemView>();
-                var renderer = go.AddComponent<SpriteRenderer>();
-                renderer.sortingOrder = 32767;
-            }
+                ConveyorItemView itemView = null;
+                if (conveyorItemPrefab != null)
+                {
+                    itemView = Instantiate(conveyorItemPrefab, transform.position, Quaternion.identity);
+                }
+                else
+                {
+                    GameObject go = new GameObject("ConveyorItem");
+                    go.transform.position = transform.position;
+                    float scale = ResourcesManager.instance.getResourceScale(typeToOutput);
+                    go.transform.localScale = new Vector3(scale, scale, 1f);
+                    itemView = go.AddComponent<ConveyorItemView>();
+                    var renderer = go.AddComponent<SpriteRenderer>();
+                    renderer.sortingOrder = 32767;
+                }
 
-            var sr = itemView.GetComponentInChildren<SpriteRenderer>();
-            if (sr != null) 
-            {
-                sr.sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
-                sr.sortingOrder = 5;
-            }
-            item.View = itemView;
+                var sr = itemView.GetComponentInChildren<SpriteRenderer>();
+                if (sr != null) 
+                {
+                    sr.sprite = ResourcesManager.instance.getResourceSprite(typeToOutput);
+                    sr.sortingOrder = 5;
+                }
+                item.View = itemView;
 
-            Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
-            inventory.RemoveItem(typeToOutput);
-        }
-        else
-        {
-            Debug.Log($"[Storage] Failed to output {typeToOutput} to {outPort.ConnectedBlock.name} (Conveyor full?)");
+                Debug.Log($"[Storage] Successfully output {typeToOutput} to {outPort.ConnectedBlock.name}");
+                Inventory.RemoveItem(typeToOutput);
+                
+                // Track this port as the last successfully used port
+                lastOutputPortIndex = index;
+            }
         }
     }
 
@@ -128,7 +162,7 @@ public class MachineStorage : FactoryBlock, IInteractable, IInventoryProvider
     {
         if (receivingPort == null || !receivingPort.IsInput) return false;
 
-        if (inventory.AddItem(item.Type))
+        if (Inventory.AddItem(item.Type))
         {
             if (item.View != null)
                 Destroy(item.View.gameObject);

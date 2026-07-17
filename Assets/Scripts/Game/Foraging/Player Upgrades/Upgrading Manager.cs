@@ -13,38 +13,47 @@ public class UpgradingManager : MonoBehaviour
     [SerializeField] private PlayerExperienceManager pem;
 
     private PlayerController player;
-    private Inventory inventory = new();
+    private Inventory inventory;
     private List<IncrementInterface> increments = new();
 
     private List<UpgradeData> upgrades;
 
-    void Awake()
-    {
-        upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
-    }
-
     void OnEnable()
     {
         inventory = PlayerInventory.Instance?.ForagingInventory;
-        inventory.OnInventoryChanged += refreshCounters;
-        pem.Subscribe(updateCounters);
+        if (inventory != null)
+        {
+            inventory.OnInventoryChanged += refreshCounters;
+        }
+        if (pem != null)
+        {
+            pem.Subscribe(updateCounters);
+        }
     }
 
-     void Start()
+    void Start()
     {
-        Vector3 down = new Vector3(0, yOffset, 0);
-        int i = 0;
-        foreach (UpgradeData upgrade in upgrades)
+        if (PlayerLevelManager.instance != null)
         {
-            GameObject upg = Instantiate(UIPrefab);
-            upg.transform.SetParent(UIParent, false);
-            upg.transform.position += i * down;
-            i++;
-            IncrementInterface increment = upg.GetComponent<IncrementInterface>();
-            increment.upgradeData = upgrade;
-            increment.upgrade = tryUpgrade;
-            increments.Add(increment);
-            increment.UpdateUI();
+            upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
+        }
+
+        if (upgrades != null)
+        {
+            Vector3 down = new Vector3(0, yOffset, 0);
+            int i = 0;
+            foreach (UpgradeData upgrade in upgrades)
+            {
+                GameObject upg = Instantiate(UIPrefab);
+                upg.transform.SetParent(UIParent, false);
+                upg.transform.position += i * down;
+                i++;
+                IncrementInterface increment = upg.GetComponent<IncrementInterface>();
+                increment.upgradeData = upgrade;
+                increment.upgrade = tryUpgrade;
+                increments.Add(increment);
+                increment.UpdateUI();
+            }
         }
 
         refreshCounters();
@@ -52,15 +61,27 @@ public class UpgradingManager : MonoBehaviour
 
     void OnDisable()
     {
-        inventory.OnInventoryChanged += refreshCounters;
+        if (inventory != null)
+        {
+            inventory.OnInventoryChanged -= refreshCounters;
+        }
     }
 
     public void correctPlayerStats(PlayerController player)
     {
         this.player = player;
-        foreach (var i in upgrades)
+        
+        if (upgrades == null && PlayerLevelManager.instance != null)
         {
-            player.UpgradeStat(i.GetStatType(), i.getCurLevelValue());
+            upgrades = PlayerLevelManager.instance.getPlayerUpgrades();
+        }
+
+        if (upgrades != null)
+        {
+            foreach (var i in upgrades)
+            {
+                player.UpgradeStat(i.GetStatType(), i.getCurLevelValue());
+            }
         }
     }
 

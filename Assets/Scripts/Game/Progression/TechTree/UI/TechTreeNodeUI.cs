@@ -26,12 +26,12 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
     public CanvasGroup detailsCanvasGroup;
 
     [Header("Colors")]
+    public bool overrideBackgroundColor = true;
     public Color lockedColor = new Color(0.3f, 0.3f, 0.3f, 1f);
     public Color availableColor = new Color(1f, 1f, 1f, 1f);
     public Color unlockedColor = new Color(1f, 0.8f, 0f, 1f);
 
     private bool isExpanded = false;
-    private bool isHovered = false;
     
     // Drag detection
     private Vector2 pointerDownPos;
@@ -42,12 +42,17 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
     {
         if (nodeData != null)
         {
+            Debug.Log($"[TechTreeNode] {gameObject.name} initialized with data: {nodeData.name}. Icon: {(nodeData.icon != null ? nodeData.icon.name : "NULL")}, Display Name: {nodeData.displayName}");
             if (icon != null) icon.sprite = nodeData.icon;
             if (titleText != null) titleText.text = nodeData.displayName;
             
             if (descriptionText != null) descriptionText.text = nodeData.description;
             if (detailsImage != null) detailsImage.sprite = nodeData.icon; // Use the same icon, or you could add a new field in TechTreeNodeData
             if (costText != null) costText.text = GetCostString();
+        }
+        else
+        {
+            Debug.LogWarning($"[TechTreeNode] {gameObject.name} has NO NodeData assigned!");
         }
 
         if (costPanel != null) costPanel.SetActive(false);
@@ -75,30 +80,28 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
 
         if (isUnlocked)
         {
-            if (background != null) background.color = unlockedColor;
+            if (background != null && overrideBackgroundColor) background.color = unlockedColor;
             if (icon != null) icon.color = Color.white;
         }
         else if (depsMet)
         {
-            if (background != null) background.color = availableColor;
+            if (background != null && overrideBackgroundColor) background.color = availableColor;
             if (icon != null) icon.color = Color.white;
         }
         else
         {
-            if (background != null) background.color = lockedColor;
+            if (background != null && overrideBackgroundColor) background.color = lockedColor;
             if (icon != null) icon.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Darker icon
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        isHovered = true;
-        if (costPanel != null && !isExpanded) costPanel.SetActive(true);
+        if (costPanel != null) costPanel.SetActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        isHovered = false;
         if (costPanel != null) costPanel.SetActive(false);
     }
 
@@ -124,7 +127,14 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
 
         if (eventData.button == PointerEventData.InputButton.Right)
         {
-            ToggleExpandedState();
+            if (TechTreeUI.Instance != null && TechTreeUI.Instance.globalDetailsPanel != null)
+            {
+                TechTreeUI.Instance.ShowNodeDetails(nodeData);
+            }
+            else
+            {
+                ToggleExpandedState();
+            }
         }
         else if (eventData.button == PointerEventData.InputButton.Left)
         {
@@ -156,9 +166,7 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
         
         if (isExpanded)
         {
-            if (costPanel != null) costPanel.SetActive(false);
             transform.SetAsLastSibling(); // Bring to front
-            
             if (detailsPanel != null) detailsPanel.SetActive(true);
             
             transform.DOScale(Vector3.one * 1.5f, duration).SetEase(Ease.OutQuad);
@@ -166,14 +174,16 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
         }
         else
         {
-            if (costPanel != null && isHovered) costPanel.SetActive(true);
-            
             transform.DOScale(Vector3.one, duration).SetEase(Ease.OutQuad);
             if (detailsCanvasGroup != null)
             {
                 detailsCanvasGroup.DOFade(0f, duration).OnComplete(() => {
                     if (detailsPanel != null) detailsPanel.SetActive(false);
                 });
+            }
+            else
+            {
+                if (detailsPanel != null) detailsPanel.SetActive(false);
             }
         }
     }

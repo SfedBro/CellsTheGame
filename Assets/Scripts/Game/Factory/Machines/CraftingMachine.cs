@@ -6,6 +6,7 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
 {
     [Header("Recipe Configuration")]
     public List<RecipeData> availableRecipes = new List<RecipeData>();
+    public RecipeData selectedRecipe;
 
     [Header("Inventory")]
     public Inventory inputInventory = new Inventory { slotCount = 4 };
@@ -15,6 +16,19 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
     public Inventory OutputInventory => outputInventory;
     public float ProgressPercentage => (activeRecipe != null && activeRecipe.ProcessTime > 0) ? (progress / activeRecipe.ProcessTime) : 0f;
     public string RecipeName => activeRecipe != null ? activeRecipe.RecipeName : "Нет рецепта";
+
+    public List<RecipeData> AvailableRecipes => availableRecipes;
+    public RecipeData SelectedRecipe => selectedRecipe;
+
+    public void SelectRecipe(RecipeData recipe)
+    {
+        if (selectedRecipe != recipe)
+        {
+            selectedRecipe = recipe;
+            activeRecipe = null;
+            progress = 0f;
+        }
+    }
 
     [Header("Processing")]
     public float progress;
@@ -46,6 +60,7 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
         public float progress;
         public Inventory inputInventory;
         public Inventory outputInventory;
+        public string selectedRecipeName;
     }
 
     public override string GetSaveState()
@@ -54,7 +69,8 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
         {
             progress = this.progress,
             inputInventory = this.inputInventory,
-            outputInventory = this.outputInventory
+            outputInventory = this.outputInventory,
+            selectedRecipeName = this.selectedRecipe != null ? this.selectedRecipe.name : ""
         };
         return JsonUtility.ToJson(state);
     }
@@ -74,6 +90,15 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
                 this.inputInventory = state.inputInventory;
             if (state.outputInventory != null && state.outputInventory.slots != null)
                 this.outputInventory = state.outputInventory;
+
+            if (!string.IsNullOrEmpty(state.selectedRecipeName))
+            {
+                this.selectedRecipe = availableRecipes.Find(r => r != null && (r.name == state.selectedRecipeName || r.RecipeName == state.selectedRecipeName));
+            }
+            else
+            {
+                this.selectedRecipe = null;
+            }
         }
     }
 
@@ -87,17 +112,17 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
     {
         if (receivingPort == null || !receivingPort.IsInput) return false;
 
-        if (availableRecipes == null || availableRecipes.Count == 0) 
+        if (selectedRecipe == null) 
         {
-            GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] no recipes available.", gameObject);
+            GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] no recipe selected to accept items.", gameObject);
             return false;
         }
 
-        // Accept item if it is an input for ANY available recipe
-        bool isInputItem = availableRecipes.Any(r => r.Inputs.Any(input => input.type == item.Type));
+        // Accept item only if it is an input for the selected recipe
+        bool isInputItem = selectedRecipe.Inputs.Any(input => input.type == item.Type);
         if (!isInputItem) 
         {
-            GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] item {item.Type} is not an input for any recipe.", gameObject);
+            GameLogger.Log(LogChannel.Crafting, $"[{gameObject.name}] item {item.Type} is not an input for selected recipe.", gameObject);
             return false;
         }
         
@@ -114,25 +139,22 @@ public class CraftingMachine : FactoryBlock, IInteractable, ICraftingProvider
 
     private void ProcessRecipe()
     {
-        if (availableRecipes == null || availableRecipes.Count == 0) return;
-
-        // If we don't have an active recipe, or the active recipe is no longer valid, find a new one
-        if (activeRecipe == null || !inputInventory.ContainsItems(activeRecipe.Inputs) || !outputInventory.CanAddItems(activeRecipe.Outputs))
+        if (selectedRecipe == null)
         {
             activeRecipe = null;
             progress = 0f;
-            foreach (var recipe in availableRecipes)
-            {
-                if (inputInventory.ContainsItems(recipe.Inputs) && outputInventory.CanAddItems(recipe.Outputs))
-                {
-                    activeRecipe = recipe;
-                    break;
-                }
-            }
+            return;
         }
 
-        // If we still don't have an active recipe, return
-        if (activeRecipe == null) return;
+        // Keep activeRecipe locked to selectedRecipe
+        activeRecipe = selectedRecipe;
+
+        // If inputs are missing or outputs are full, hold progress
+        if (!inputInventory.ContainsItems(activeRecipe.Inputs) || !outputInventory.CanAddItems(activeRecipe.Outputs))
+        {
+            progress = 0f;
+            return;
+        }
 
         // Process the recipe
         progress += FactoryTickManager.Instance.TickRate;

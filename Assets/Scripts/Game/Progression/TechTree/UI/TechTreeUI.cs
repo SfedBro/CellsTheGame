@@ -5,6 +5,13 @@ public class TechTreeUI : MonoBehaviour
     public static TechTreeUI Instance;
 
     public GameObject rootPanel;
+
+    [Header("Global Details Panel")]
+    public GameObject globalDetailsPanel;
+    public TMPro.TMP_Text globalTitleText;
+    public TMPro.TMP_Text globalDescriptionText;
+    public TMPro.TMP_Text globalCostText;
+    public UnityEngine.UI.Image globalIcon;
     
     [Header("Line Settings")]
     public TechTreeLineUI linePrefab;
@@ -14,11 +21,13 @@ public class TechTreeUI : MonoBehaviour
     private System.Collections.Generic.List<TechTreeLineUI> generatedLines = new System.Collections.Generic.List<TechTreeLineUI>();
 
     private InputSystem_Actions inputActions;
+    private TechTreeNodeData selectedNode;
 
     private void Awake()
     {
         Instance = this;
         if (rootPanel != null) rootPanel.SetActive(false);
+        if (globalDetailsPanel != null) globalDetailsPanel.SetActive(false);
 
         inputActions = new InputSystem_Actions();
         inputActions.UI.OpenTechTree.performed += _ => ToggleWindow();
@@ -94,6 +103,7 @@ public class TechTreeUI : MonoBehaviour
         }
 
         rootPanel.SetActive(true);
+        if (globalDetailsPanel != null) globalDetailsPanel.SetActive(false);
         RefreshTree();
     }
 
@@ -103,6 +113,7 @@ public class TechTreeUI : MonoBehaviour
         {
             rootPanel.SetActive(false);
         }
+        if (globalDetailsPanel != null) globalDetailsPanel.SetActive(false);
     }
 
     public void RefreshTree()
@@ -122,5 +133,42 @@ public class TechTreeUI : MonoBehaviour
                 line.Refresh();
             }
         }
+    }
+
+    public void ShowNodeDetails(TechTreeNodeData nodeData)
+    {
+        if (nodeData == null) return;
+
+        if (globalDetailsPanel != null)
+        {
+            if (globalDetailsPanel.activeSelf && selectedNode == nodeData)
+            {
+                globalDetailsPanel.SetActive(false);
+                selectedNode = null;
+                return;
+            }
+
+            selectedNode = nodeData;
+            globalDetailsPanel.SetActive(true);
+            if (globalTitleText != null) globalTitleText.text = nodeData.displayName;
+            if (globalDescriptionText != null) globalDescriptionText.text = nodeData.description;
+            if (globalIcon != null) globalIcon.sprite = nodeData.icon;
+            
+            if (globalCostText != null)
+            {
+                globalCostText.text = GetCostString(nodeData);
+            }
+        }
+    }
+
+    private string GetCostString(TechTreeNodeData nodeData)
+    {
+        if (nodeData == null || nodeData.cost == null || nodeData.cost.Count == 0) return "Бесплатно";
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        foreach (var req in nodeData.cost)
+        {
+            sb.AppendLine($"{req.type}: {req.amount}");
+        }
+        return sb.ToString().TrimEnd();
     }
 }

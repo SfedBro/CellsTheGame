@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -27,11 +28,16 @@ public class PlayerController : MonoBehaviour, IPausable
     private float factoryEnteringTimer = 0f;
     private bool factoryIsEntering = false;
 
+    [Header("Attack")]
+    [SerializeField] private Transform bulletParent;
+    [SerializeField] private PlayerModule baseCannonModule;
+    public PlayerModule BaseCannonModule => baseCannonModule;
+    public IWeapon DefaultWeapon { get; set; }
+    public IWeapon CurrentWeapon { get; set; }
     [Header("Stats")]
     [SerializeField] private PlayerStats basicPlayerStats;
-    [SerializeField] private PlayerStats curPlayerStats;
-    private PlayerStats addIncrements = new(0);
-    private PlayerStats multIncrements = new(1);
+    public PlayerStats curPlayerStats;
+    private System.Collections.Generic.List<StatModifier> statModifiers = new System.Collections.Generic.List<StatModifier>();
     private float curHP;
     private float regenerationTimer = 0f;
 
@@ -56,6 +62,37 @@ public class PlayerController : MonoBehaviour, IPausable
         inputActions = foragingManager.GetInputSystem();
         rb = GetComponent<Rigidbody2D>();
         renderers = GetComponentsInChildren<SpriteRenderer>();
+
+        if (baseCannonModule != null)
+        {
+            Debug.Log($"[PlayerController] baseCannonModule '{baseCannonModule.name}' has {baseCannonModule.effects.Count} effects.");
+            foreach (var fx in baseCannonModule.effects)
+            {
+                Debug.Log($"[PlayerController] - Asset effect type: {(fx != null ? fx.GetType().Name : "null")}, is IWeapon: {fx is IWeapon}");
+            }
+
+            PlayerModule runtimeBaseModule = Instantiate(baseCannonModule);
+            if (runtimeBaseModule.effects == null || runtimeBaseModule.effects.Count == 0)
+            {
+                runtimeBaseModule.effects = new List<IModuleEffect>(baseCannonModule.effects);
+            }
+            Debug.Log($"[PlayerController] runtimeBaseModule '{runtimeBaseModule.name}' has {runtimeBaseModule.effects.Count} effects.");
+            foreach (var effect in runtimeBaseModule.effects)
+            {
+                Debug.Log($"[PlayerController] - Runtime effect type: {(effect != null ? effect.GetType().Name : "null")}, is IWeapon: {effect is IWeapon}");
+                if (effect is IWeapon weapon)
+                {
+                    DefaultWeapon = weapon;
+                    CurrentWeapon = weapon;
+                    break;
+                }
+            }
+        }
+
+        if (DefaultWeapon == null)
+        {
+            Debug.LogError($"No IWeapon effect found in Base Cannon Module on Player -> PlayerController! baseCannonModule assigned: {baseCannonModule != null}");
+        }
     }
 
     void Start()
@@ -224,7 +261,6 @@ public class PlayerController : MonoBehaviour, IPausable
             endAttack = true;
             return;
         }
-
         gun.AttackEnd();
     }
 
@@ -330,30 +366,88 @@ public class PlayerController : MonoBehaviour, IPausable
 
     #region stats
 
-    private void recalculateStats()
+    public void AddModifier(StatModifier mod)
     {
+        statModifiers.Add(mod);
+        recalculateStats();
+    }
+
+    public void RemoveModifier(StatModifier mod)
+    {
+        statModifiers.Remove(mod);
+        recalculateStats();
+    }
+
+    public void RemoveModifiersFromSource(object source)
+    {
+        statModifiers.RemoveAll(m => m.Source == source);
+        recalculateStats();
+    }
+
+    public void recalculateStats()
+    {
+        // 1. Start with basic stats
         curPlayerStats.Copy(basicPlayerStats);
-        curPlayerStats.Add(addIncrements);
-        curPlayerStats.Multiply(multIncrements);
+
+        // 2. Apply all Flat modifiers first
+        foreach (var mod in statModifiers)
+        {
+            if (mod.Type == ModifierType.Flat)
+            {
+                ApplyModifier(curPlayerStats, mod.StatType, mod.Value, isMultiply: false);
+            }
+        }
+
+        // 3. Apply all Percent modifiers next
+        foreach (var mod in statModifiers)
+        {
+            if (mod.Type == ModifierType.Percent)
+            {
+                ApplyModifier(curPlayerStats, mod.StatType, mod.Value, isMultiply: true);
+            }
+        }
+        
+        // Update HP boundaries if changed
+        if (hintsController != null)
+        {
+            hintsController.SetPlayerHP(curHP);
+        }
+    }
+
+    private void ApplyModifier(PlayerStats stats, PlayerStatType type, float value, bool isMultiply)
+    {
+        switch (type)
+        {
+            case PlayerStatType.Mass:
+                if (isMultiply) stats.mass *= (1f + value); else stats.mass += value;
+                break;
+            case PlayerStatType.EngineForce:
+                if (isMultiply) stats.engineForce *= (1f + value); else stats.engineForce += value;
+                break;
+            case PlayerStatType.MaxSpeed:
+                if (isMultiply) stats.maxSpeed *= (1f + value); else stats.maxSpeed += value;
+                break;
+            case PlayerStatType.RotationSpeed:
+                if (isMultiply) stats.rotationSpeed *= (1f + value); else stats.rotationSpeed += value;
+                break;
+            case PlayerStatType.MaxHP:
+                if (isMultiply) stats.maxHP *= (1f + value); else stats.maxHP += value;
+                break;
+            case PlayerStatType.MinSpeed:
+                if (isMultiply) stats.minSpeed *= (1f + value); else stats.minSpeed += value;
+                break;
+            case PlayerStatType.Damage:
+                if (isMultiply) stats.dmg *= (1f + value); else stats.dmg += value;
+                break;
+            case PlayerStatType.AttackCoolDown:
+                if (isMultiply) stats.attackCoolDown *= (1f + value); else stats.attackCoolDown += value;
+                break;
+        }
     }
 
     public void AddMass(int m)
     {
-        addIncrements.mass += m;
-
-        recalculateStats();
-    }
-
-    public void AddAddIncrements(PlayerStats addition)
-    {
-        addIncrements.Add(addition);
-        recalculateStats();
-    }
-
-    public void AddMultIncrements(PlayerStats multiplication)
-    {
-        multIncrements.Add(multiplication);
-        recalculateStats();
+        AddModifier(new StatModifier(m, ModifierType.Flat, PlayerStatType.Mass, this));
     }
 
     #endregion

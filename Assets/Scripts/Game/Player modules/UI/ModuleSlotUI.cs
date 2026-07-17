@@ -44,6 +44,7 @@ public class ModuleSlotUI : MonoBehaviour, IPointerClickHandler, IBeginDragHandl
             if (iconImage != null)
             {
                 iconImage.sprite = module.sprite;
+                iconImage.preserveAspect = true;
                 iconImage.enabled = true;
             }
             if (titleText != null) titleText.text = module.title;

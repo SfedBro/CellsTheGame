@@ -5,6 +5,7 @@ public enum TechEffectType
     UnlockBuilding,
     IncreaseMaxLevel,
     UnlockLocation,
+    UnlockModule,
     Custom
 }
 

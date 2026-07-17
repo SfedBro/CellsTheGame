@@ -7,6 +7,9 @@ public class TechTreeManager : MonoBehaviour, IGameService
 {
     public static TechTreeManager Instance;
 
+    [Header("Module Unlocks Configuration")]
+    [SerializeField] private List<PlayerModule> availableModules = new List<PlayerModule>();
+
     private HashSet<string> unlockedNodes = new HashSet<string>();
 
     private string saveKey = "TechTreeSave";
@@ -118,6 +121,22 @@ public class TechTreeManager : MonoBehaviour, IGameService
                     break;
                 case TechEffectType.UnlockLocation:
                     Debug.Log($"[TechTree] Unlocked Location: {effect.stringParameter}");
+                    break;
+                case TechEffectType.UnlockModule:
+                    Debug.Log($"[TechTree] Unlocked Module: {effect.stringParameter}");
+                    PlayerModule moduleToUnlock = null;
+                    if (availableModules != null)
+                    {
+                        moduleToUnlock = availableModules.Find(m => m != null && (m.name == effect.stringParameter || m.title == effect.stringParameter));
+                    }
+                    if (moduleToUnlock != null && PlayerModuleManager.Instance != null)
+                    {
+                        PlayerModuleManager.Instance.AddOwnedModule(moduleToUnlock);
+                    }
+                    else
+                    {
+                        Debug.LogError($"[TechTree] Failed to find module asset in TechTreeManager availableModules list: {effect.stringParameter}");
+                    }
                     break;
                 case TechEffectType.Custom:
                     Debug.Log($"[TechTree] Custom effect applied: {effect.stringParameter}");

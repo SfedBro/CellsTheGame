@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: TestNodeB
   m_EditorClassIdentifier: 
   nodeId: TestB
-  displayName: Test Node 2
+  displayName: "\u041C\u043E\u0434\u0443\u043B\u044C \u0414\u0432\u043E\u0439\u043D\u043E\u0433\u043E
+    \u0412\u044B\u0441\u0442\u0440\u0435\u043B\u0430"
   description: Test, that requires Node 1 to be unlocked
-  icon: {fileID: 0}
+  icon: {fileID: -211902454850941632, guid: 93a5fe40ff4e53b4abfb55fd35005093, type: 3}
   dependencies:
   - {fileID: 11400000, guid: 6d400e18ecb404c43b79339c35e5130f, type: 2}
   cost:

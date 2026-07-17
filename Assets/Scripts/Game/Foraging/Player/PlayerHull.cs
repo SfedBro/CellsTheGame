@@ -20,6 +20,8 @@ public class PlayerHull : MonoBehaviour, IPausable
 
     #region getters n setters
 
+    public Vector2 MoveInput => moveInput;
+
     public void SetMoveInput(Vector2 value)
     {
         moveInput = value;

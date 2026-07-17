@@ -13,6 +13,9 @@ public abstract class FactoryBlock : MonoBehaviour
     [Header("Connections")]
     public List<Port> Ports = new List<Port>();
 
+    [Header("UI Configuration")]
+    public GameObject customInventoryPanelPrefab;
+
     protected Vector3Int gridPosition;
     public Vector3Int GridPosition => gridPosition;
     #endregion

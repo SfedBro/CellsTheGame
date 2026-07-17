@@ -168,9 +168,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'XX
-
-'
+  m_text: XX
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -253,7 +251,7 @@ GameObject:
   - component: {fileID: 4626931076017406438}
   - component: {fileID: 3999893025809643378}
   - component: {fileID: 5728321066683062609}
-  - component: {fileID: 2841198326174129387}
+  - component: {fileID: 6354596174186017941}
   m_Layer: 5
   m_Name: Inventory Slot
   m_TagString: Untagged
@@ -319,7 +317,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2841198326174129387
+--- !u!114 &6354596174186017941
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

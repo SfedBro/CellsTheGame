@@ -5,7 +5,7 @@ public class PlayerModuleController : MonoBehaviour
     #region fields
 
     [Header("References")]
-    private PlayerController player;
+    [SerializeField] private PlayerController player;
     private PlayerGun gun;
     #endregion
 
@@ -46,36 +46,23 @@ public class PlayerModuleController : MonoBehaviour
 
     public void EnableModule(PlayerModule module)
     {
-        // Apply specific logics
-        switch (module)
+        if (module.effects != null)
         {
-            case IModuleCannon cannon:
-                gun.SetCannon(cannon);
-            break;
-            case IModuleUseE usable:
-                player.activeAbilityE = usable.Use;
-            break;
-            case IModuleStat stat:
-                player.AddAddIncrements(stat.GetAddChanges());
-                player.AddMultIncrements(stat.GetMultCganges());
-            break;
+            foreach (var effect in module.effects)
+            {
+                effect.Apply(player);
+            }
         }
     }
 
     public void DisableModule(PlayerModule module)
     {
-        switch (module)
+        if (module.effects != null)
         {
-            case IModuleCannon cannon:
-                gun.SetCannon(null);
-            break;
-            case IModuleUseE usable:
-                player.activeAbilityE = null;
-            break;
-            case IModuleStat stat:
-                player.AddAddIncrements(stat.GetAddChanges() * -1);
-                player.AddMultIncrements(stat.GetMultCganges() * -1);
-            break;
+            foreach (var effect in module.effects)
+            {
+                effect.Remove(player);
+            }
         }
     }
 

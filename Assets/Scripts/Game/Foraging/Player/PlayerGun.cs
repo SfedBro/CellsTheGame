@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,16 +8,12 @@ public class PlayerGun : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerController playerController;
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private Transform muzzleEnd;
     public PlayerStats curPlayerStats = new(0);
 
     [Header("Fight")]
-    [SerializeField] private PlayerModule baseCannonModule;
     private AttackData attackData;
-    private IModuleCannon baseCannon;
-    private IModuleCannon curCannon;
     private bool isAttacking;
-    private float attackCoolDownTiemer = 0f;
+    private float attackCoolDownTimer = 0f;
 
     private float curAngle = 0;
     private float targetAngle = 0;
@@ -28,22 +23,22 @@ public class PlayerGun : MonoBehaviour
 
     #region getters n setters
 
-    public void SetCannon(IModuleCannon cannon)
-    {
-        if (cannon == null)
-        {
-            curCannon = baseCannon;
-        } else
-        {
-            curCannon = cannon;
-            curCannon.Initialize(attackData, muzzleEnd);
-        }
-    }
-
     public void SetAttackData(AttackData data)
     {
         attackData = data;
-        baseCannon.Initialize(data, muzzleEnd);
+    }
+
+    private float ActiveCoolDown
+    {
+        get
+        {
+            float cd = curPlayerStats.attackCoolDown;
+            if (playerController != null && playerController.CurrentWeapon != null)
+            {
+                cd *= playerController.CurrentWeapon.CoolDownMultiplier;
+            }
+            return cd;
+        }
     }
 
     #endregion
@@ -53,14 +48,14 @@ public class PlayerGun : MonoBehaviour
 
     void Awake()
     {
-        if (baseCannonModule is IModuleCannon)
+        if (playerController == null)
         {
-            baseCannon = (IModuleCannon)Instantiate(baseCannonModule);
-            curCannon = baseCannon;
-        } 
-        else
+            playerController = GetComponentInParent<PlayerController>();
+        }
+        
+        if (playerCamera == null)
         {
-            Debug.LogError("Invalid Base Cannon Set in Player -> PlayerController!");
+            playerCamera = Camera.main;
         }
     }
 
@@ -72,20 +67,28 @@ public class PlayerGun : MonoBehaviour
     void Update()
     {
         // ROTATION
-        Vector2 direction = (playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position).normalized;
-        targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        curAngle = Mathf.MoveTowardsAngle(curAngle, targetAngle, curPlayerStats.rotationSpeed * Time.deltaTime);
-        transform.rotation = Quaternion.AngleAxis(curAngle - 90, Vector3.forward);
+        if (playerCamera != null)
+        {
+            Vector2 direction = (playerCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position).normalized;
+            targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            curAngle = Mathf.MoveTowardsAngle(curAngle, targetAngle, curPlayerStats.rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.AngleAxis(curAngle - 90, Vector3.forward);
+        }
 
-        if (attackCoolDownTiemer > curPlayerStats.attackCoolDown)
+        // ATTACK COOLDOWN & TICK LOOP
+        float activeCD = ActiveCoolDown;
+        if (isAttacking)
         {
-            if (isAttacking) {
-                attackCoolDownTiemer = 0f;
-                curCannon.AttackActivate();
+            if (attackCoolDownTimer >= activeCD)
+            {
+                attackCoolDownTimer = 0f;
+                FireTick();
             }
-        } else
+        }
+
+        if (attackCoolDownTimer < activeCD)
         {
-            attackCoolDownTiemer += Time.deltaTime;
+            attackCoolDownTimer += Time.deltaTime;
         }
     }
 
@@ -96,15 +99,37 @@ public class PlayerGun : MonoBehaviour
 
     public void AttackStart()
     {
-        curCannon.AttackStart();
         isAttacking = true;
+        
+        if (playerController != null && playerController.CurrentWeapon != null)
+        {
+            playerController.CurrentWeapon.StartAttack(playerController, curAngle);
+        }
+
+        // Fire first tick immediately if cooldown is ready
+        if (attackCoolDownTimer >= ActiveCoolDown)
+        {
+            attackCoolDownTimer = 0f;
+            FireTick();
+        }
     }
 
     public void AttackEnd()
     {
-        curCannon.AttackEnd();
         isAttacking = false;
-        attackCoolDownTiemer = 0f;
+
+        if (playerController != null && playerController.CurrentWeapon != null)
+        {
+            playerController.CurrentWeapon.EndAttack(playerController);
+        }
+    }
+
+    private void FireTick()
+    {
+        if (playerController != null && playerController.CurrentWeapon != null)
+        {
+            playerController.CurrentWeapon.AttackTick(playerController);
+        }
     }
 
     #endregion

@@ -38,6 +38,11 @@ public class InventoryPanelUI : MonoBehaviour
     public Transform machineSingleSlotsContainer; // For standard single-inventory storage
     public Transform machineInputSlotsContainer;  // For crafting machine inputs
     public Transform machineOutputSlotsContainer; // For crafting machine outputs
+    public Transform machineRecipeButtonsContainer; // For recipe selection buttons
+
+    [Header("Machine Recipe Popup Trigger")]
+    public Button selectRecipeButton;
+    public TMPro.TMP_Text selectRecipeButtonLabel;
 
     [Header("Prefabs")]
     public ItemSlotUI itemSlotPrefab;
@@ -93,6 +98,41 @@ public class InventoryPanelUI : MonoBehaviour
             var drag = machineTabButton.gameObject.GetComponent<TabDragHandler>();
             if (drag == null) drag = machineTabButton.gameObject.AddComponent<TabDragHandler>();
             drag.Initialize(parent, this, PanelTabType.Machine);
+        }
+
+        // Dynamically build recipe buttons container if not assigned by prefab
+        if (machineRecipeButtonsContainer == null && machineInputSlotsContainer != null)
+        {
+            GameObject recipeBlockGo = new GameObject("RecipeBlock", typeof(RectTransform));
+            recipeBlockGo.transform.SetParent(machineInputSlotsContainer.parent, false);
+            recipeBlockGo.transform.SetSiblingIndex(machineInputSlotsContainer.GetSiblingIndex());
+
+            VerticalLayoutGroup recipeBlockLayout = recipeBlockGo.AddComponent<VerticalLayoutGroup>();
+            recipeBlockLayout.childControlWidth = true;
+            recipeBlockLayout.childControlHeight = true;
+            recipeBlockLayout.childForceExpandWidth = true;
+            recipeBlockLayout.childForceExpandHeight = false;
+
+            GameObject recipeLabelGo = new GameObject("RecipeLabel", typeof(RectTransform));
+            recipeLabelGo.transform.SetParent(recipeBlockGo.transform, false);
+            var recipeLabelText = recipeLabelGo.AddComponent<TMPro.TextMeshProUGUI>();
+            recipeLabelText.text = "Выберите рецепт:";
+            recipeLabelText.fontSize = 14;
+            recipeLabelText.color = Color.white;
+
+            GameObject recipeButtonsGo = new GameObject("RecipeButtonsContainer", typeof(RectTransform));
+            recipeButtonsGo.transform.SetParent(recipeBlockGo.transform, false);
+            HorizontalLayoutGroup recipeButtonsLayout = recipeButtonsGo.AddComponent<HorizontalLayoutGroup>();
+            recipeButtonsLayout.childControlWidth = true;
+            recipeButtonsLayout.childControlHeight = true;
+            recipeButtonsLayout.childForceExpandWidth = false;
+            recipeButtonsLayout.childForceExpandHeight = true;
+            recipeButtonsLayout.spacing = 8;
+            
+            LayoutElement recipeButtonsLayoutElement = recipeButtonsGo.AddComponent<LayoutElement>();
+            recipeButtonsLayoutElement.preferredHeight = 40;
+
+            machineRecipeButtonsContainer = recipeButtonsGo.transform;
         }
     }
 
@@ -245,6 +285,8 @@ public class InventoryPanelUI : MonoBehaviour
             if (machineSingleSlotsContainer != null) machineSingleSlotsContainer.gameObject.SetActive(true);
             if (machineInputSlotsContainer != null) machineInputSlotsContainer.gameObject.SetActive(false);
             if (machineOutputSlotsContainer != null) machineOutputSlotsContainer.gameObject.SetActive(false);
+            if (machineRecipeButtonsContainer != null) machineRecipeButtonsContainer.gameObject.SetActive(false);
+            if (selectRecipeButton != null) selectRecipeButton.gameObject.SetActive(false);
 
             var inv = selectedProvider.Inventory;
             if (inv != null)
@@ -265,6 +307,90 @@ public class InventoryPanelUI : MonoBehaviour
             if (machineSingleSlotsContainer != null) machineSingleSlotsContainer.gameObject.SetActive(false);
             if (machineInputSlotsContainer != null) machineInputSlotsContainer.gameObject.SetActive(true);
             if (machineOutputSlotsContainer != null) machineOutputSlotsContainer.gameObject.SetActive(true);
+
+            // Populate recipe buttons
+            if (selectRecipeButton != null)
+            {
+                selectRecipeButton.gameObject.SetActive(true);
+                if (machineRecipeButtonsContainer != null) machineRecipeButtonsContainer.gameObject.SetActive(false);
+
+                selectRecipeButton.onClick.RemoveAllListeners();
+                selectRecipeButton.onClick.AddListener(() =>
+                {
+                    if (RecipeSelectionPopup.Instance != null)
+                    {
+                        RecipeSelectionPopup.Instance.OpenPopup(
+                            selectedCrafting as MonoBehaviour,
+                            selectedCrafting.AvailableRecipes,
+                            selectedCrafting.SelectedRecipe,
+                            (recipe) =>
+                            {
+                                selectedCrafting.SelectRecipe(recipe);
+                                RefreshView();
+                            }
+                        );
+                    }
+                });
+
+                if (selectRecipeButtonLabel != null)
+                {
+                    selectRecipeButtonLabel.text = selectedCrafting.SelectedRecipe != null ? selectedCrafting.SelectedRecipe.RecipeName : "Выбрать рецепт";
+                }
+            }
+            else if (machineRecipeButtonsContainer != null)
+            {
+                machineRecipeButtonsContainer.gameObject.SetActive(true);
+                
+                // Clear old buttons
+                foreach (Transform child in machineRecipeButtonsContainer)
+                {
+                    Destroy(child.gameObject);
+                }
+
+                // Spawn a single button to open the popup
+                GameObject btnGo = new GameObject("ChooseRecipeButton", typeof(RectTransform));
+                btnGo.transform.SetParent(machineRecipeButtonsContainer, false);
+                
+                Image img = btnGo.AddComponent<Image>();
+                img.color = new Color(0.24f, 0.24f, 0.28f, 1f);
+                
+                Button btn = btnGo.AddComponent<Button>();
+                btn.targetGraphic = img;
+                btn.onClick.AddListener(() =>
+                {
+                    if (RecipeSelectionPopup.Instance != null)
+                    {
+                        RecipeSelectionPopup.Instance.OpenPopup(
+                            selectedCrafting as MonoBehaviour,
+                            selectedCrafting.AvailableRecipes,
+                            selectedCrafting.SelectedRecipe,
+                            (recipe) =>
+                            {
+                                selectedCrafting.SelectRecipe(recipe);
+                                RefreshView();
+                            }
+                        );
+                    }
+                });
+
+                LayoutElement le = btnGo.AddComponent<LayoutElement>();
+                le.preferredWidth = 140;
+                le.preferredHeight = 35;
+
+                GameObject txtGo = new GameObject("Label", typeof(RectTransform));
+                txtGo.transform.SetParent(btnGo.transform, false);
+                RectTransform txtRect = txtGo.GetComponent<RectTransform>();
+                txtRect.anchorMin = Vector2.zero;
+                txtRect.anchorMax = Vector2.one;
+                txtRect.offsetMin = Vector2.zero;
+                txtRect.offsetMax = Vector2.zero;
+
+                var tmp = txtGo.AddComponent<TMPro.TextMeshProUGUI>();
+                tmp.text = selectedCrafting.SelectedRecipe != null ? selectedCrafting.SelectedRecipe.RecipeName : "Выбрать рецепт";
+                tmp.fontSize = 11;
+                tmp.alignment = TMPro.TextAlignmentOptions.Center;
+                tmp.color = Color.white;
+            }
 
             var inputInv = selectedCrafting.InputInventory;
             if (inputInv != null)
@@ -316,8 +442,18 @@ public class InventoryPanelUI : MonoBehaviour
         if (this == null) return;
         if (UnityEditor.EditorUtility.IsPersistent(this)) return;
         
-        EnsurePreviewForContainer(factorySlotsContainer, 24);
-        EnsurePreviewForContainer(foragingSlotsContainer, 12);
+        int factoryCount = 100;
+        int foragingCount = 12;
+
+        PlayerInventory playerInv = Object.FindFirstObjectByType<PlayerInventory>();
+        if (playerInv != null)
+        {
+            factoryCount = playerInv.FactorySlotCount;
+            foragingCount = playerInv.BaseForagingSlots;
+        }
+
+        EnsurePreviewForContainer(factorySlotsContainer, factoryCount);
+        EnsurePreviewForContainer(foragingSlotsContainer, foragingCount);
     }
 
     private void EnsurePreviewForContainer(Transform container, int count)

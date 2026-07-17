@@ -3,7 +3,23 @@ using System.Collections.Generic;
 
 public class PlayerLevelManager : MonoBehaviour, IGameService
 {
-    public static PlayerLevelManager instance;
+    private static PlayerLevelManager _instance;
+    public static PlayerLevelManager instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindFirstObjectByType<PlayerLevelManager>();
+                if (_instance != null)
+                {
+                    _instance.InitializeService();
+                }
+            }
+            return _instance;
+        }
+    }
+
     [SerializeField] private List<UpgradeData> upgradeTemplates;
     private List<UpgradeData> playerUpgrades = new();
     public int curPlayerLevel = 0;
@@ -12,12 +28,12 @@ public class PlayerLevelManager : MonoBehaviour, IGameService
 
     public void InitializeService()
     {
-        if (instance != null && instance != this)
+        if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        instance = this;
+        _instance = this;
         DontDestroyOnLoad(gameObject);
 
         if (playerUpgrades.Count > 0) return;
