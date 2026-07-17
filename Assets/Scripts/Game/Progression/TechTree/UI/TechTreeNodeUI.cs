@@ -97,13 +97,11 @@ public class TechTreeNodeUI : MonoBehaviour, IPointerClickHandler, IPointerEnter
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        isHovered = true;
         if (costPanel != null) costPanel.SetActive(true);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        isHovered = false;
         if (costPanel != null) costPanel.SetActive(false);
     }
 
