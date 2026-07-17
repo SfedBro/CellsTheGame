@@ -32,6 +32,10 @@ public class PlayerInteractor : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.X) && !Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.RightControl))
         {
+            if (PlayerModuleManager.Instance != null)
+            {
+                PlayerModuleManager.Instance.EnsureWeaponEquipped();
+            }
             if (AutoSaveManager.Instance != null)
             {
                 AutoSaveManager.Instance.SaveAll();
