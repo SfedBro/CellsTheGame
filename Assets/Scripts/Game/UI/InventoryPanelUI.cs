@@ -44,6 +44,9 @@ public class InventoryPanelUI : MonoBehaviour
     public Button selectRecipeButton;
     public TMPro.TMP_Text selectRecipeButtonLabel;
 
+    [Header("Machine Progress Bar")]
+    public Image machineProgressBar;
+
     [Header("Prefabs")]
     public ItemSlotUI itemSlotPrefab;
     public ModuleSlotUI moduleSlotPrefab;
@@ -487,4 +490,20 @@ public class InventoryPanelUI : MonoBehaviour
         }
     }
 #endif
+
+    private void Update()
+    {
+        if (Application.isPlaying && currentTab == PanelTabType.Machine && machineProgressBar != null && parentWindow != null)
+        {
+            var selectedCrafting = parentWindow.SelectedCraftingProvider;
+            if (selectedCrafting != null)
+            {
+                machineProgressBar.fillAmount = selectedCrafting.ProgressPercentage;
+            }
+            else
+            {
+                machineProgressBar.fillAmount = 0f;
+            }
+        }
+    }
 }
