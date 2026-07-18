@@ -320,7 +320,7 @@ public class InventoryPanelUI : MonoBehaviour
                     if (RecipeSelectionPopup.Instance != null)
                     {
                         RecipeSelectionPopup.Instance.OpenPopup(
-                            selectedCrafting as MonoBehaviour,
+                            selectRecipeButton.GetComponent<RectTransform>(),
                             selectedCrafting.AvailableRecipes,
                             selectedCrafting.SelectedRecipe,
                             (recipe) =>
@@ -361,7 +361,7 @@ public class InventoryPanelUI : MonoBehaviour
                     if (RecipeSelectionPopup.Instance != null)
                     {
                         RecipeSelectionPopup.Instance.OpenPopup(
-                            selectedCrafting as MonoBehaviour,
+                            btnGo.GetComponent<RectTransform>(),
                             selectedCrafting.AvailableRecipes,
                             selectedCrafting.SelectedRecipe,
                             (recipe) =>
