@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc273a89d1a098048bf63b22d40a84f7, type: 3}
   m_Name: TinIngot
   m_EditorClassIdentifier: 
-  RecipeName: New Recipe
+  RecipeName: Tin Ingot
   Inputs:
   - type: 3
     amount: 1
   Outputs:
   - type: 6
     amount: 1
-  ProcessTime: 2
+  ProcessTime: 1

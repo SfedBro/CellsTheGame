@@ -39,9 +39,9 @@ public class RecipeSelectionPopup : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void OpenPopup(MonoBehaviour machine, List<RecipeData> recipes, RecipeData currentRecipe, Action<RecipeData> onSelect)
+    public void OpenPopup(RectTransform buttonRect, List<RecipeData> recipes, RecipeData currentRecipe, Action<RecipeData> onSelect)
     {
-        if (machine == null || recipes == null || recipes.Count == 0)
+        if (buttonRect == null || recipes == null || recipes.Count == 0)
         {
             Close();
             return;
@@ -50,8 +50,8 @@ public class RecipeSelectionPopup : MonoBehaviour
         onRecipeSelectedCallback = onSelect;
         gameObject.SetActive(true);
 
-        // 1. Position popup above the machine block in Screen/Canvas space
-        PositionAboveMachine(machine);
+        // 1. Position popup above the UI button
+        PositionAboveButton(buttonRect);
 
         // 2. Populate recipe buttons
         PopulateButtons(recipes, currentRecipe);
@@ -63,25 +63,19 @@ public class RecipeSelectionPopup : MonoBehaviour
         onRecipeSelectedCallback = null;
     }
 
-    private void PositionAboveMachine(MonoBehaviour machine)
+    private void PositionAboveButton(RectTransform buttonRect)
     {
         if (canvas == null) canvas = GetComponentInParent<Canvas>();
-        if (canvas == null) return;
+        if (canvas == null || buttonRect == null) return;
 
-        // Get machine's world position
-        Vector3 worldPos = machine.transform.position;
-
-        // Convert world position to screen space
-        Camera mainCam = Camera.main != null ? Camera.main : Camera.current;
-        if (mainCam == null) return;
-
-        Vector2 screenPos = mainCam.WorldToScreenPoint(worldPos);
+        // Get screen position of the button
+        Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, buttonRect.position);
 
         // Convert screen space to local position inside canvas RectTransform
         RectTransform canvasRect = canvas.GetComponent<RectTransform>();
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPos, canvas.worldCamera, out Vector2 localPoint))
         {
-            // Apply offset (e.g. place it directly above the machine)
+            // Apply offset (place it above the button)
             localPoint += positionOffset;
 
             // Clamp popup position to keep it fully on screen

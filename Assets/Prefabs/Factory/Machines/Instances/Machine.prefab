@@ -243,11 +243,14 @@ MonoBehaviour:
     IsInput: 1
     IsOutput: 0
     ConnectedBlock: {fileID: 0}
+  customInventoryPanelPrefab: {fileID: 8905777301333374810, guid: 64a650e3c52bbc34fb2ba479274d4bbb, type: 3}
   availableRecipes:
-  - {fileID: 11400000, guid: 6df0e09a98b5a364c9f7e4480d94430a, type: 2}
   - {fileID: 11400000, guid: 369fa6e678f44ca4bb5b25a822620f4e, type: 2}
-  - {fileID: 11400000, guid: 2eb50d171af712848b77318a380e4ce7, type: 2}
+  - {fileID: 11400000, guid: 73641ea3aa4db164f860a016564f4b81, type: 2}
+  - {fileID: 11400000, guid: 6df0e09a98b5a364c9f7e4480d94430a, type: 2}
   - {fileID: 11400000, guid: 266707fc31d7f534c87ad55683b9115f, type: 2}
+  - {fileID: 11400000, guid: 2eb50d171af712848b77318a380e4ce7, type: 2}
+  - {fileID: 11400000, guid: bfd6c1c142ca88340a43ce4eb5a57441, type: 2}
   selectedRecipe: {fileID: 0}
   inputInventory:
     slotCount: 4

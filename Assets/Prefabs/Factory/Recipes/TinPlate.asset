@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc273a89d1a098048bf63b22d40a84f7, type: 3}
-  m_Name: IronPlate
+  m_Name: TinPlate
   m_EditorClassIdentifier: 
-  RecipeName: Iron Plate
+  RecipeName: Tin Plate
   Inputs:
-  - type: 4
+  - type: 6
     amount: 2
   Outputs:
-  - type: 7
+  - type: 9
     amount: 1
   ProcessTime: 3

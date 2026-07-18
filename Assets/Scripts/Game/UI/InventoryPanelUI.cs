@@ -44,6 +44,9 @@ public class InventoryPanelUI : MonoBehaviour
     public Button selectRecipeButton;
     public TMPro.TMP_Text selectRecipeButtonLabel;
 
+    [Header("Machine Progress Bar")]
+    public Image machineProgressBar;
+
     [Header("Prefabs")]
     public ItemSlotUI itemSlotPrefab;
     public ModuleSlotUI moduleSlotPrefab;
@@ -320,7 +323,7 @@ public class InventoryPanelUI : MonoBehaviour
                     if (RecipeSelectionPopup.Instance != null)
                     {
                         RecipeSelectionPopup.Instance.OpenPopup(
-                            selectedCrafting as MonoBehaviour,
+                            selectRecipeButton.GetComponent<RectTransform>(),
                             selectedCrafting.AvailableRecipes,
                             selectedCrafting.SelectedRecipe,
                             (recipe) =>
@@ -329,6 +332,19 @@ public class InventoryPanelUI : MonoBehaviour
                                 RefreshView();
                             }
                         );
+                    }
+                    else
+                    {
+                        // Fallback: Cycle recipes directly if popup is missing
+                        var recipes = selectedCrafting.AvailableRecipes;
+                        if (recipes != null && recipes.Count > 0)
+                        {
+                            int currentIndex = recipes.IndexOf(selectedCrafting.SelectedRecipe);
+                            int nextIndex = (currentIndex + 1) % recipes.Count;
+                            var nextRecipe = recipes[nextIndex];
+                            selectedCrafting.SelectRecipe(nextRecipe);
+                            RefreshView();
+                        }
                     }
                 });
 
@@ -361,7 +377,7 @@ public class InventoryPanelUI : MonoBehaviour
                     if (RecipeSelectionPopup.Instance != null)
                     {
                         RecipeSelectionPopup.Instance.OpenPopup(
-                            selectedCrafting as MonoBehaviour,
+                            btnGo.GetComponent<RectTransform>(),
                             selectedCrafting.AvailableRecipes,
                             selectedCrafting.SelectedRecipe,
                             (recipe) =>
@@ -370,6 +386,19 @@ public class InventoryPanelUI : MonoBehaviour
                                 RefreshView();
                             }
                         );
+                    }
+                    else
+                    {
+                        // Fallback: Cycle recipes directly if popup is missing
+                        var recipes = selectedCrafting.AvailableRecipes;
+                        if (recipes != null && recipes.Count > 0)
+                        {
+                            int currentIndex = recipes.IndexOf(selectedCrafting.SelectedRecipe);
+                            int nextIndex = (currentIndex + 1) % recipes.Count;
+                            var nextRecipe = recipes[nextIndex];
+                            selectedCrafting.SelectRecipe(nextRecipe);
+                            RefreshView();
+                        }
                     }
                 });
 
@@ -487,4 +516,20 @@ public class InventoryPanelUI : MonoBehaviour
         }
     }
 #endif
+
+    private void Update()
+    {
+        if (Application.isPlaying && currentTab == PanelTabType.Machine && machineProgressBar != null && parentWindow != null)
+        {
+            var selectedCrafting = parentWindow.SelectedCraftingProvider;
+            if (selectedCrafting != null)
+            {
+                machineProgressBar.fillAmount = selectedCrafting.ProgressPercentage;
+            }
+            else
+            {
+                machineProgressBar.fillAmount = 0f;
+            }
+        }
+    }
 }

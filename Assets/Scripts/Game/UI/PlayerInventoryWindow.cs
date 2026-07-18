@@ -236,15 +236,22 @@ public class PlayerInventoryWindow : MonoBehaviour
     private void ValidatePanelReferences(InventoryPanelUI panel, string panelName, List<string> missingFields)
     {
         if (panel.itemSlotPrefab == null) missingFields.Add($"{panelName}.itemSlotPrefab");
-        if (panel.moduleSlotPrefab == null) missingFields.Add($"{panelName}.moduleSlotPrefab");
 
-        if (panel.factorySlotsContainer == null) missingFields.Add($"{panelName}.factorySlotsContainer");
-        if (panel.foragingSlotsContainer == null) missingFields.Add($"{panelName}.foragingSlotsContainer");
-        if (panel.modulesSlotsContainer == null) missingFields.Add($"{panelName}.modulesSlotsContainer");
+        // If the panel has tab buttons or views for Factory/Foraging/Modules, it is treated as a full inventory panel
+        bool isFullPanel = panel.factoryView != null || panel.foragingView != null || panel.factoryTabButton != null;
 
-        if (panel.factoryView == null) missingFields.Add($"{panelName}.factoryView");
-        if (panel.foragingView == null) missingFields.Add($"{panelName}.foragingView");
-        if (panel.modulesView == null) missingFields.Add($"{panelName}.modulesView");
+        if (isFullPanel)
+        {
+            if (panel.moduleSlotPrefab == null) missingFields.Add($"{panelName}.moduleSlotPrefab");
+            if (panel.factorySlotsContainer == null) missingFields.Add($"{panelName}.factorySlotsContainer");
+            if (panel.foragingSlotsContainer == null) missingFields.Add($"{panelName}.foragingSlotsContainer");
+            if (panel.modulesSlotsContainer == null) missingFields.Add($"{panelName}.modulesSlotsContainer");
+
+            if (panel.factoryView == null) missingFields.Add($"{panelName}.factoryView");
+            if (panel.foragingView == null) missingFields.Add($"{panelName}.foragingView");
+            if (panel.modulesView == null) missingFields.Add($"{panelName}.modulesView");
+        }
+
         if (panel.machineView == null) missingFields.Add($"{panelName}.machineView");
     }
 
