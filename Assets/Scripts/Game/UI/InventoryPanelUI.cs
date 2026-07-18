@@ -333,6 +333,19 @@ public class InventoryPanelUI : MonoBehaviour
                             }
                         );
                     }
+                    else
+                    {
+                        // Fallback: Cycle recipes directly if popup is missing
+                        var recipes = selectedCrafting.AvailableRecipes;
+                        if (recipes != null && recipes.Count > 0)
+                        {
+                            int currentIndex = recipes.IndexOf(selectedCrafting.SelectedRecipe);
+                            int nextIndex = (currentIndex + 1) % recipes.Count;
+                            var nextRecipe = recipes[nextIndex];
+                            selectedCrafting.SelectRecipe(nextRecipe);
+                            RefreshView();
+                        }
+                    }
                 });
 
                 if (selectRecipeButtonLabel != null)
@@ -373,6 +386,19 @@ public class InventoryPanelUI : MonoBehaviour
                                 RefreshView();
                             }
                         );
+                    }
+                    else
+                    {
+                        // Fallback: Cycle recipes directly if popup is missing
+                        var recipes = selectedCrafting.AvailableRecipes;
+                        if (recipes != null && recipes.Count > 0)
+                        {
+                            int currentIndex = recipes.IndexOf(selectedCrafting.SelectedRecipe);
+                            int nextIndex = (currentIndex + 1) % recipes.Count;
+                            var nextRecipe = recipes[nextIndex];
+                            selectedCrafting.SelectRecipe(nextRecipe);
+                            RefreshView();
+                        }
                     }
                 });
 
